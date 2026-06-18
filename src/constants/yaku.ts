@@ -73,7 +73,7 @@ export const YAKU = {
   },
   NIKODESUMAN_BINJO: {
     name: "ニコデスマン（便乗）",
-    yaku: 2,
+    yaku: 1,
     desc: "手牌が流行牌を含む基本牌2種のみ",
   },
 };
