@@ -1,0 +1,64 @@
+@use "@/styles/variables" as *;
+@use "@/styles/mixins" as *;
+
+.roundTitle {
+  font-size: 20px;
+  font-weight: $fw-bold;
+  color: $color-text-gray;
+  margin-bottom: $gap-large;
+}
+
+.playerList {
+  display: flex;
+  flex-direction: column;
+  gap: $gap-large;
+}
+
+.playerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $padding-score-row;
+  border-radius: $radius-small;
+}
+
+.playerLeft {
+  display: flex;
+  align-items: center;
+  gap: $gap-large;
+}
+
+.playerName {
+  font-weight: $fw-bold;
+  font-size: 20px;
+  color: $color-text-light;
+}
+
+.playerRight {
+  display: flex;
+  align-items: center;
+  gap: $gap-large;
+}
+
+.playerScore {
+  font-size: $fs-lg;
+  font-weight: $fw-bold;
+  color: $color-text-primary;
+}
+
+.scoreDelta {
+  font-size: $fs-md;
+  font-weight: $fw-bold;
+}
+
+.scoreDeltaPositive {
+  color: $color-score-positive;
+}
+
+.scoreDeltaNegative {
+  color: $color-score-negative;
+}
+
+.buttonRow {
+  margin-top: 24px;
+}

@@ -1,0 +1,39 @@
+.container {
+  position: absolute;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.bar {
+  width: 100%;
+  height: 1px;
+  background: #000;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.tileImage {
+  width: 150px;
+  height: auto;
+}
+
+.text {
+  color: #fff;
+  font-size: 72px;
+  font-weight: 900;
+  letter-spacing: 8px;
+  text-shadow: 0 0 10px rgba(255, 200, 0, 0.8);
+}

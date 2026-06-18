@@ -1,0 +1,59 @@
+@use "variables" as *;
+
+@mixin card($radius: $radius-card, $shadow: $shadow-modal, $bg: $color-card-bg) {
+  background: $bg;
+  border-radius: $radius;
+  box-shadow: $shadow;
+}
+
+@mixin overlay($opacity: 0.5) {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, $opacity);
+}
+
+@mixin center-flex {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin center-absolute {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin modal-card {
+  @include card;
+  padding: $padding-modal;
+  text-align: center;
+}
+
+@mixin avatar($size: 32px, $border: 2px solid #000) {
+  width: $size;
+  height: $size;
+  border-radius: 100%;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+  border: $border;
+}
+
+@mixin badge-base {
+  font-size: $fs-xxs;
+  padding: 0 $gap-medium;
+  border-radius: $radius-pill;
+  font-weight: $fw-bold;
+  line-height: 18px;
+  letter-spacing: 0.03em;
+  box-shadow: $shadow-button;
+  flex-shrink: 0;
+}
+
+@mixin text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

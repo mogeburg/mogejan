@@ -1,0 +1,59 @@
+@use "@/styles/variables" as *;
+@use "@/styles/mixins" as *;
+
+.modalCard {
+  text-align: center;
+}
+
+.version {
+  text-align: right;
+  margin: 0 0 4px 0;
+  padding: 4px 0;
+  font-size: $fs-xs;
+  user-select: none;
+}
+
+.versionRed {
+  text-align: right;
+  margin: 0 0 4px 0;
+  padding: 4px 0;
+  font-size: $fs-xs;
+  color: #e74c3c;
+  user-select: none;
+}
+
+.title {
+  font-size: $fs-huge;
+  margin: -2px 0 20px 0;
+  line-height: 1;
+  color: $color-text-primary;
+  letter-spacing: 4px;
+  font-weight: $fw-black;
+}
+
+.titleRed {
+  font-size: $fs-huge;
+  margin: -2px 0 20px 0;
+  line-height: 1;
+  color: #e74c3c;
+  letter-spacing: 4px;
+  font-weight: $fw-black;
+}
+
+.charGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: $gap-large;
+  justify-items: center;
+}
+
+.charItem {
+  cursor: pointer;
+}
+
+.charItemFaceDown {
+  cursor: default;
+  opacity: 0.85;
+  filter: grayscale(0.3);
+  transition: opacity 0.2s;
+}

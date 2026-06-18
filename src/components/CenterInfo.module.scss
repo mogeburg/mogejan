@@ -1,0 +1,128 @@
+@use "@/styles/variables" as *;
+@use "@/styles/mixins" as *;
+
+.container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 540px;
+  height: 320px;
+  z-index: 1;
+}
+
+.cpuTop {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.cpuLeft {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.cpuRight {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.playerBottom {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.centerBox {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.infoCard {
+  @include card($radius-card, $shadow-card, $color-card-bg-90);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 150px;
+}
+
+.infoText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.roundLabel {
+  font-size: $fs-small;
+  font-weight: $fw-black;
+  color: $color-text-primary;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.honbaLabel {
+  font-size: $fs-xxs;
+  font-weight: $fw-bold;
+  color: $color-text-secondary;
+  margin-left: $gap-xs;
+}
+
+.wallLabel {
+  font-size: $fs-xs;
+  color: $color-text-secondary;
+  font-weight: $fw-bold;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: end;
+}
+
+.wallCount {
+  font-size: 33px;
+  line-height: 1;
+  font-weight: $fw-black;
+  color: $color-text-primary;
+}
+
+.doraRow {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  border-top: 1px solid $color-border-light;
+  padding-top: $gap-medium;
+  width: 100%;
+  justify-content: center;
+}
+
+.doraItem {
+  display: flex;
+  align-items: center;
+  gap: $gap-xs;
+}
+
+.trendRow {
+  display: flex;
+  gap: 0;
+  align-items: center;
+  border-top: 1px solid $color-border-light;
+  padding-top: $gap-medium;
+  width: 100%;
+  justify-content: center;
+}
+
+

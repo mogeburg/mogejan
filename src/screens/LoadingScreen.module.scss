@@ -1,0 +1,55 @@
+@use "@/styles/variables" as *;
+@use "@/styles/mixins" as *;
+
+.overlay {
+  width: 100%;
+  height: 100%;
+  @include center-flex;
+  cursor: pointer;
+  background: $color-overlay-dark;
+  user-select: none;
+}
+
+.overlayLoading {
+  cursor: default;
+}
+
+.center {
+  text-align: center;
+}
+
+.loadingText {
+  color: $color-text-tertiary;
+  font-size: $fs-md;
+  font-weight: $fw-bold;
+}
+
+.barTrack {
+  width: 240px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  margin: 12px auto 0;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  background: $color-btn-primary-bg;
+  border-radius: 3px;
+  transition: width 0.15s ease-out;
+}
+
+.promptText {
+  color: $color-white;
+  font-size: $fs-lg;
+  font-weight: $fw-bold;
+  display: block;
+}
+
+.hintText {
+  color: $color-text-tertiary;
+  font-size: $fs-body;
+  display: block;
+  margin-top: $gap-large;
+}

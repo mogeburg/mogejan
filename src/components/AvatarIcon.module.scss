@@ -1,0 +1,22 @@
+.wrapper {
+  position: relative;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.avatar {
+  border-radius: 100%;
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.crown {
+  position: absolute;
+  top: -30%;
+  left: 35%;
+  transform: translateX(-50%) rotate(-20deg);
+  z-index: 5;
+  pointer-events: none;
+  line-height: 0;
+}

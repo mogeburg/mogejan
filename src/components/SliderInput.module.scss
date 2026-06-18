@@ -1,0 +1,18 @@
+@use "@/styles/variables" as *;
+
+.row {
+  margin-bottom: $gap-large;
+}
+
+.label {
+  margin-bottom: $gap-xs;
+}
+
+.slider {
+  width: 200px;
+}
+
+.value {
+  margin-left: $gap-medium;
+  font-weight: $fw-bold;
+}

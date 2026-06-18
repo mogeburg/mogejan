@@ -1,0 +1,512 @@
+@use "@/styles/variables" as *;
+
+.panel {
+  font-size: $fs-body;
+  color: $color-text-primary;
+  line-height: 1.9;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panelAlt {
+  font-size: $fs-body;
+  color: $color-text-primary;
+  line-height: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panelSettings {
+  font-size: $fs-body;
+  color: $color-text-primary;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.menuIntro {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border: 1px solid $color-border-medium;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,243,235,0.96));
+  border-radius: $radius-medium;
+}
+
+.menuIntroMain {
+  min-width: 0;
+}
+
+.menuIntroAside {
+  flex-shrink: 0;
+}
+
+.menuTitle {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.15;
+}
+
+.menuLead {
+  margin-top: 6px;
+  color: $color-text-mid;
+  line-height: 1.6;
+}
+
+.menuSection {
+  border: 1px solid $color-border-light;
+  border-radius: $radius-medium;
+  background: rgba(255,255,255,0.86);
+  overflow: hidden;
+}
+
+.menuSectionHeader {
+  padding: 10px 14px 9px;
+  border-bottom: 1px solid $color-border-light;
+  background: rgba(255,255,255,0.65);
+}
+
+.menuSectionTitle {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.25;
+}
+
+.menuSectionDescription {
+  margin-top: 4px;
+  color: $color-text-mid;
+  font-size: $fs-small;
+  line-height: 1.5;
+}
+
+.menuSectionBody {
+  padding: 12px 14px;
+}
+
+.sectionStack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.compactNote {
+  margin: 0;
+  color: $color-text-mid;
+  font-size: $fs-small;
+  line-height: 1.7;
+}
+
+.linkList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.linkChip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 34px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: $radius-xs;
+  background: rgba(255,255,255,0.92);
+  color: $color-text-primary;
+  text-decoration: underline;
+  font-weight: $fw-bold;
+  transition: color 0.16s ease, background-color 0.16s ease;
+}
+
+.linkChip:hover {
+  color: $color-btn-primary-border;
+  background: rgba(255,255,255,0.98);
+}
+
+.linkChip:focus-visible {
+  outline: 2px solid rgba($color-btn-primary-bg, 0.35);
+  outline-offset: 2px;
+}
+
+.creditGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0;
+  background: transparent;
+}
+
+.creditCard {
+  padding: 12px 14px;
+  border: 0;
+  background: $color-card-bg-90;
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.creditTitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.creditBody {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.creditList {
+  margin: 0;
+  padding-left: 18px;
+  font-size: $fs-small;
+  line-height: 1.7;
+}
+
+.creditLink {
+  color: $color-text-primary;
+  text-decoration: underline;
+  font-weight: $fw-bold;
+  transition: color 0.16s ease;
+}
+
+.creditLink:hover {
+  color: $color-btn-primary-border;
+}
+
+.creditLink:focus-visible {
+  outline: 2px solid rgba($color-btn-primary-bg, 0.35);
+  outline-offset: 2px;
+}
+
+.linkListCompact {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tableWrap {
+  border: 0;
+  border-radius: 0;
+  overflow: hidden;
+  background: rgba(255,255,255,0.92);
+}
+
+.tileGridPanel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 0;
+  background: rgba(255,255,255,0.82);
+}
+
+.tileGridPanelTight {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  padding: 12px 14px;
+  border: 0;
+  border-radius: 0;
+  background: rgba(255,255,255,0.82);
+}
+
+.h3 {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+}
+
+.h3Bottom {
+  margin: 16px 0 12px 0;
+  font-size: 16px;
+}
+
+.h3Alt {
+  margin: 0 0 4px 0;
+  font-size: 16px;
+}
+
+.p {
+  margin: 0 0 16px 0;
+}
+
+.pNoMargin {
+  margin: 0 0 8px 0;
+}
+
+.ul {
+  margin: 0 0 20px 0;
+  padding-left: 20px;
+  font-size: $fs-small;
+}
+
+.ulPlain {
+  margin: 0;
+  padding-left: 20px;
+  font-size: $fs-small;
+}
+
+.versionHistoryTree {
+  list-style: none;
+  margin: 0;
+  padding-left: 0;
+  font-size: $fs-small;
+}
+
+.versionHistoryTree > li + li {
+  margin-top: 8px;
+}
+
+.versionHistoryLabel {
+  font-weight: $fw-bold;
+}
+
+.versionHistoryText {
+  margin-left: 6px;
+}
+
+.versionHistorySummaryList {
+  margin: 6px 0 0 16px;
+  padding-left: 16px;
+}
+
+.versionHistoryFold {
+  margin: 0;
+}
+
+.versionHistorySummary {
+  cursor: pointer;
+  color: $color-text-secondary;
+  font-size: $fs-small;
+  font-weight: $fw-bold;
+  line-height: 1.5;
+  user-select: none;
+}
+
+.versionHistorySummary:hover {
+  color: $color-text-primary;
+}
+
+.versionHistoryList {
+  list-style: none;
+  margin: 8px 0 0;
+  padding-left: 16px;
+  font-size: $fs-small;
+}
+
+.versionHistoryList > li + li {
+  margin-top: 6px;
+}
+
+.ulNested {
+  padding-left: 20px;
+}
+
+.tileGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.metricSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.metricSubSection {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.metricGroupTitle {
+  font-size: $fs-small;
+  font-weight: $fw-bold;
+  color: $color-text-secondary;
+  margin-top: 2px;
+}
+
+.metricGrid,
+.metricGridCompact {
+  display: grid;
+  gap: 1px;
+  padding: 1px;
+  background: $color-border-medium;
+  overflow: hidden;
+}
+
+.metricGrid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.metricGridCompact {
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+}
+
+.metricCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border: 0;
+  border-radius: 0;
+  background: $color-card-bg-90;
+  box-shadow: none;
+}
+
+.metricLabel {
+  font-size: $fs-small;
+  color: $color-text-primary;
+  line-height: 1.3;
+}
+
+.metricValue {
+  margin-top: 6px;
+  font-size: 18px;
+  font-weight: $fw-bold;
+  color: $color-text-primary;
+  line-height: 1.2;
+  word-break: break-word;
+}
+
+@media (max-width: 900px) {
+  .metricGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .metricGrid,
+  .metricGridCompact {
+    grid-template-columns: 1fr;
+  }
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.th {
+  text-align: left;
+  padding: $padding-cell;
+}
+
+.thCenter {
+  text-align: center;
+  padding: $padding-cell;
+  width: 48px;
+}
+
+.tr {
+  border-bottom: 1px solid $color-border-light;
+}
+
+.trHead {
+  border-bottom: 1px solid $color-border-medium;
+}
+
+.td {
+  padding: $padding-cell;
+  font-weight: $fw-bold;
+}
+
+.tdCenter {
+  text-align: center;
+  padding: $padding-cell;
+}
+
+.tdDesc {
+  padding: $padding-cell;
+  color: $color-text-mid;
+  font-size: $fs-small;
+}
+
+.settingsRow {
+  margin-bottom: $gap-large;
+}
+
+.settingsColumns {
+  display: flex;
+  gap: 20px;
+}
+
+.settingsLeft {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settingsRight {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settingsDivider {
+  display: none;
+}
+
+.settingsSurface {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.settingsActions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.settingsSubLabel {
+  margin: 0 0 6px 0;
+  font-size: $fs-small;
+  font-weight: $fw-bold;
+  color: $color-text-secondary;
+  line-height: 1.4;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: $gap-small;
+  cursor: pointer;
+  user-select: none;
+}
+
+@media (max-width: 900px) {
+  .settingsColumns {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .settingsDivider {
+    display: none;
+  }
+
+  .creditGrid {
+    grid-template-columns: 1fr;
+  }
+}

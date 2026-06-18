@@ -1,0 +1,59 @@
+@use "@/styles/variables" as *;
+@use "@/styles/mixins" as *;
+
+.title {
+  font-size: $fs-xl;
+  margin: 0 0 24px;
+  color: $color-text-primary;
+}
+
+.playerList {
+  display: flex;
+  flex-direction: column;
+  gap: $gap-medium;
+}
+
+.playerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $padding-result-row;
+  border-radius: $radius-small;
+}
+
+.winnerRow {
+  background: #fff8e1;
+}
+
+.playerLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.rankIcon {
+  font-size: $fs-lg;
+}
+
+.avatar {
+  @include avatar(28px);
+}
+
+.playerName {
+  font-weight: $fw-bold;
+  font-size: $fs-md;
+  color: $color-text-light;
+}
+
+.playerScore {
+  font-size: 22px;
+  font-weight: $fw-bold;
+  color: $color-text-primary;
+}
+
+.buttonRow {
+  margin-top: 24px;
+  display: flex;
+  gap: $gap-large;
+  justify-content: center;
+}

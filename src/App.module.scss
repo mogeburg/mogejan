@@ -1,0 +1,33 @@
+@use "@/styles/variables" as *;
+@use "@/styles/mixins" as *;
+
+.outer {
+  width: 100dvw;
+  min-width: 100svw;
+  height: 100dvh;
+  min-height: 100svh;
+  @include center-flex;
+  overflow: hidden;
+  background: $color-bg-beige;
+}
+
+.gameArea {
+  width: $game-w;
+  height: $game-h;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+  background: radial-gradient(circle at center, $color-green-light 0%, $color-green-dark 100%);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 300px 300px;
+    mix-blend-mode: overlay;
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+}

@@ -1,0 +1,295 @@
+import { resolveBgmPath } from "@/constants/game";
+import { getBasicTileId, getTrendTileId } from "@/constants/tiles";
+import { useGameStore } from "@/store";
+import { voiceAudioUrl } from "@/utils/assets";
+import { getCurrentBgmSrc, playBgm, playVoice } from "@/utils/audio";
+import { canFormWinningHand, findWaiterId } from "@/utils/check";
+import { evaluateSpecialYaku } from "@/utils/evaluateSpecialYaku";
+import type { YakuResult } from "@/utils/evaluateYaku";
+import { evaluateYaku } from "@/utils/evaluateYaku";
+import { getCpuProfile } from "@/ai/CpuController";
+
+export function getCutinRarity(totalYaku: number) {
+  return totalYaku >= 13 ? "epic" : totalYaku >= 6 ? "rare" : "normal";
+}
+
+export function getCutinImageVariant(totalYaku: number) {
+  return totalYaku >= 8 ? "baiman" : "normal";
+}
+
+function shouldUseEchoVoice(totalYaku: number) {
+  return getCutinRarity(totalYaku) !== "normal";
+}
+
+function getHandAfterDiscard(tiles: number[], discardTileId: number): number[] {
+  const nextTiles = [...tiles];
+  const discardIndex = nextTiles.indexOf(discardTileId);
+  if (discardIndex >= 0) {
+    nextTiles.splice(discardIndex, 1);
+  }
+  return nextTiles;
+}
+
+export function getRiichiWinningCandidates(trendTypes: number[]): number[] {
+  return [
+    ...Array.from({ length: 9 }, (_, index) => getBasicTileId(index)),
+    ...trendTypes.map((trendType) => getTrendTileId(trendType)),
+  ];
+}
+
+interface ProjectedYakuParams {
+  riichi: boolean;
+  doubleReach: boolean;
+  ippatsu: boolean;
+  isRon: boolean;
+  hasPonMelds: boolean;
+  doraTile: number | null;
+  uradoraTile: number | null;
+  allTiles: number[];
+  winnerDiscardsEmpty: boolean;
+  playerName: string;
+  trendTypes: number[];
+}
+
+export function getProjectedTotalYaku(params: ProjectedYakuParams): number {
+  return evaluateYaku(params)
+    .concat(evaluateSpecialYaku(params.allTiles))
+    .reduce((sum, result) => sum + result.yaku, 0);
+}
+
+interface CanDeclareRiichiForTilesParams {
+  tiles: number[];
+  discardTileId: number;
+  openMeldTiles: number[];
+  hasPonMelds: boolean;
+  doraTile: number | null;
+  playerName: string;
+  trendTypes: number[];
+  winnerDiscardsEmpty: boolean;
+  doubleReach: boolean;
+  minTotalYaku?: number;
+}
+
+export function canDeclareRiichiForTiles({
+  tiles,
+  discardTileId,
+  openMeldTiles,
+  hasPonMelds,
+  doraTile,
+  playerName,
+  trendTypes,
+  winnerDiscardsEmpty,
+  doubleReach,
+  minTotalYaku = 2,
+}: CanDeclareRiichiForTilesParams): boolean {
+  const handAfterDiscard = getHandAfterDiscard(tiles, discardTileId);
+  const winningCandidates = getRiichiWinningCandidates(trendTypes);
+
+  return winningCandidates.some((winningTileId) => {
+    const allTiles = [...handAfterDiscard, winningTileId, ...openMeldTiles];
+    if (!canFormWinningHand(allTiles)) return false;
+
+    const totalYaku = getProjectedTotalYaku({
+      riichi: true,
+      doubleReach,
+      ippatsu: false,
+      isRon: true,
+      hasPonMelds,
+      doraTile,
+      uradoraTile: null,
+      allTiles,
+      winnerDiscardsEmpty,
+      playerName,
+      trendTypes,
+    });
+
+    return totalYaku >= minTotalYaku;
+  });
+}
+
+export function canDeclareRiichi(
+  playerIndex: number,
+  discardTileId?: number | null,
+  minTotalYaku = 2,
+): boolean {
+  const state = useGameStore.getState();
+  const tiles = [
+    ...state.hands[playerIndex],
+    ...(state.drawnTile != null ? [state.drawnTile] : []),
+  ];
+  const riichiDiscardTileId = discardTileId ?? findWaiterId(tiles);
+  if (riichiDiscardTileId == null) return false;
+
+  return canDeclareRiichiForTiles({
+    tiles,
+    discardTileId: riichiDiscardTileId,
+    openMeldTiles: state.ponMelds[playerIndex].flat(),
+    hasPonMelds: state.ponMelds[playerIndex].length > 0,
+    doraTile: state.doraTile,
+    playerName: state.players[playerIndex].name,
+    trendTypes: state.trendTypes,
+    winnerDiscardsEmpty: state.discards[playerIndex].length === 0,
+    doubleReach: state.discards[playerIndex].length === 0,
+    minTotalYaku,
+  });
+}
+
+export function evaluateWin(
+  playerIndex: number,
+  options?: {
+    isRon?: boolean;
+    claimedTile?: number;
+  },
+): { totalYaku: number; results: YakuResult[] } {
+  const state = useGameStore.getState();
+  const drawnTiles =
+    options?.claimedTile != null
+      ? [options.claimedTile]
+      : state.drawnTile != null
+        ? [state.drawnTile]
+        : [];
+  const allTiles = [
+    ...state.hands[playerIndex],
+    ...drawnTiles,
+    ...state.ponMelds[playerIndex].flat(),
+  ];
+  const totalYaku = getProjectedTotalYaku({
+    riichi: state.riichi[playerIndex],
+    doubleReach: state.doubleReach[playerIndex],
+    ippatsu: state.ippatsu[playerIndex],
+    isRon: options?.isRon ?? false,
+    hasPonMelds: state.ponMelds[playerIndex].length > 0,
+    doraTile: state.doraTile,
+    uradoraTile: state.uradoraTile,
+    allTiles,
+    winnerDiscardsEmpty: state.discards[playerIndex].length === 0,
+    playerName: state.players[playerIndex].name,
+    trendTypes: state.trendTypes,
+  });
+  const results = evaluateYaku({
+    riichi: state.riichi[playerIndex],
+    doubleReach: state.doubleReach[playerIndex],
+    ippatsu: state.ippatsu[playerIndex],
+    isRon: options?.isRon ?? false,
+    hasPonMelds: state.ponMelds[playerIndex].length > 0,
+    doraTile: state.doraTile,
+    uradoraTile: state.uradoraTile,
+    allTiles,
+    winnerDiscardsEmpty: state.discards[playerIndex].length === 0,
+    playerName: state.players[playerIndex].name,
+    trendTypes: state.trendTypes,
+  }).concat(evaluateSpecialYaku(allTiles));
+
+  return {
+    totalYaku,
+    results,
+  };
+}
+
+export function executeTsumoWin(playerIndex: number) {
+  const state = useGameStore.getState();
+  state.declareWin(playerIndex);
+  const { totalYaku } = evaluateWin(playerIndex);
+  playVoice(
+    shouldUseEchoVoice(totalYaku)
+      ? voiceAudioUrl("tsumo-echo.opus")
+      : voiceAudioUrl("tsumo.opus"),
+  );
+  state.showCutin(
+    "ツモ",
+    playerIndex,
+    getCutinRarity(totalYaku),
+    getCutinImageVariant(totalYaku),
+  );
+}
+
+export function executeRonWin(playerIndex: number) {
+  const state = useGameStore.getState();
+  const claimedTile = state.pendingRon?.tileId;
+  if (claimedTile == null) return;
+
+  const { totalYaku } = evaluateWin(playerIndex, {
+    isRon: true,
+    claimedTile,
+  });
+  playVoice(
+    shouldUseEchoVoice(totalYaku)
+      ? voiceAudioUrl("ron-echo.opus")
+      : voiceAudioUrl("ron.opus"),
+  );
+  state.executeRon(playerIndex);
+  state.showCutin(
+    "ロン",
+    playerIndex,
+    getCutinRarity(totalYaku),
+    getCutinImageVariant(totalYaku),
+  );
+}
+
+export function executePonCall(playerIndex: number) {
+  const state = useGameStore.getState();
+  playVoice(voiceAudioUrl("pon.opus"));
+  state.executePon(playerIndex);
+  state.showSpeechBubble("ポン", playerIndex);
+}
+
+export function executeRiichiAction(playerIndex: number): boolean {
+  const state = useGameStore.getState();
+  const isHumanPlayer = state.players[playerIndex].type === "human";
+  const handTiles = [
+    ...state.hands[playerIndex],
+    ...(state.drawnTile != null ? [state.drawnTile] : []),
+    ...state.ponMelds[playerIndex].flat(),
+  ];
+  const waiter = findWaiterId(handTiles);
+  if (waiter == null) return false;
+  if (!isHumanPlayer) {
+    const minTotalYaku = getCpuProfile(state.cpuStrength).minRiichiYaku;
+    if (!canDeclareRiichi(playerIndex, waiter, minTotalYaku)) {
+      return false;
+    }
+  }
+
+  playVoice(voiceAudioUrl("riichi.opus"));
+  if (
+    isHumanPlayer &&
+    state.riichiBgmSetting !== "none" &&
+    (state.riichiBgmSetting === "random" ||
+      state.riichiBgmSetting !== state.normalBgmSetting)
+  ) {
+    playBgm(
+      resolveBgmPath(
+        state.riichiBgmSetting,
+        state.normalBgmSetting,
+        getCurrentBgmSrc(),
+      ),
+    );
+  }
+
+  state.showSpeechBubble("リーチ", playerIndex);
+  if (isHumanPlayer) {
+    state.setRiichiCutin(playerIndex, waiter);
+  }
+  state.declareRiichi(playerIndex);
+  state.discard(waiter, true);
+  return true;
+}
+
+export function autoDiscardAfterRiichiDraw() {
+  const state = useGameStore.getState();
+  if (state.drawnTile != null && state.riichi[state.turnIndex]) {
+    state.discard(state.drawnTile);
+  }
+}
+
+export function shouldAutoDiscardRiichiHand(playerIndex: number): boolean {
+  const state = useGameStore.getState();
+  if (state.drawnTile == null || !state.riichi[playerIndex]) return false;
+
+  const allTiles = [
+    ...state.hands[playerIndex],
+    state.drawnTile,
+    ...state.ponMelds[playerIndex].flat(),
+  ];
+  return !canFormWinningHand(allTiles);
+}

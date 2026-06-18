@@ -1,0 +1,102 @@
+@use "@/styles/variables" as *;
+@use "@/styles/mixins" as *;
+
+.winnerRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: $fs-xxl;
+  font-weight: $fw-bold;
+  margin-bottom: 16px;
+}
+
+.winnerAvatar {
+  @include avatar(36px);
+}
+
+.winnerName {
+  color: $color-text-primary;
+}
+
+.tileRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $gap-xxs;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.infoRow {
+  display: flex;
+  gap: $gap-dora;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $gap-xs;
+}
+
+.infoLabel {
+  font-size: $fs-xs;
+  color: $color-text-mid;
+  font-weight: $fw-bold;
+}
+
+.infoTiles {
+  display: flex;
+  gap: $gap-xxs;
+}
+
+.yakuList {
+  display: flex;
+  flex-direction: column;
+  gap: $gap-xs;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.yakuRow {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  font-size: $fs-md;
+  padding: 2px 8px;
+  border-radius: $radius-xs;
+}
+
+.yakuRowAlt {
+  background: #f9f9f9;
+}
+
+.yakuName {
+  color: $color-text-body;
+}
+
+.yakuValue {
+  color: $color-text-primary;
+  font-weight: $fw-bold;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  font-size: $fs-title;
+  font-weight: $fw-bold;
+  border-top: 2px solid $color-border-strong;
+  padding-top: $gap-medium;
+  margin-top: $gap-xs;
+}
+
+.totalLabel {
+  color: $color-text-primary;
+}
+
+.totalValue {
+  color: $color-text-primary;
+}

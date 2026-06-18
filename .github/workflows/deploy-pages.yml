@@ -1,0 +1,102 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build app
+        run: npm run build
+
+      - name: Prepare publish branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_REF_TYPE: ${{ github.ref_type }}
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages; then
+            git clone --branch gh-pages --single-branch "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" .publish
+          else
+            mkdir .publish
+            cd .publish
+            git init
+            git checkout -b gh-pages
+            git remote add origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git"
+            cd ..
+          fi
+
+          mkdir -p .publish/versions
+
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            rm -rf ".publish/versions/${GITHUB_REF_NAME}"
+            mkdir -p ".publish/versions/${GITHUB_REF_NAME}"
+            cp -R dist/. ".publish/versions/${GITHUB_REF_NAME}/"
+            cd dist
+            zip -r "../.publish/versions/mogejan-${GITHUB_REF_NAME}.zip" .
+            cd ..
+          else
+            find .publish -mindepth 1 -maxdepth 1 ! -name '.git' ! -name 'versions' -exec rm -rf {} +
+            cp -R dist/. .publish/
+          fi
+
+          node scripts/render-pages-index.mjs .publish/versions
+          touch .publish/.nojekyll
+
+      - name: Commit and push
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+          GITHUB_REF_TYPE: ${{ github.ref_type }}
+        run: |
+          cd .publish
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          if git diff --cached --quiet; then
+            echo "No changes to publish"
+            exit 0
+          fi
+
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            git commit -m "Publish version ${GITHUB_REF_NAME}"
+          else
+            git commit -m "Publish latest ${GITHUB_REF_NAME}"
+          fi
+
+          git push origin gh-pages
+
+      - name: Create release archive
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GITHUB_REF_NAME: ${{ github.ref_name }}
+        run: |
+          cd dist
+          zip -r "../mogejan-${GITHUB_REF_NAME}.zip" .
+
+      - name: Upload release archive
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: mogejan-${{ github.ref_name }}.zip

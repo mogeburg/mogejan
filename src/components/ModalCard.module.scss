@@ -1,0 +1,12 @@
+@use "@/styles/variables" as *;
+@use "@/styles/mixins" as *;
+
+.wrapper {
+  width: 100%;
+  height: 100%;
+  @include center-flex;
+}
+
+.card {
+  @include modal-card;
+}

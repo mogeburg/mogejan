@@ -1,0 +1,65 @@
+@use "@/styles/variables" as *;
+@use "@/styles/mixins" as *;
+
+.base {
+  font-weight: $fw-bold;
+  border-radius: $radius-xs;
+  cursor: pointer;
+  letter-spacing: 1px;
+  box-shadow: $shadow-button;
+  transition: filter 0.1s;
+
+  &:hover {
+    filter: brightness(1.15);
+  }
+
+  &:active {
+    filter: brightness(0.85);
+  }
+}
+
+.normal {
+  background: $color-btn-normal-bg;
+  color: $color-btn-normal-text;
+  border: 2px solid $color-btn-normal-border;
+}
+
+.primary {
+  background: $color-btn-primary-bg;
+  color: $color-white;
+  border: 2px solid $color-btn-primary-border;
+}
+
+.secondary {
+  background: $color-btn-secondary-bg;
+  color: $color-white;
+  border: 2px solid $color-btn-secondary-border;
+}
+
+.tertiary {
+  background: $color-btn-tertiary-bg;
+  color: $color-btn-tertiary-text;
+  border: 2px solid $color-btn-tertiary-border;
+}
+
+.menu {
+  background: $color-overlay-menu-btn;
+  color: $color-menu-btn-text;
+  border: 1px solid $color-menu-btn-border;
+}
+
+.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.sizeNormal {
+  font-size: $fs-small;
+  padding: $padding-btn-normal;
+}
+
+.sizeLarge {
+  font-size: $fs-md;
+  padding: $padding-btn-large;
+}

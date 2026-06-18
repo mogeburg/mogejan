@@ -1,0 +1,69 @@
+@use "@/styles/variables" as *;
+
+.container {
+  position: relative;
+  width: $player-box-w;
+  height: $player-box-h;
+  overflow: hidden;
+}
+
+.actionRow {
+  position: absolute;
+  bottom: 68px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  gap: $gap-medium;
+  z-index: 2;
+}
+
+.handArea {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.handInner {
+  display: flex;
+  margin: auto;
+  width: 95%;
+}
+
+.handTiles {
+  display: flex;
+  gap: $gap-xxs;
+  flex-wrap: wrap;
+}
+
+.drawnTileGap {
+  margin-left: 12px;
+}
+
+.ponArea {
+  display: flex;
+  gap: $gap-tile;
+  margin-left: auto;
+}
+
+.ponMeld {
+  display: flex;
+  gap: $gap-tile;
+}
+
+.discardArea {
+  position: absolute;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 0;
+  width: 60%;
+  height: 50%;
+  left: 20%;
+  top: 16px;
+}
+
+

@@ -1,0 +1,15 @@
+.container {
+  position: fixed;
+  bottom: 0;
+  left: 24px;
+  z-index: 100;
+  pointer-events: none;
+  width: 190px;
+  height: 200px;
+  background-size: 300% 200%;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+  animation-duration: var(--dance-duration, 0.5s);
+  animation-timing-function: step-start;
+  animation-iteration-count: infinite;
+}
