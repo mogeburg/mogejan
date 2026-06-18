@@ -9,7 +9,7 @@ export type VersionHistoryEntry = {
 
 export const VERSION_HISTORY: VersionHistoryEntry[] = [
   {
-    version: `${VERSION}`,
+    version: `0.02`,
     summary: "流行牌・特殊役を追加した",
     defaultOpen: true,
     children: [
@@ -24,6 +24,10 @@ export const VERSION_HISTORY: VersionHistoryEntry[] = [
           "URL変更、GitHubへ移行",
           "その他、細かい箇所を修正",
         ],
+      },
+      {
+        version: `${VERSION}`,
+        summary: ["画像・音声のフォールバック対応"],
       },
     ],
   },

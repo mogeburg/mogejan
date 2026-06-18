@@ -1,7 +1,7 @@
 import { getImageUrl, TileData } from "@/constants/tiles";
 import { bgmAudioUrl } from "@/utils/assets";
 
-export const VERSION = "0.02";
+export const VERSION = "0.021";
 export const MASTER_VOLUME = 80;
 export const BGM_VOLUME = 75;
 export const SE_VOLUME = 50;
