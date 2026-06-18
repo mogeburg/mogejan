@@ -122,8 +122,8 @@ const CPU_PROFILES: Record<string, CpuProfile> = {
     missTenpaiRate: 0.0,
     ponRate: 1.0,
     safeFoldRate: 1.0,
-    minRiichiYaku: 5,
-    targetWinYaku: 5,
+    minRiichiYaku: 4,
+    targetWinYaku: 4,
     threatenedRiichiYaku: 1,
     threatenedPushRate: 0.25,
     doraValueWeight: 1.08,
@@ -575,6 +575,32 @@ function applyParentPushBonus(
   };
 }
 
+function getTotalDiscardCount(): number {
+  const state = useGameStore.getState();
+  return state.discards.reduce((sum, row) => sum + row.length, 0);
+}
+
+function applyRoundProgressYakuTarget(
+  profile: CpuProfile,
+  strength: CpuStrength,
+): CpuProfile {
+  if (strength !== "hard") return profile;
+
+  const totalDiscards = getTotalDiscardCount();
+  const stagedTarget =
+    totalDiscards >= 50 ? 1 :
+    totalDiscards >= 40 ? 2 :
+    totalDiscards >= 30 ? 3 :
+    totalDiscards >= 20 ? 4 :
+    5;
+
+  return {
+    ...profile,
+    minRiichiYaku: stagedTarget,
+    targetWinYaku: stagedTarget,
+  };
+}
+
 function chooseByScore(
   discardableTiles: number[],
   ctx: EvalContext,
@@ -641,6 +667,148 @@ function simulatePon(
     if (idx >= 0) newHand.splice(idx, 1);
   }
   return { newHand, newPonMelds: [...ponMelds, [tileId, tileId, tileId]] };
+}
+
+function getBestWinningYakuAfterDiscard(
+  handAfterDiscard: number[],
+  openMeldTiles: number[],
+  meta: {
+    hasPonMelds: boolean;
+    doraTile: number | null;
+    playerName: string;
+    trendTypes: number[];
+    winnerDiscardsEmpty: boolean;
+    doubleReach: boolean;
+    allowRiichi: boolean;
+  },
+): number {
+  let best = 0;
+
+  for (const winningTileId of getCandidateWinningTiles(meta.trendTypes)) {
+    const allTiles = [...handAfterDiscard, winningTileId, ...openMeldTiles];
+    if (!canFormWinningHand(allTiles)) continue;
+
+    best = Math.max(
+      best,
+      getProjectedTotalYaku({
+        riichi: false,
+        doubleReach: false,
+        ippatsu: false,
+        isRon: true,
+        hasPonMelds: meta.hasPonMelds,
+        doraTile: meta.doraTile,
+        uradoraTile: null,
+        allTiles,
+        winnerDiscardsEmpty: meta.winnerDiscardsEmpty,
+        playerName: meta.playerName,
+        trendTypes: meta.trendTypes,
+      }),
+    );
+  }
+
+  if (!meta.allowRiichi) return best;
+
+  for (const discardTileId of handAfterDiscard) {
+    const tilesBeforeWin = [...handAfterDiscard, discardTileId];
+    if (
+      !canDeclareRiichiForTiles({
+        tiles: tilesBeforeWin,
+        discardTileId,
+        openMeldTiles,
+        hasPonMelds: meta.hasPonMelds,
+        doraTile: meta.doraTile,
+        playerName: meta.playerName,
+        trendTypes: meta.trendTypes,
+        winnerDiscardsEmpty: meta.winnerDiscardsEmpty,
+        doubleReach: meta.doubleReach,
+        minTotalYaku: 1,
+      })
+    ) {
+      continue;
+    }
+
+    for (const winningTileId of getCandidateWinningTiles(meta.trendTypes)) {
+      const allTiles = [...handAfterDiscard, winningTileId, ...openMeldTiles];
+      if (!canFormWinningHand(allTiles)) continue;
+
+      best = Math.max(
+        best,
+        getProjectedTotalYaku({
+          riichi: true,
+          doubleReach: meta.doubleReach,
+          ippatsu: false,
+          isRon: true,
+          hasPonMelds: meta.hasPonMelds,
+          doraTile: meta.doraTile,
+          uradoraTile: null,
+          allTiles,
+          winnerDiscardsEmpty: meta.winnerDiscardsEmpty,
+          playerName: meta.playerName,
+          trendTypes: meta.trendTypes,
+        }),
+      );
+    }
+  }
+
+  return best;
+}
+
+function estimateExpectedYakuAfterCall(
+  hand: number[],
+  ponMelds: number[][],
+  playerName: string,
+  doraTile: number | null,
+  trendTypes: number[],
+  visibleCounts: number[],
+  winnerDiscardsEmpty: boolean,
+  doubleReach: boolean,
+): number {
+  const openMeldTiles = ponMelds.flat();
+  const hasPonMelds = ponMelds.length > 0;
+  const totalByColor = new Array(21).fill(0);
+  for (let i = 0; i < 9; i++) totalByColor[i] = 9;
+  for (const trendType of trendTypes) totalByColor[9 + trendType] = 4;
+
+  const ownTileCounts = countAllTileColors(hand);
+  const remainingByColor = totalByColor.map((total, index) =>
+    Math.max(0, total - (visibleCounts[index] ?? 0) - (ownTileCounts[index] ?? 0)),
+  );
+
+  let totalWeight = 0;
+  let totalExpectedYaku = 0;
+
+  for (const drawTileId of getCandidateWinningTiles(trendTypes)) {
+    const remainingCount = remainingByColor[getTileColor(drawTileId)] ?? 0;
+    if (remainingCount <= 0) continue;
+    totalWeight += remainingCount;
+
+    const nextTiles = [...hand, drawTileId];
+    let bestYakuForDraw = 0;
+
+    for (const discardTileId of nextTiles) {
+      const handAfterDiscard = removeSingleTile(nextTiles, discardTileId);
+      const readyAllTiles = [...handAfterDiscard, ...openMeldTiles];
+      if (!canFormTenpai(readyAllTiles)) continue;
+      if (findWaiterId(readyAllTiles) == null) continue;
+
+      bestYakuForDraw = Math.max(
+        bestYakuForDraw,
+        getBestWinningYakuAfterDiscard(handAfterDiscard, openMeldTiles, {
+          hasPonMelds,
+          doraTile,
+          playerName,
+          trendTypes,
+          winnerDiscardsEmpty,
+          doubleReach,
+          allowRiichi: !hasPonMelds,
+        }),
+      );
+    }
+
+    totalExpectedYaku += bestYakuForDraw * remainingCount;
+  }
+
+  return totalWeight > 0 ? totalExpectedYaku / totalWeight : 0;
 }
 
 export function getTotalYakuValue(
@@ -723,11 +891,12 @@ export function cpuDiscard(
   }
   const baseProfile = getCpuProfile(strength);
   const personalityResult = personality
-    ? applyWeights(baseProfile, personality)
+    ? applyWeights(applyRoundProgressYakuTarget(baseProfile, strength), personality)
     : null;
   const state = useGameStore.getState();
   const profile = applyParentPushBonus(
-    personalityResult?.adjusted ?? baseProfile,
+    personalityResult?.adjusted ??
+      applyRoundProgressYakuTarget(baseProfile, strength),
     state.turnIndex === state.parentIndex,
   );
   const multipliers = personalityResult?.multipliers ?? {
@@ -862,11 +1031,11 @@ export function cpuHandlePon(
     ).length;
     if (matchingCount === 3 || matchingCount === 6) return "cancel";
 
-    const state = useGameStore.getState();
-    const baseProfile = applyParentPushBonus(
-      getCpuProfile(strength),
-      state.turnIndex === state.parentIndex,
-    );
+      const state = useGameStore.getState();
+      const baseProfile = applyParentPushBonus(
+        applyRoundProgressYakuTarget(getCpuProfile(strength), strength),
+        state.turnIndex === state.parentIndex,
+      );
     const personalityResult = personality
       ? applyWeights(baseProfile, personality)
       : null;
@@ -889,23 +1058,54 @@ export function cpuHandlePon(
       threatenedRiichiYaku: baseProfile.threatenedRiichiYaku,
       doraValueWeight: baseProfile.doraValueWeight,
       selfWindValueWeight: baseProfile.selfWindValueWeight,
-    };
-    const beforeAllTiles = [...hand, ...ponMelds.flat()];
-    const beforeScore = evaluateHandScore(hand, beforeAllTiles, ponMelds, base);
+      };
+      const beforeAllTiles = [...hand, ...ponMelds.flat()];
+      const beforeScore = evaluateHandScore(hand, beforeAllTiles, ponMelds, base);
+      const beforeExpectedYaku = estimateExpectedYakuAfterCall(
+        hand,
+        ponMelds,
+        playerName,
+        state.doraTile,
+        state.trendTypes,
+        base.visibleCounts,
+        state.discards[state.turnIndex].length === 0,
+        state.discards[state.turnIndex].length === 0,
+      );
 
-    const sim = simulatePon(hand, ponMelds, tileId);
-    if (sim == null) return "cancel";
+      const sim = simulatePon(hand, ponMelds, tileId);
+      if (sim == null) return "cancel";
 
-    const afterAllTiles = [...sim.newHand, ...sim.newPonMelds.flat()];
+      const afterAllTiles = [...sim.newHand, ...sim.newPonMelds.flat()];
     const afterScore = evaluateHandScore(
-      sim.newHand,
-      afterAllTiles,
-      sim.newPonMelds,
-      base,
-    );
+        sim.newHand,
+        afterAllTiles,
+        sim.newPonMelds,
+        base,
+      );
+      const afterExpectedYaku = estimateExpectedYakuAfterCall(
+        sim.newHand,
+        sim.newPonMelds,
+        playerName,
+        state.doraTile,
+        state.trendTypes,
+        base.visibleCounts,
+        state.discards[state.turnIndex].length === 0,
+        false,
+      );
 
-    return afterScore > beforeScore ? "pon" : "cancel";
-  }
+      if (
+        ponMelds.length < 2 &&
+        sim.newPonMelds.length === 2 &&
+        afterExpectedYaku + 0.25 < baseProfile.minRiichiYaku
+      ) {
+        return "cancel";
+      }
+
+      if (afterExpectedYaku + 0.25 < beforeExpectedYaku) return "cancel";
+      if (afterExpectedYaku > beforeExpectedYaku + 0.25) return "pon";
+
+      return afterScore > beforeScore ? "pon" : "cancel";
+    }
 
   const baseProfile = getCpuProfile(strength);
   const result = personality ? applyWeights(baseProfile, personality) : null;
