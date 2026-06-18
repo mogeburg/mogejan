@@ -1,0 +1,48 @@
+<!doctype html>
+
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/x-icon" href="./favicons/favicon.ico" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicons/icon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicons/icon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon-180x180.png" />
+    <link rel="manifest" href="./favicons/manifest.json" />
+    <meta name="msapplication-TileColor" content="#e53935" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta property="og:title" content="もげじゃん" />
+    <meta
+      property="og:description"
+      content="あいもげキャラを題材とした麻雀風ドンジャラ"
+    />
+    <meta property="og:image" content="./ogp.png" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>もげじゃん</title>
+    <script type="module" crossorigin src="./assets/index-CHOLrzIW.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DaIdxKCk.css">
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      font-family:
+        Noto Sans JP,
+        Hiragino Sans,
+        BIZ UDPGothic,
+        sans-serif;
+    "
+  >
+    <div id="app"></div>
+    <script>
+      (function() {
+        var base = "./";
+        var m = document.querySelector('meta[property="og:image"]');
+        if (m) m.content = new URL(base + "ogp.png", location.href).toString();
+      })();
+    </script>
+  </body>
+</html>
