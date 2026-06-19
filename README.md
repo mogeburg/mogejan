@@ -1,6 +1,7 @@
 ## もげじゃん
 
-あいもげキャラを題材とした麻雀風ドンジャラ
+あいもげキャラを題材とした麻雀風ドンジャラ  
+前バージョンは[こちら](https://mogeburg.github.io/mogejan/versions/)
 
 ## TODO
 
