@@ -23,7 +23,6 @@ export function OverlayMenu({
 }: Props) {
   const [internalActiveIndex, setInternalActiveIndex] = useState(0);
   const activeIndex = controlledActiveIndex ?? internalActiveIndex;
-  const active = tabs[activeIndex];
 
   function handleTabChange(index: number) {
     if (controlledActiveIndex == null) {
@@ -54,7 +53,17 @@ export function OverlayMenu({
           ✕
         </button>
         <div className={styles.content}>
-          {active.content}
+          {tabs.map((tab, index) => (
+            <div
+              key={tab.label}
+              className={
+                index === activeIndex ? styles.contentPanelActive : styles.contentPanelHidden
+              }
+              aria-hidden={index !== activeIndex}
+            >
+              {tab.content}
+            </div>
+          ))}
         </div>
         {footer && <div className={styles.footer}>{footer}</div>}
       </div>
