@@ -93,7 +93,7 @@ export function OtherPanel() {
             </div>
 
             <div className={styles.creditCard}>
-              <h4 className={styles.creditTitle}>SE・ボイス</h4>
+              <h4 className={styles.creditTitle}>SE</h4>
               <div className={styles.creditBody}>
                 <ul className={styles.creditList}>
                   <li>
@@ -116,6 +116,14 @@ export function OtherPanel() {
                       ノタの森
                     </a>
                   </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className={styles.creditCard}>
+              <h4 className={styles.creditTitle}>ボイス</h4>
+              <div className={styles.creditBody}>
+                <ul className={styles.creditList}>
                   <li>
                     <a
                       className={styles.creditLink}
@@ -124,24 +132,6 @@ export function OtherPanel() {
                       rel="noopener noreferrer"
                     >
                       音読さん
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className={styles.creditCard}>
-              <h4 className={styles.creditTitle}>その他</h4>
-              <div className={styles.creditBody}>
-                <ul className={styles.creditList}>
-                  <li>
-                    <a
-                      className={styles.creditLink}
-                      href="https://mogejan.netlify.app/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      v0.0111
                     </a>
                   </li>
                 </ul>

@@ -20,6 +20,17 @@ function versionZipName(version) {
   return `mogejan-${version}.zip`;
 }
 
+function renderExtraLatestLink(index) {
+  if (index !== 0) {
+    return "";
+  }
+
+  return `
+            <div class="version-extra-links">
+              <a class="version-extra-link" href="https://mogejan.netlify.app/" target="_blank" rel="noopener noreferrer">v0.0111</a>
+            </div>`;
+}
+
 function renderVersionLinks(versions) {
   if (versions.length === 0) {
     return `<p class="empty">まだ公開済みバージョンはありません。</p>`;
@@ -27,11 +38,12 @@ function renderVersionLinks(versions) {
 
   return versions
     .map(
-      (version) => `
+      (version, index) => `
         <li class="version-row">
           <div>
             <div class="version-name">${version}</div>
             <div class="version-meta">Static build archive</div>
+            ${renderExtraLatestLink(index)}
           </div>
           <div class="actions">
             <a class="button" href="./${version}/">Play</a>
@@ -146,6 +158,20 @@ async function main() {
       .version-meta,
       .empty {
         color: var(--muted);
+      }
+
+      .version-extra-links {
+        margin-top: 8px;
+      }
+
+      .version-extra-link {
+        color: var(--accent);
+        text-decoration: none;
+        font-weight: 700;
+      }
+
+      .version-extra-link:hover {
+        text-decoration: underline;
       }
 
       .actions {
