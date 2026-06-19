@@ -10,11 +10,27 @@ interface Props {
   tabs: Tab[];
   footer?: ReactNode;
   onClose: () => void;
+  activeIndex?: number;
+  onActiveIndexChange?: (index: number) => void;
 }
 
-export function OverlayMenu({ tabs, footer, onClose }: Props) {
-  const [activeIndex, setActiveIndex] = useState(0);
+export function OverlayMenu({
+  tabs,
+  footer,
+  onClose,
+  activeIndex: controlledActiveIndex,
+  onActiveIndexChange,
+}: Props) {
+  const [internalActiveIndex, setInternalActiveIndex] = useState(0);
+  const activeIndex = controlledActiveIndex ?? internalActiveIndex;
   const active = tabs[activeIndex];
+
+  function handleTabChange(index: number) {
+    if (controlledActiveIndex == null) {
+      setInternalActiveIndex(index);
+    }
+    onActiveIndexChange?.(index);
+  }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -23,7 +39,7 @@ export function OverlayMenu({ tabs, footer, onClose }: Props) {
           {tabs.map((tab, i) => (
             <button
               key={i}
-              onClick={() => setActiveIndex(i)}
+              onClick={() => handleTabChange(i)}
               className={`${styles.tabBtn} ${i === activeIndex ? styles.tabActive : styles.tabInactive}`}
             >
               {tab.label}

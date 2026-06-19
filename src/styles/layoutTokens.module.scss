@@ -1,0 +1,6 @@
+@use "@/styles/variables" as *;
+
+:export {
+  gameWidth: $game-w;
+  gameHeight: $game-h;
+}

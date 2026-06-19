@@ -1,5 +1,3 @@
-import { Button } from "@/components/Button";
-import { CheckboxButton } from "@/components/CheckboxButton";
 import { MenuSection } from "@/components/MenuSection";
 import { ModeToggle } from "@/components/ModeToggle";
 import styles from "@/components/Panel.module.scss";
@@ -12,37 +10,8 @@ import {
   BGM_SELECTABLE_KEYS,
   CPU_STRENGTH_LABELS,
   CPU_STRENGTHS,
-  IS_DEBUG,
 } from "@/constants/game";
 import { useGameStore } from "@/store";
-
-const CUTIN_TESTS = [
-  {
-    label: "ノーマル",
-    type: "normal" as const,
-    imageVariant: "normal" as const,
-  },
-  {
-    label: "満貫",
-    type: "rare" as const,
-    imageVariant: "normal" as const,
-  },
-  {
-    label: "倍満",
-    type: "rare" as const,
-    imageVariant: "baiman" as const,
-  },
-  {
-    label: "役満",
-    type: "epic" as const,
-    imageVariant: "baiman" as const,
-  },
-  {
-    label: "流局",
-    type: "ryuukyoku" as const,
-    imageVariant: "normal" as const,
-  },
-];
 
 const CPU_STRENGTH_OPTIONS = CPU_STRENGTHS.map((strength) => ({
   value: strength,
@@ -101,7 +70,7 @@ function ToggleSetting<T extends string | number>({
   );
 }
 
-export function SettingsPanel({ onClose }: { onClose?: () => void }) {
+export function SettingsPanel() {
   const speed = useGameStore((s) => s.speed);
   const setSpeed = useGameStore((s) => s.setSpeed);
   const cpuStrength = useGameStore((s) => s.cpuStrength);
@@ -120,9 +89,6 @@ export function SettingsPanel({ onClose }: { onClose?: () => void }) {
   const setRiichiBgmSetting = useGameStore((s) => s.setRiichiBgmSetting);
   const riichiAvatar = useGameStore((s) => s.riichiAvatar);
   const setRiichiAvatar = useGameStore((s) => s.setRiichiAvatar);
-  const debugFlags = useGameStore((s) => s.debugFlags);
-  const toggleDebugFlag = useGameStore((s) => s.toggleDebugFlag);
-  const showCutinTest = useGameStore((s) => s.showCutin);
 
   return (
     <div className={styles.panelSettings}>
@@ -184,62 +150,6 @@ export function SettingsPanel({ onClose }: { onClose?: () => void }) {
               </div>
             </div>
           </MenuSection>
-
-          {IS_DEBUG && (
-            <MenuSection title="デバッグ">
-              <div className={styles.sectionStack}>
-                <div className={styles.settingsSurface}>
-                  <div className={styles.settingsActions}>
-                    <CheckboxButton
-                      label="牌全表示"
-                      checked={debugFlags.showAllTiles}
-                      onChange={() => toggleDebugFlag("showAllTiles")}
-                    />
-                    <CheckboxButton
-                      label="CPU手動操作"
-                      checked={debugFlags.manualCpu}
-                      onChange={() => toggleDebugFlag("manualCpu")}
-                    />
-                    <CheckboxButton
-                      label="常にツモ切り"
-                      checked={debugFlags.alwaysTsumogiri}
-                      onChange={() => toggleDebugFlag("alwaysTsumogiri")}
-                    />
-                    <CheckboxButton
-                      label="性格値表示"
-                      checked={debugFlags.showCpuPersonalities}
-                      onChange={() => toggleDebugFlag("showCpuPersonalities")}
-                    />
-                  </div>
-                </div>
-
-                <div className={styles.settingsSurface}>
-                  <p className={styles.settingsSubLabel}>カットインテスト</p>
-                  <div className={styles.settingsActions}>
-                    {CUTIN_TESTS.map((c) => (
-                      <Button
-                        key={c.label}
-                        label={c.label}
-                        size="normal"
-                        onClick={() => {
-                          showCutinTest("ロン", 0, c.type, c.imageVariant);
-                          onClose?.();
-                        }}
-                      />
-                    ))}
-                    <Button
-                      label="リーチ"
-                      size="normal"
-                      onClick={() => {
-                        useGameStore.getState().setRiichiCutin(0, 1);
-                        onClose?.();
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </MenuSection>
-          )}
         </div>
 
         <div className={styles.settingsRight}>

@@ -43,6 +43,13 @@ export interface Player {
   charId: string;
 }
 
+export type CutinPreview = {
+  sourcePlayer: number;
+  targetPlayer: number;
+  isRon: boolean;
+  animateJitter?: boolean;
+};
+
 interface GameStore {
   currentScreen: Screen;
   players: Player[];
@@ -84,6 +91,7 @@ interface GameStore {
   cutinPlayer: number | null;
   cutinType: "normal" | "rare" | "epic" | "ryuukyoku";
   cutinImageVariant: CutinImageVariant;
+  cutinPreview: CutinPreview | null;
   riichiCutinPlayer: number | null;
   riichiCutinTileId: number | null;
   speechBubbles: { id: number; text: string; playerIndex: number }[];
@@ -131,6 +139,13 @@ interface GameStore {
   showCutin: (
     text: string,
     playerIndex?: number,
+    type?: "normal" | "rare" | "epic" | "ryuukyoku",
+    imageVariant?: CutinImageVariant,
+  ) => void;
+  showDebugCutin: (
+    text: string,
+    playerIndex: number,
+    preview: CutinPreview,
     type?: "normal" | "rare" | "epic" | "ryuukyoku",
     imageVariant?: CutinImageVariant,
   ) => void;
@@ -255,6 +270,7 @@ function createRoundState() {
     cutinPlayer: null as number | null,
     cutinType: "normal" as const,
     cutinImageVariant: "normal" as const,
+    cutinPreview: null as CutinPreview | null,
     riichiCutinPlayer: null as number | null,
     riichiCutinTileId: null as number | null,
     speechBubbles: [] as { id: number; text: string; playerIndex: number }[],
@@ -370,6 +386,15 @@ export const useGameStore = create<GameStore>()(
           cutinPlayer: playerIndex ?? null,
           cutinType: type ?? "normal",
           cutinImageVariant: imageVariant ?? "normal",
+          cutinPreview: null,
+        }),
+      showDebugCutin: (text, playerIndex, preview, type, imageVariant) =>
+        set({
+          cutin: text,
+          cutinPlayer: playerIndex,
+          cutinType: type ?? "normal",
+          cutinImageVariant: imageVariant ?? "normal",
+          cutinPreview: preview,
         }),
       setRiichiCutin: (playerIndex, tileId) =>
         set({
@@ -378,12 +403,22 @@ export const useGameStore = create<GameStore>()(
         }),
       hideCutin: () =>
         set((state) => {
+          if (state.cutinPreview != null) {
+            return {
+              cutin: null,
+              cutinPlayer: null,
+              cutinType: "normal",
+              cutinImageVariant: "normal",
+              cutinPreview: null,
+            };
+          }
           if (state.winner != null) {
             return {
               cutin: null,
               cutinPlayer: null,
               cutinType: "normal",
               cutinImageVariant: "normal",
+              cutinPreview: null,
               currentScreen: "result",
             };
           }
@@ -393,6 +428,7 @@ export const useGameStore = create<GameStore>()(
               cutinPlayer: null,
               cutinType: "normal",
               cutinImageVariant: "normal",
+              cutinPreview: null,
               currentScreen: "scoreConfirm",
             };
           }
@@ -401,6 +437,7 @@ export const useGameStore = create<GameStore>()(
             cutinPlayer: null,
             cutinType: "normal",
             cutinImageVariant: "normal",
+            cutinPreview: null,
           };
         }),
       showSpeechBubble: (text, playerIndex) => {
