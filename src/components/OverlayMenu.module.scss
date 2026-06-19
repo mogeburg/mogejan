@@ -12,7 +12,7 @@
 .modal {
   position: relative;
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(245,239,231,0.98));
+    linear-gradient(180deg, $color-menu-surface-top, $color-menu-surface-bottom);
   border: 1px solid rgba(0,0,0,0.08);
   border-radius: 18px;
   width: 78%;
@@ -27,15 +27,15 @@
   display: flex;
   padding: 10px 52px 0 10px;
   gap: 8px;
-  border-bottom: 1px solid rgba(99, 58, 28, 0.18);
-  background: rgba(228,216,201,0.75);
+  border-bottom: 1px solid $color-menu-tabbar-border;
+  background: $color-menu-tabbar-bg;
 }
 
 .tabBtn {
   flex: 1 1 0;
   min-height: 42px;
   padding: 0 14px;
-  border: 1px solid rgba(99, 58, 28, 0.22);
+  border: 1px solid $color-menu-tab-border;
   border-bottom: none;
   border-radius: 12px 12px 0 0;
   cursor: pointer;
@@ -44,16 +44,16 @@
 }
 
 .tabActive {
-  background: #c74b3c;
+  background: $color-menu-tab-active-bg;
   font-weight: $fw-bold;
-  color: #fff;
+  color: $color-menu-tab-active-text;
   transform: translateY(1px);
 }
 
 .tabInactive {
-  background: rgba(255,255,255,0.88);
+  background: $color-menu-tab-inactive-bg;
   font-weight: $fw-bold;
-  color: #5c4636;
+  color: $color-menu-tab-inactive-text;
 }
 
 .closeBtn {
@@ -62,15 +62,26 @@
   right: 12px;
   width: 34px;
   height: 34px;
-  border: 1px solid #b84c3f;
+  border: 1px solid $color-close-btn-border;
   border-radius: 999px;
-  background: #fff4f1;
+  background: $color-close-btn-bg;
   font-size: $fs-lg;
   padding: 0;
   cursor: pointer;
-  color: #9b2f21;
+  color: $color-close-btn-text;
   line-height: 1;
   z-index: 1;
+  box-shadow: $shadow-button;
+  transition: filter 0.12s ease, transform 0.12s ease;
+}
+
+.closeBtn:hover {
+  filter: brightness(1.08);
+}
+
+.closeBtn:active {
+  filter: brightness(0.92);
+  transform: scale(0.96);
 }
 
 .content {

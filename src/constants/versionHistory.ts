@@ -27,7 +27,11 @@ export const VERSION_HISTORY: VersionHistoryEntry[] = [
       },
       {
         version: `${VERSION}`,
-        summary: ["画像・音声のフォールバック対応"],
+        summary: [
+          "画像・音声のフォールバック対応",
+          "雷エフェクトの追加",
+          "その他、デザインを微調整",
+        ],
       },
     ],
   },

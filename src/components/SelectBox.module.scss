@@ -36,13 +36,13 @@
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &:hover {
-    border-color: $color-green-light;
+    border-color: $color-btn-secondary-bg;
   }
 
   &:focus {
     outline: none;
-    border-color: $color-green-light;
-    box-shadow: 0 0 0 3px rgba($color-green-light, 0.15);
+    border-color: $color-btn-secondary-bg;
+    box-shadow: 0 0 0 3px $color-btn-secondary-focus-ring;
   }
 
   &:disabled {

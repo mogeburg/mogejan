@@ -4,7 +4,7 @@
   display: flex;
   margin-top: $gap-large;
   border-radius: 6px;
-  background: #e8e8e8;
+  background: $color-toggle-track-bg;
   padding: 3px;
   gap: 3px;
 }
@@ -32,17 +32,17 @@
 }
 
 .inactive {
-  background: rgba(255,255,255,0.72);
-  color: #666;
+  background: $color-toggle-inactive-bg;
+  color: $color-toggle-inactive-text;
 
   &:hover {
-    background: rgba(255,255,255,0.92);
-    color: #333;
+    background: $color-toggle-inactive-bg-hover;
+    color: $color-toggle-inactive-text-hover;
   }
 }
 
 .disabled {
-  background: rgba(0,0,0,0.16);
-  color: rgba(255,255,255,0.72);
+  background: $color-toggle-disabled-bg;
+  color: $color-toggle-disabled-text;
   cursor: not-allowed;
 }

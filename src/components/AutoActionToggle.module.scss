@@ -1,3 +1,5 @@
+@use "@/styles/variables" as *;
+
 .container {
   position: absolute;
   bottom: 8px;
@@ -10,13 +12,13 @@
 }
 
 .label {
-  font-weight: 700;
+  font-weight: $fw-bold;
   font-size: 11px;
   letter-spacing: 1px;
-  color: #fff;
+  color: $color-auto-label-text;
   padding: 2px 6px;
   border-radius: 4px;
-  background: #222;
+  background: $color-auto-label-bg;
 }
 
 .btnRow {
@@ -26,10 +28,10 @@
 }
 
 .btn {
-  font-weight: 700;
+  font-weight: $fw-bold;
   font-size: 11px;
   padding: 3px 10px;
-  border-radius: 6px;
+  border-radius: $radius-xs;
   border: 2px solid;
   cursor: pointer;
   letter-spacing: 1px;
@@ -37,13 +39,13 @@
 }
 
 .on {
-  background: #e53935;
-  color: #fff;
-  border-color: #b71c1c;
+  background: $color-btn-primary-bg;
+  color: $color-white;
+  border-color: $color-btn-primary-border;
 }
 
 .off {
-  background: #fff;
-  color: #222;
-  border-color: #222;
+  background: $color-btn-normal-bg;
+  color: $color-btn-normal-text;
+  border-color: $color-btn-normal-border;
 }

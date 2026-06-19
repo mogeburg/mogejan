@@ -20,7 +20,7 @@
 .value {
   font-size: $fs-md;
   font-weight: $fw-bold;
-  color: $color-green-light;
+  color: $color-btn-secondary-bg;
   min-width: 28px;
   text-align: right;
 }
@@ -38,7 +38,7 @@
   left: 0;
   height: 100%;
   border-radius: 3px;
-  background: linear-gradient(90deg, $color-green-dark, $color-green-light);
+  background: linear-gradient(90deg, $color-btn-secondary-border, $color-btn-secondary-bg);
   pointer-events: none;
   z-index: 1;
 }
@@ -62,7 +62,7 @@
     height: 18px;
     border-radius: 50%;
     background: $color-white;
-    border: 2px solid $color-green-light;
+    border: 2px solid $color-btn-secondary-bg;
     box-shadow: $shadow-button;
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
@@ -73,7 +73,7 @@
     height: 18px;
     border-radius: 50%;
     background: $color-white;
-    border: 2px solid $color-green-light;
+    border: 2px solid $color-btn-secondary-bg;
     box-shadow: $shadow-button;
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
