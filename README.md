@@ -5,6 +5,8 @@
 ## TODO
 
 - ver 0.03 予定
+  - スマホ用のデザイン検討
+  - ロン・ツモ時に誰が誰から上がったかのエフェクト検討
   - キャラクター別の特殊能力を追加
   - 特殊役に絵を追加
   - リーチアバターのBPM同期
@@ -20,12 +22,12 @@
 
 ### バージョンについて
 
-- 小数点第二を二進法形式で加算する（なぜ？）
-  - v0.01 -> v0.011 -> v0.0111
-  - v1.00 -> v1.001 -> v1.0011
-  - 満足したら小数点第一を上げる
+- パッチバージョンアップ時は末尾に1を追加していく（なぜ？）  
+  満足したらマイナーバージョンアップとして小数点第一を上げること
+  - `v0.01` -> `v0.011` -> `v0.0111` -> ... -`> v0.02`
 
-- バージョンを固定するぞ！という気持ちになったら https://github.com/mogeburg/mogejan/releases/new からタグを切る
+- メジャー・マイナーバージョンを上げる際は、先に[タグを切ること](https://github.com/mogeburg/mogejan/releases/new)
   - `Tag:Select tag` -> `Create new tag` -> `vX.XX`
-  - `Release Title`はタグ名でおｋ、なんかリリースノートも適当に自動生成
-  - `Publish release`
+  - `Release Title`はタグ名そのままで👌
+  - `Release notes`は`Generate release notes`そのままで👌
+  - 問題なさそうなら`Publish release`する
