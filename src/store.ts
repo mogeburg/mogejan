@@ -18,10 +18,10 @@ import {
 import { SPECIAL_YAKU } from "@/constants/specialYaku";
 import { isSameColorLikeTile } from "@/constants/tiles";
 import { YAKU } from "@/constants/yaku";
-import { canFormWinningHand, getEligiblePonPlayerIndexes } from "@/utils/check";
+import { canFormWinningHand, findWaiterId, getEligiblePonPlayerIndexes } from "@/utils/check";
 import { usePlayStatsStore } from "@/utils/playStats";
 import { createStorageKey } from "@/utils/storage";
-import { createHands, pickTrendTypes, sortTiles } from "@/utils/tiles";
+import { createHands, pickTrendTypes, shuffleArray, sortTiles } from "@/utils/tiles";
 import { scheduleNextDraw } from "@/utils/turnScheduler";
 import type { CutinImageVariant } from "@/utils/assets";
 import { create } from "zustand";
@@ -170,6 +170,7 @@ interface GameStore {
   cancelRon: () => void;
   resetData: () => void;
   initGame: (players: Player[]) => void;
+  startDebugMidgame: (players?: Player[]) => void;
 }
 
 function getRonEligiblePlayers(
@@ -257,6 +258,267 @@ function scheduleDrawForTurn(nextTurn: number, speed: number) {
     canDraw: () => canDrawForTurn(nextTurn),
     draw: () => useGameStore.getState().draw(),
   });
+}
+
+function popWallTile(state: ReturnType<typeof createRoundState>) {
+  if (state.wall.length === 0) return null;
+  const [top, ...rest] = state.wall;
+  state.wall = rest;
+  return top;
+}
+
+function getDiscardOptions(
+  state: ReturnType<typeof createRoundState>,
+  playerIndex: number,
+) {
+  if (state.turnIndex === playerIndex && state.drawnTile != null) {
+    return [...state.hands[playerIndex], state.drawnTile];
+  }
+  return [...state.hands[playerIndex]];
+}
+
+function applyDebugDiscard(
+  state: ReturnType<typeof createRoundState>,
+  playerIndex: number,
+  tileId: number,
+  isRiichi = false,
+) {
+  const hand = [...state.hands[playerIndex]];
+  const drawnTile = state.turnIndex === playerIndex ? state.drawnTile : null;
+
+  if (drawnTile != null) {
+    if (tileId !== drawnTile) {
+      const idx = hand.indexOf(tileId);
+      if (idx !== -1) hand.splice(idx, 1);
+      hand.push(drawnTile);
+      hand.sort(sortTiles);
+    }
+  } else {
+    const idx = hand.indexOf(tileId);
+    if (idx !== -1) hand.splice(idx, 1);
+  }
+
+  state.hands[playerIndex] = hand;
+  state.discards[playerIndex] = [...state.discards[playerIndex], tileId];
+  state.takenDiscards[playerIndex] = [...state.takenDiscards[playerIndex], false];
+  state.lastDiscard = { tileId, fromPlayer: playerIndex };
+  if (isRiichi) {
+    state.riichi[playerIndex] = true;
+    state.ippatsu[playerIndex] = true;
+    state.doubleReach[playerIndex] = state.discards[playerIndex].length === 1;
+    state.riichiDiscardPositions[playerIndex] = state.discards[playerIndex].length - 1;
+  }
+  state.drawnTile = null;
+}
+
+function applyDebugPon(
+  state: ReturnType<typeof createRoundState>,
+  callerIndex: number,
+  fromPlayer: number,
+  tileId: number,
+) {
+  const hand = [...state.hands[callerIndex]];
+  const matchingTiles: number[] = [];
+  const remaining: number[] = [];
+
+  for (const id of hand) {
+    if (isSameColorLikeTile(id, tileId) && matchingTiles.length < 2) {
+      matchingTiles.push(id);
+    } else {
+      remaining.push(id);
+    }
+  }
+
+  if (matchingTiles.length < 2) return false;
+
+  remaining.sort(sortTiles);
+  state.hands[callerIndex] = remaining;
+  state.takenDiscards[fromPlayer][state.takenDiscards[fromPlayer].length - 1] = true;
+  state.ponMelds[callerIndex] = [...state.ponMelds[callerIndex], [...matchingTiles, tileId]];
+  state.turnIndex = callerIndex;
+  state.drawnTile = null;
+  state.ippatsu = [false, false, false, false];
+  state.pendingPon = null;
+  return true;
+}
+
+function findPonOpportunity(
+  state: ReturnType<typeof createRoundState>,
+  playerIndex: number,
+) {
+  const discardOptions = shuffleArray(getDiscardOptions(state, playerIndex));
+  const candidates = shuffleArray(
+    Array.from({ length: PLAYER_COUNT }, (_, i) => i).filter((i) => i !== playerIndex),
+  );
+
+  for (const tileId of discardOptions) {
+    for (const callerIndex of candidates) {
+      const matchCount = state.hands[callerIndex].filter((id) =>
+        isSameColorLikeTile(id, tileId),
+      ).length;
+      if (matchCount >= 2) {
+        return { tileId, callerIndex };
+      }
+    }
+  }
+  return null;
+}
+
+function enforceCpuRiichiMarkers(state: ReturnType<typeof createRoundState>) {
+  const cpuCandidates = [1, 2, 3]
+    .map((playerIndex) => ({
+      playerIndex,
+      discardCount: state.discards[playerIndex].length,
+    }))
+    .sort((a, b) => b.discardCount - a.discardCount);
+
+  const doubleRiichiPlayer = cpuCandidates[0]?.playerIndex ?? 1;
+  const riichiPlayer =
+    cpuCandidates.find((candidate) => candidate.playerIndex !== doubleRiichiPlayer)?.playerIndex ?? 2;
+
+  state.riichi = [false, false, false, false];
+  state.doubleReach = [false, false, false, false];
+  state.ippatsu = [false, false, false, false];
+  state.riichiDiscardPositions = [null, null, null, null];
+
+  state.riichi[doubleRiichiPlayer] = true;
+  state.doubleReach[doubleRiichiPlayer] = true;
+  state.ippatsu[doubleRiichiPlayer] = false;
+  if (state.discards[doubleRiichiPlayer].length > 0) {
+    state.riichiDiscardPositions[doubleRiichiPlayer] = 0;
+  }
+
+  state.riichi[riichiPlayer] = true;
+  state.doubleReach[riichiPlayer] = false;
+  state.ippatsu[riichiPlayer] = false;
+  if (state.discards[riichiPlayer].length > 1) {
+    state.riichiDiscardPositions[riichiPlayer] = 1;
+  } else if (state.discards[riichiPlayer].length > 0) {
+    state.riichiDiscardPositions[riichiPlayer] = 0;
+  }
+}
+
+function buildDebugMidgameState(base: {
+  parentIndex: number;
+  round: number;
+  kyoku: number;
+  honba: number;
+}) {
+  const trendTypes = pickTrendTypes();
+  const { hands, wall } = createHands(trendTypes);
+  const doraTile = wall.at(-2) ?? null;
+  const uradoraTile = wall.at(-1) ?? null;
+  const wallWithoutDora = wall.slice(0, -2);
+  const [top, ...rest] = wallWithoutDora;
+  const state = createRoundState();
+
+  state.hands = hands.map((hand) => [...hand]);
+  state.wall = rest;
+  state.drawnTile = top ?? null;
+  state.turnIndex = base.parentIndex;
+  state.round = base.round;
+  state.kyoku = base.kyoku;
+  state.honba = base.honba;
+  state.doraTile = doraTile;
+  state.uradoraTile = uradoraTile;
+  state.trendTypes = trendTypes;
+  const cpuTargets = shuffleArray([1, 2, 3]);
+  const doubleRiichiTarget = cpuTargets[0];
+  const riichiTarget = cpuTargets[1];
+
+  let totalDiscards = 0;
+  let ponDone = false;
+  let riichiDone = false;
+  let doubleRiichiDone = false;
+  const targetDiscards = 10 + Math.floor(Math.random() * 5);
+
+  for (let step = 0; step < 40 && state.wall.length > 0; step++) {
+    if (state.drawnTile == null) {
+      state.drawnTile = popWallTile(state);
+      if (state.drawnTile == null) break;
+    }
+
+    const activePlayer = state.turnIndex;
+    const waiterId = findWaiterId([...state.hands[activePlayer], state.drawnTile]);
+    const shouldDoubleRiichi =
+      activePlayer === doubleRiichiTarget &&
+      !doubleRiichiDone &&
+      state.discards[activePlayer].length === 0 &&
+      waiterId != null;
+    const shouldRiichi =
+      activePlayer === riichiTarget &&
+      !riichiDone &&
+      state.discards[activePlayer].length > 0 &&
+      totalDiscards >= 4 &&
+      waiterId != null;
+    const riichiTile = shouldDoubleRiichi || shouldRiichi ? waiterId : null;
+    const ponOpportunity = !ponDone ? findPonOpportunity(state, activePlayer) : null;
+    const discardOptions = getDiscardOptions(state, activePlayer);
+    const discardTile =
+      riichiTile ??
+      ponOpportunity?.tileId ??
+      discardOptions[Math.floor(Math.random() * discardOptions.length)];
+
+    applyDebugDiscard(state, activePlayer, discardTile, riichiTile != null);
+    totalDiscards++;
+    if (shouldDoubleRiichi) {
+      doubleRiichiDone = true;
+      riichiDone = activePlayer === riichiTarget;
+    } else if (shouldRiichi) {
+      riichiDone = true;
+    }
+
+    if (
+      ponOpportunity != null &&
+      applyDebugPon(state, ponOpportunity.callerIndex, activePlayer, discardTile)
+    ) {
+      ponDone = true;
+
+      if (state.hands[ponOpportunity.callerIndex].length > 0) {
+        const ponDiscardOptions = [...state.hands[ponOpportunity.callerIndex]];
+        const ponDiscardTile =
+          ponDiscardOptions[Math.floor(Math.random() * ponDiscardOptions.length)];
+        applyDebugDiscard(state, ponOpportunity.callerIndex, ponDiscardTile);
+        totalDiscards++;
+      }
+
+      state.turnIndex = (ponOpportunity.callerIndex + 1) % PLAYER_COUNT;
+      state.drawnTile = popWallTile(state);
+    } else {
+      state.turnIndex = (activePlayer + 1) % PLAYER_COUNT;
+      state.drawnTile = popWallTile(state);
+    }
+
+    if (
+      ponDone &&
+      riichiDone &&
+      doubleRiichiDone &&
+      totalDiscards >= targetDiscards &&
+      state.turnIndex === 0
+    ) {
+      if (state.drawnTile == null) {
+        state.drawnTile = popWallTile(state);
+      }
+      if (state.drawnTile != null) break;
+    }
+  }
+
+  if (state.drawnTile == null) {
+    state.drawnTile = popWallTile(state);
+  }
+
+  enforceCpuRiichiMarkers(state);
+
+  return {
+    snapshot: {
+      ...state,
+      currentDealWallLength: wall.length,
+    },
+    ponDone,
+    riichiDone,
+    doubleRiichiDone,
+    totalDiscards,
+  };
 }
 
 function createRoundState() {
@@ -718,6 +980,47 @@ export const useGameStore = create<GameStore>()(
           cpuPersonalities: players.map((p) =>
             p.type === "cpu" ? generateRandomPersonality() : null,
           ),
+        }),
+      startDebugMidgame: (players) =>
+        set((state) => {
+          const nextPlayers = players ?? state.players;
+          const cpuPersonalities = nextPlayers.map((p) =>
+            p.type === "cpu" ? generateRandomPersonality() : null,
+          );
+          let debugState = buildDebugMidgameState({
+            parentIndex: 0,
+            round: 0,
+            kyoku: 0,
+            honba: 0,
+          });
+
+          for (
+            let i = 0;
+            i < 20 &&
+            (!debugState.ponDone ||
+              !debugState.riichiDone ||
+              !debugState.doubleRiichiDone ||
+              debugState.totalDiscards < 8);
+            i++
+          ) {
+            debugState = buildDebugMidgameState({
+              parentIndex: 0,
+              round: 0,
+              kyoku: 0,
+              honba: 0,
+            });
+          }
+
+          return {
+            ...debugState.snapshot,
+            currentScreen: "game",
+            players: nextPlayers,
+            parentIndex: 0,
+            round: 0,
+            kyoku: 0,
+            honba: 0,
+            cpuPersonalities,
+          };
         }),
     }),
     {

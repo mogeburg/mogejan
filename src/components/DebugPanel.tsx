@@ -24,9 +24,11 @@ const PLAYER_INDEX_OPTIONS = [
 
 export function DebugPanel({ onClose }: { onClose?: () => void }) {
   const debugFlags = useGameStore((s) => s.debugFlags);
+  const players = useGameStore((s) => s.players);
   const toggleDebugFlag = useGameStore((s) => s.toggleDebugFlag);
   const showCutinTest = useGameStore((s) => s.showCutin);
   const showDebugCutin = useGameStore((s) => s.showDebugCutin);
+  const startDebugMidgame = useGameStore((s) => s.startDebugMidgame);
   const [lightningSourcePlayer, setLightningSourcePlayer] = useState(0);
   const [lightningTargetPlayer, setLightningTargetPlayer] = useState(1);
 
@@ -55,6 +57,21 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
                 label="性格値表示"
                 checked={debugFlags.showCpuPersonalities}
                 onChange={() => toggleDebugFlag("showCpuPersonalities")}
+              />
+            </div>
+          </div>
+
+          <div className={styles.settingsSurface}>
+            <FieldLabel className={styles.settingsSubLabel}>局面ショートカット</FieldLabel>
+            <div className={styles.settingsActions}>
+              <Button
+                label="今のメンツで中盤へ"
+                size="normal"
+                color="secondary"
+                onClick={() => {
+                  startDebugMidgame(players);
+                  onClose?.();
+                }}
               />
             </div>
           </div>

@@ -120,6 +120,7 @@ export function useTitleScreenStore() {
       simulationMode: state.simulationMode,
       setSimulationMode: state.setSimulationMode,
       initGame: state.initGame,
+      startDebugMidgame: state.startDebugMidgame,
     })),
   );
 }
