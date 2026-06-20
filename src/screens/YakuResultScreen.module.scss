@@ -1,14 +1,21 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
+
+$yaku-result-gap-small: 10px;
+$yaku-result-gap-medium: 16px;
+$yaku-result-row-padding: 2px 8px;
+$yaku-result-row-alt-bg: #f9f9f9;
+$yaku-result-list-max-height: 220px;
 
 .winnerRow {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  font-size: $fs-xxl;
-  font-weight: $fw-bold;
-  margin-bottom: 16px;
+  gap: $yaku-result-gap-small;
+  font-size: $font-size-xxl;
+  font-weight: $font-weight-bold;
+  margin-bottom: $yaku-result-gap-medium;
 }
 
 .winnerAvatar {
@@ -22,55 +29,69 @@
 .tileRow {
   display: flex;
   flex-wrap: wrap;
-  gap: $gap-xxs;
+  gap: $space-1;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: $yaku-result-gap-medium;
 }
 
 .infoRow {
   display: flex;
-  gap: $gap-dora;
+  gap: 16px;
   justify-content: center;
-  margin-bottom: 16px;
+  margin-bottom: $yaku-result-gap-medium;
 }
 
 .infoItem {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: $gap-xs;
+  gap: $space-2;
 }
 
 .infoLabel {
-  font-size: $fs-xs;
-  color: $color-text-mid;
-  font-weight: $fw-bold;
+  font-size: $font-size-xs;
+  color: #666;
+  font-weight: $font-weight-bold;
 }
 
 .infoTiles {
   display: flex;
-  gap: $gap-xxs;
+  gap: $space-1;
 }
 
 .yakuList {
   display: flex;
   flex-direction: column;
-  gap: $gap-xs;
+  gap: $space-2;
   align-items: center;
-  margin-bottom: 24px;
+  max-width: 100%;
+  margin-bottom: $space-7;
+}
+
+.yakuRows {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  width: 100%;
+  max-height: $yaku-result-list-max-height;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: $space-1;
+  box-sizing: border-box;
 }
 
 .yakuRow {
   display: flex;
   justify-content: space-between;
-  width: 300px;
-  font-size: $fs-md;
-  padding: 2px 8px;
+  width: 100%;
+  font-size: $font-size-md;
+  padding: $yaku-result-row-padding;
   border-radius: $radius-xs;
+  box-sizing: border-box;
 }
 
 .yakuRowAlt {
-  background: #f9f9f9;
+  background: $yaku-result-row-alt-bg;
 }
 
 .yakuName {
@@ -79,18 +100,19 @@
 
 .yakuValue {
   color: $color-text-primary;
-  font-weight: $fw-bold;
+  font-weight: $font-weight-bold;
 }
 
 .totalRow {
   display: flex;
   justify-content: space-between;
-  width: 300px;
-  font-size: $fs-title;
-  font-weight: $fw-bold;
+  width: 100%;
+  font-size: $font-size-title;
+  font-weight: $font-weight-bold;
   border-top: 2px solid $color-border-strong;
-  padding-top: $gap-medium;
-  margin-top: $gap-xs;
+  padding-top: $space-4;
+  margin-top: $space-2;
+  box-sizing: border-box;
 }
 
 .totalLabel {

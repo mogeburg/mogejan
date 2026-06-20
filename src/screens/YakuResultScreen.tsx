@@ -124,15 +124,17 @@ export function YakuResultScreen() {
         )}
       </div>
       <div className={styles.yakuList}>
-        {yaku.map((y, i) => (
-          <div
-            key={i}
-            className={`${styles.yakuRow} ${i % 2 === 0 ? styles.yakuRowAlt : ""}`}
-          >
-            <span className={styles.yakuName}>{y.name}</span>
-            <span className={styles.yakuValue}>{y.yaku}役</span>
-          </div>
-        ))}
+        <div className={styles.yakuRows}>
+          {yaku.map((y, i) => (
+            <div
+              key={i}
+              className={`${styles.yakuRow} ${i % 2 === 0 ? styles.yakuRowAlt : ""}`}
+            >
+              <span className={styles.yakuName}>{y.name}</span>
+              <span className={styles.yakuValue}>{y.yaku}役</span>
+            </div>
+          ))}
+        </div>
         <div className={styles.totalRow}>
           <span className={styles.totalLabel}>{rankName ?? ""}</span>
           <span className={styles.totalValue}>{totalYaku}役</span>
