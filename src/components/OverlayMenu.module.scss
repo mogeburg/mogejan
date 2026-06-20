@@ -1,5 +1,28 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
+
+$overlay-menu-radius: 18px;
+$overlay-menu-space-sm: $space-3;
+$overlay-menu-space-md: $space-4;
+$overlay-menu-space-lg: $space-5;
+$overlay-menu-tab-padding: 10px 52px 0 10px;
+$overlay-menu-content-padding: 18px;
+$overlay-menu-footer-padding: 14px 18px 18px;
+$overlay-menu-tab-radius: 12px 12px 0 0;
+$overlay-menu-close-size: 34px;
+$overlay-menu-close-offset-top: 10px;
+$overlay-menu-close-offset-right: 12px;
+$overlay-menu-tab-min-height: 42px;
+$overlay-menu-surface-top: rgba(255, 255, 255, 0.98);
+$overlay-menu-surface-bottom: rgba(245, 239, 231, 0.98);
+$overlay-menu-tabbar-bg: rgba(228, 216, 201, 0.75);
+$overlay-menu-tabbar-border: rgba(99, 58, 28, 0.18);
+$overlay-menu-tab-border: rgba(99, 58, 28, 0.22);
+$overlay-menu-tab-inactive-bg: rgba(255, 255, 255, 0.88);
+$overlay-menu-tab-inactive-text: #5c4636;
+$overlay-menu-footer-bg: rgba(255, 255, 255, 0.55);
+$overlay-menu-tab-inline-padding: 14px;
 
 .overlay {
   @include overlay(0.4);
@@ -12,64 +35,64 @@
 .modal {
   position: relative;
   background:
-    linear-gradient(180deg, $color-menu-surface-top, $color-menu-surface-bottom);
+    linear-gradient(180deg, $overlay-menu-surface-top, $overlay-menu-surface-bottom);
   border: 1px solid rgba(0,0,0,0.08);
-  border-radius: 18px;
+  border-radius: $overlay-menu-radius;
   width: 78%;
   height: 82%;
   display: flex;
   flex-direction: column;
-  box-shadow: $shadow-menu;
+  box-shadow: $shadow-4;
   overflow: hidden;
 }
 
 .tabBar {
   display: flex;
-  padding: 10px 52px 0 10px;
-  gap: 8px;
-  border-bottom: 1px solid $color-menu-tabbar-border;
-  background: $color-menu-tabbar-bg;
+  padding: $overlay-menu-tab-padding;
+  gap: $overlay-menu-space-md;
+  border-bottom: 1px solid $overlay-menu-tabbar-border;
+  background: $overlay-menu-tabbar-bg;
 }
 
 .tabBtn {
   flex: 1 1 0;
-  min-height: 42px;
-  padding: 0 14px;
-  border: 1px solid $color-menu-tab-border;
+  min-height: $overlay-menu-tab-min-height;
+  padding: 0 $overlay-menu-tab-inline-padding;
+  border: 1px solid $overlay-menu-tab-border;
   border-bottom: none;
-  border-radius: 12px 12px 0 0;
+  border-radius: $overlay-menu-tab-radius;
   cursor: pointer;
-  font-size: $fs-body;
+  font-size: $font-size-body;
 }
 
 .tabActive {
-  background: $color-menu-tab-active-bg;
-  font-weight: $fw-bold;
-  color: $color-menu-tab-active-text;
+  background: $color-accent;
+  font-weight: $font-weight-bold;
+  color: $color-text-contrast;
 }
 
 .tabInactive {
-  background: $color-menu-tab-inactive-bg;
-  font-weight: $fw-bold;
-  color: $color-menu-tab-inactive-text;
+  background: $overlay-menu-tab-inactive-bg;
+  font-weight: $font-weight-bold;
+  color: $overlay-menu-tab-inactive-text;
 }
 
 .closeBtn {
   position: absolute;
-  top: 10px;
-  right: 12px;
-  width: 34px;
-  height: 34px;
-  border: 1px solid $color-close-btn-border;
-  border-radius: 999px;
-  background: $color-close-btn-bg;
-  font-size: $fs-lg;
+  top: $overlay-menu-close-offset-top;
+  right: $overlay-menu-close-offset-right;
+  width: $overlay-menu-close-size;
+  height: $overlay-menu-close-size;
+  border: 1px solid $color-accent-strong;
+  border-radius: $radius-pill;
+  background: $color-accent;
+  font-size: $font-size-lg;
   padding: 0;
   cursor: pointer;
-  color: $color-close-btn-text;
+  color: $color-text-contrast;
   line-height: 1;
   z-index: 1;
-  box-shadow: $shadow-button;
+  box-shadow: $shadow-1;
   transition: filter 0.12s ease, transform 0.12s ease;
 }
 
@@ -84,7 +107,7 @@
 
 .content {
   flex: 1;
-  padding: 18px;
+  padding: $overlay-menu-content-padding;
   overflow: auto;
 }
 
@@ -98,8 +121,8 @@
 
 .footer {
   display: flex;
-  gap: $gap-small;
-  padding: 14px 18px 18px;
-  border-top: 1px solid $color-border-light;
-  background: rgba(255,255,255,0.55);
+  gap: $overlay-menu-space-sm;
+  padding: $overlay-menu-footer-padding;
+  border-top: 1px solid $color-border-subtle;
+  background: $overlay-menu-footer-bg;
 }

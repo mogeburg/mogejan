@@ -1,41 +1,75 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+
+$panel-stack-gap: 12px;
+$panel-section-gap: 10px;
+$panel-inline-gap: 8px;
+$panel-space-xs: $space-2;
+$panel-space-sm: $space-3;
+$panel-space-md: $space-4;
+$panel-space-lg: $space-5;
+$panel-space-xl: $space-6;
+$panel-card-padding: 12px 14px;
+$panel-intro-padding: 14px 16px;
+$panel-section-header-padding: 10px 14px 9px;
+$panel-section-body-padding: 12px 14px;
+$panel-table-cell-padding: 6px 8px;
+$panel-settings-columns-gap: 20px;
+$panel-settings-sub-label-margin: 0 0 6px 0;
+$panel-link-chip-min-height: 34px;
+$panel-link-chip-padding-x: 12px;
+$panel-credit-list-padding-left: 18px;
+$panel-list-padding-left: 20px;
+$panel-tree-padding-left: 16px;
+$panel-grid-min-width: 120px;
+$panel-table-center-width: 48px;
+$panel-metric-card-padding: 14px 16px;
+$panel-h3-size: calc(16px * var(--text-scale, 1));
+$panel-credit-title-size: calc(14px * var(--text-scale, 1));
+$panel-metric-value-size: calc(18px * var(--text-scale, 1));
+$panel-settings-mobile-gap: 16px;
+$panel-surface-bg: rgba(255, 255, 255, 0.86);
+$panel-surface-muted-bg: rgba(255, 255, 255, 0.65);
+$panel-surface-strong-bg: rgba(255, 255, 255, 0.92);
+$panel-surface-soft-bg: rgba(255, 255, 255, 0.82);
+$panel-intro-bg: linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,243,235,0.96));
+$panel-focus-ring: rgba(229, 57, 53, 0.35);
 
 .panel {
-  font-size: $fs-body;
+  font-size: $font-size-body;
   color: $color-text-primary;
   line-height: 1.9;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $panel-stack-gap;
 }
 
 .panelAlt {
-  font-size: $fs-body;
+  font-size: $font-size-body;
   color: $color-text-primary;
   line-height: 2;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $panel-stack-gap;
 }
 
 .panelSettings {
-  font-size: $fs-body;
+  font-size: $font-size-body;
   color: $color-text-primary;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $panel-stack-gap;
 }
 
 .menuIntro {
   display: flex;
-  gap: 12px;
+  gap: $panel-stack-gap;
   align-items: flex-start;
   justify-content: space-between;
-  padding: 14px 16px;
-  border: 1px solid $color-border-medium;
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,243,235,0.96));
-  border-radius: $radius-medium;
+  padding: $panel-intro-padding;
+  border: 1px solid $color-border-default;
+  background: $panel-intro-bg;
+  border-radius: $radius-md;
 }
 
 .menuIntroMain {
@@ -48,139 +82,139 @@
 
 .menuTitle {
   margin: 0;
-  font-size: 22px;
+  font-size: calc(22px * var(--text-scale, 1));
   line-height: 1.15;
 }
 
 .menuLead {
-  margin-top: 6px;
-  color: $color-text-mid;
+  margin-top: $panel-space-sm;
+  color: $color-text-muted;
   line-height: 1.6;
 }
 
 .menuSection {
-  border: 1px solid $color-border-light;
-  border-radius: $radius-medium;
-  background: rgba(255,255,255,0.86);
+  border: 1px solid $color-border-subtle;
+  border-radius: $radius-md;
+  background: $panel-surface-bg;
   overflow: hidden;
 }
 
 .menuSectionHeader {
-  padding: 10px 14px 9px;
-  border-bottom: 1px solid $color-border-light;
-  background: rgba(255,255,255,0.65);
+  padding: $panel-section-header-padding;
+  border-bottom: 1px solid $color-border-subtle;
+  background: $panel-surface-muted-bg;
 }
 
 .menuSectionTitle {
   margin: 0;
-  font-size: 16px;
+  font-size: $panel-h3-size;
   line-height: 1.25;
 }
 
 .menuSectionDescription {
-  margin-top: 4px;
-  color: $color-text-mid;
-  font-size: $fs-small;
+  margin-top: $panel-space-xs;
+  color: $color-text-muted;
+  font-size: $font-size-sm;
   line-height: 1.5;
 }
 
 .menuSectionBody {
-  padding: 12px 14px;
+  padding: $panel-section-body-padding;
 }
 
 .sectionStack {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: $panel-section-gap;
 }
 
 .compactNote {
   margin: 0;
-  color: $color-text-mid;
-  font-size: $fs-small;
+  color: $color-text-muted;
+  font-size: $font-size-sm;
   line-height: 1.7;
 }
 
 .linkList {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: $panel-section-gap;
 }
 
 .linkChip {
   display: inline-flex;
   align-items: center;
-  min-height: 34px;
-  padding: 0 12px;
+  min-height: $panel-link-chip-min-height;
+  padding: 0 $panel-link-chip-padding-x;
   border: 0;
   border-radius: $radius-xs;
-  background: rgba(255,255,255,0.92);
+  background: $panel-surface-strong-bg;
   color: $color-text-primary;
   text-decoration: underline;
-  font-weight: $fw-bold;
+  font-weight: $font-weight-bold;
   transition: color 0.16s ease, background-color 0.16s ease;
 }
 
 .linkChip:hover {
-  color: $color-btn-primary-border;
-  background: rgba(255,255,255,0.98);
+  color: $color-accent-strong;
+  background: $color-surface-strong;
 }
 
 .linkChip:focus-visible {
-  outline: 2px solid rgba($color-btn-primary-bg, 0.35);
+  outline: 2px solid $panel-focus-ring;
   outline-offset: 2px;
 }
 
 .creditGrid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: $panel-section-gap;
   padding: 0;
   background: transparent;
 }
 
 .creditCard {
-  padding: 12px 14px;
+  padding: $panel-card-padding;
   border: 0;
-  background: $color-card-bg-90;
+  background: $color-surface-soft;
   border-radius: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: $panel-inline-gap;
 }
 
 .creditTitle {
   margin: 0;
-  font-size: 14px;
+  font-size: $panel-credit-title-size;
   line-height: 1.35;
 }
 
 .creditBody {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: $panel-inline-gap;
 }
 
 .creditList {
   margin: 0;
-  padding-left: 18px;
-  font-size: $fs-small;
+  padding-left: $panel-credit-list-padding-left;
+  font-size: $font-size-sm;
   line-height: 1.7;
 }
 
 .creditLink {
   color: $color-text-primary;
   text-decoration: underline;
-  font-weight: $fw-bold;
+  font-weight: $font-weight-bold;
   transition: color 0.16s ease;
 }
 
 .creditLink:hover {
-  color: $color-btn-primary-border;
+  color: $color-accent-strong;
 }
 
 .creditLink:focus-visible {
-  outline: 2px solid rgba($color-btn-primary-bg, 0.35);
+  outline: 2px solid $panel-focus-ring;
   outline-offset: 2px;
 }
 
@@ -188,99 +222,99 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: $panel-inline-gap;
 }
 
 .chipRow {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: $panel-inline-gap;
 }
 
 .tableWrap {
   border: 0;
   border-radius: 0;
   overflow: hidden;
-  background: rgba(255,255,255,0.92);
+  background: $panel-surface-strong-bg;
 }
 
 .tileGridPanel {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px 14px;
+  gap: $panel-inline-gap;
+  padding: $panel-card-padding;
   border: 0;
   border-radius: 0;
-  background: rgba(255,255,255,0.82);
+  background: $panel-surface-soft-bg;
 }
 
 .tileGridPanelTight {
   display: flex;
   flex-wrap: wrap;
   gap: 0;
-  padding: 12px 14px;
+  padding: $panel-card-padding;
   border: 0;
   border-radius: 0;
-  background: rgba(255,255,255,0.82);
+  background: $panel-surface-soft-bg;
 }
 
 .h3 {
-  margin: 0 0 8px 0;
-  font-size: 16px;
+  margin: 0 0 $panel-space-md 0;
+  font-size: $panel-h3-size;
 }
 
 .h3Bottom {
-  margin: 16px 0 12px 0;
-  font-size: 16px;
+  margin: $panel-space-xl 0 $panel-space-lg 0;
+  font-size: $panel-h3-size;
 }
 
 .h3Alt {
-  margin: 0 0 4px 0;
-  font-size: 16px;
+  margin: 0 0 $panel-space-xs 0;
+  font-size: $panel-h3-size;
 }
 
 .p {
-  margin: 0 0 16px 0;
+  margin: 0 0 $panel-space-xl 0;
 }
 
 .pNoMargin {
-  margin: 0 0 8px 0;
+  margin: 0 0 $panel-space-md 0;
 }
 
 .ul {
-  margin: 0 0 20px 0;
-  padding-left: 20px;
-  font-size: $fs-small;
+  margin: 0 0 $panel-settings-columns-gap 0;
+  padding-left: $panel-list-padding-left;
+  font-size: $font-size-sm;
 }
 
 .ulPlain {
   margin: 0;
-  padding-left: 20px;
-  font-size: $fs-small;
+  padding-left: $panel-list-padding-left;
+  font-size: $font-size-sm;
 }
 
 .versionHistoryTree {
   list-style: none;
   margin: 0;
   padding-left: 0;
-  font-size: $fs-small;
+  font-size: $font-size-sm;
 }
 
 .versionHistoryTree > li + li {
-  margin-top: 8px;
+  margin-top: $panel-space-md;
 }
 
 .versionHistoryLabel {
-  font-weight: $fw-bold;
+  font-weight: $font-weight-bold;
 }
 
 .versionHistoryText {
-  margin-left: 6px;
+  margin-left: $panel-space-sm;
 }
 
 .versionHistorySummaryList {
-  margin: 6px 0 0 16px;
-  padding-left: 16px;
+  margin: $panel-space-sm 0 0 $panel-tree-padding-left;
+  padding-left: $panel-tree-padding-left;
 }
 
 .versionHistoryFold {
@@ -290,8 +324,8 @@
 .versionHistorySummary {
   cursor: pointer;
   color: $color-text-secondary;
-  font-size: $fs-small;
-  font-weight: $fw-bold;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
   line-height: 1.5;
   user-select: none;
 }
@@ -302,41 +336,41 @@
 
 .versionHistoryList {
   list-style: none;
-  margin: 8px 0 0;
-  padding-left: 16px;
-  font-size: $fs-small;
+  margin: $panel-space-md 0 0;
+  padding-left: $panel-tree-padding-left;
+  font-size: $font-size-sm;
 }
 
 .versionHistoryList > li + li {
-  margin-top: 6px;
+  margin-top: $panel-space-sm;
 }
 
 .ulNested {
-  padding-left: 20px;
+  padding-left: $panel-list-padding-left;
 }
 
 .tileGrid {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: $panel-inline-gap;
 }
 
 .metricSection {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  margin-bottom: 12px;
+  gap: $panel-inline-gap;
+  margin-bottom: $panel-stack-gap;
 }
 
 .metricSubSection {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: $panel-space-sm;
 }
 
 .metricGroupTitle {
-  font-size: $fs-small;
-  font-weight: $fw-bold;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
   color: $color-text-secondary;
   margin-top: 2px;
 }
@@ -346,7 +380,7 @@
   display: grid;
   gap: 1px;
   padding: 1px;
-  background: $color-border-medium;
+  background: $color-border-default;
   overflow: hidden;
 }
 
@@ -355,30 +389,30 @@
 }
 
 .metricGridCompact {
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax($panel-grid-min-width, 1fr));
 }
 
 .metricCard {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  padding: 14px 16px;
+  padding: $panel-metric-card-padding;
   border: 0;
   border-radius: 0;
-  background: $color-card-bg-90;
+  background: $color-surface-soft;
   box-shadow: none;
 }
 
 .metricLabel {
-  font-size: $fs-small;
+  font-size: $font-size-sm;
   color: $color-text-primary;
   line-height: 1.3;
 }
 
 .metricValue {
-  margin-top: 6px;
-  font-size: 18px;
-  font-weight: $fw-bold;
+  margin-top: $panel-space-sm;
+  font-size: $panel-metric-value-size;
+  font-weight: $font-weight-bold;
   color: $color-text-primary;
   line-height: 1.2;
   word-break: break-word;
@@ -404,46 +438,46 @@
 
 .th {
   text-align: left;
-  padding: $padding-cell;
+  padding: $panel-table-cell-padding;
 }
 
 .thCenter {
   text-align: center;
-  padding: $padding-cell;
-  width: 48px;
+  padding: $panel-table-cell-padding;
+  width: $panel-table-center-width;
 }
 
 .tr {
-  border-bottom: 1px solid $color-border-light;
+  border-bottom: 1px solid $color-border-subtle;
 }
 
 .trHead {
-  border-bottom: 1px solid $color-border-medium;
+  border-bottom: 1px solid $color-border-default;
 }
 
 .td {
-  padding: $padding-cell;
-  font-weight: $fw-bold;
+  padding: $panel-table-cell-padding;
+  font-weight: $font-weight-bold;
 }
 
 .tdCenter {
   text-align: center;
-  padding: $padding-cell;
+  padding: $panel-table-cell-padding;
 }
 
 .tdDesc {
-  padding: $padding-cell;
-  color: $color-text-mid;
-  font-size: $fs-small;
+  padding: $panel-table-cell-padding;
+  color: $color-text-muted;
+  font-size: $font-size-sm;
 }
 
 .settingsRow {
-  margin-bottom: $gap-large;
+  margin-bottom: $space-5;
 }
 
 .settingsColumns {
   display: flex;
-  gap: 20px;
+  gap: $panel-settings-columns-gap;
 }
 
 .settingsLeft {
@@ -451,7 +485,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $panel-stack-gap;
 }
 
 .settingsRight {
@@ -459,7 +493,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: $panel-stack-gap;
 }
 
 .settingsDivider {
@@ -475,15 +509,15 @@
 
 .settingsActions {
   display: flex;
-  gap: 8px;
+  gap: $panel-inline-gap;
   flex-wrap: wrap;
-  margin-top: 8px;
+  margin-top: $panel-space-md;
 }
 
 .settingsSubLabel {
-  margin: 0 0 6px 0;
-  font-size: $fs-small;
-  font-weight: $fw-bold;
+  margin: $panel-settings-sub-label-margin;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
   color: $color-text-secondary;
   line-height: 1.4;
 }
@@ -491,7 +525,7 @@
 .checkboxLabel {
   display: flex;
   align-items: center;
-  gap: $gap-small;
+  gap: $space-3;
   cursor: pointer;
   user-select: none;
 }
@@ -499,7 +533,7 @@
 @media (max-width: 900px) {
   .settingsColumns {
     flex-direction: column;
-    gap: 16px;
+    gap: $panel-settings-mobile-gap;
   }
 
   .settingsDivider {

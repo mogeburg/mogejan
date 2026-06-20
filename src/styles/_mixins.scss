@@ -1,6 +1,8 @@
-@use "variables" as *;
+@use "tokens" as *;
+@use "semantic" as *;
+@use "layout" as *;
 
-@mixin card($radius: $radius-card, $shadow: $shadow-modal, $bg: $color-card-bg) {
+@mixin card($radius: $radius-lg, $shadow: $shadow-5, $bg: $color-surface-base) {
   background: $bg;
   border-radius: $radius;
   box-shadow: $shadow;
@@ -27,11 +29,11 @@
 
 @mixin modal-card {
   @include card;
-  padding: $padding-modal;
+  padding: 40px 48px;
   text-align: center;
 }
 
-@mixin avatar($size: 32px, $border: 2px solid #000) {
+@mixin avatar($size: 32px, $border: 2px solid $primitive-color-black) {
   width: $size;
   height: $size;
   border-radius: 100%;
@@ -42,13 +44,13 @@
 }
 
 @mixin badge-base {
-  font-size: $fs-xxs;
-  padding: 0 $gap-medium;
+  font-size: $font-size-xxs;
+  padding: 0 $space-4;
   border-radius: $radius-pill;
-  font-weight: $fw-bold;
-  line-height: 18px;
+  font-weight: $font-weight-bold;
+  line-height: calc(18px * var(--font-scale, 1));
   letter-spacing: 0.03em;
-  box-shadow: $shadow-button;
+  box-shadow: $shadow-1;
   flex-shrink: 0;
 }
 
@@ -56,4 +58,25 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@mixin pressable-control(
+  $radius: $radius-xs,
+  $shadow: $shadow-1,
+  $letter-spacing: 1px
+) {
+  font-weight: $font-weight-bold;
+  border-radius: $radius;
+  cursor: pointer;
+  letter-spacing: $letter-spacing;
+  box-shadow: $shadow;
+  transition: filter 0.1s;
+
+  &:hover {
+    filter: brightness(1.15);
+  }
+
+  &:active {
+    filter: brightness(0.85);
+  }
 }

@@ -1,15 +1,33 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+
+$cutin-overlay-bg: $color-overlay-medium;
+$cutin-text-offset: 10%;
+$cutin-text-letter-spacing: 8px;
+$cutin-text-shadow-normal: 0 0 20px rgba(255, 200, 0, 0.8),
+  4px 4px 0 rgba(0, 0, 0, 0.5);
+$cutin-text-shadow-rare: 0 0 20px rgba(255, 0, 0, 0.8),
+  4px 4px 0 rgba(0, 0, 0, 0.5);
+$cutin-text-normal: $color-text-contrast;
+$cutin-text-rare: #ff0000;
+$cutin-text-ryuukyoku: #4fc3f7;
+$cutin-text-ryuukyoku-shadow: 0 0 30px rgba(79, 195, 247, 0.6),
+  0 0 60px rgba(79, 195, 247, 0.3);
+$cutin-filter-epic: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9))
+  drop-shadow(0 0 20px rgba(255, 255, 255, 0.6))
+  drop-shadow(3px 3px 0 rgba(0, 0, 0, 0.55));
+$cutin-filter-ryuukyoku: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.8));
 
 .overlay {
   position: absolute;
   inset: 0;
   z-index: 100;
-  background: $color-overlay-medium;
+  background: $cutin-overlay-bg;
   cursor: pointer;
 }
 
 .overlayDark {
-  background: $color-overlay-medium;
+  background: $cutin-overlay-bg;
   animation: ryuukyoku-fade 0.5s ease-out forwards;
 }
 
@@ -42,12 +60,12 @@
 .text {
   position: absolute;
   z-index: 3;
-  right: 10%;
-  bottom: 10%;
-  font-size: $fs-cutin;
-  font-weight: $fw-black;
+  right: $cutin-text-offset;
+  bottom: $cutin-text-offset;
+  font-size: $font-size-cutin;
+  font-weight: $font-weight-black;
   user-select: none;
-  letter-spacing: 8px;
+  letter-spacing: $cutin-text-letter-spacing;
   animation: cutin-pop 5s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
 }
 
@@ -61,13 +79,13 @@
 }
 
 .textNormal {
-  color: $color-white;
-  text-shadow: 0 0 20px rgba(255, 200, 0, 0.8), 4px 4px 0 rgba(0, 0, 0, 0.5);
+  color: $cutin-text-normal;
+  text-shadow: $cutin-text-shadow-normal;
 }
 
 .textRare {
-  color: #ff0000;
-  text-shadow: 0 0 20px rgba(255, 0, 0, 0.8), 4px 4px 0 rgba(0, 0, 0, 0.5);
+  color: $cutin-text-rare;
+  text-shadow: $cutin-text-shadow-rare;
 }
 
 .textEpic {
@@ -99,10 +117,7 @@
   background-clip: text;
   color: transparent;
 
-  filter:
-    drop-shadow(0 0 8px rgba(255,255,255,.9))
-    drop-shadow(0 0 20px rgba(255,255,255,.6))
-    drop-shadow(3px 3px 0 rgba(0,0,0,.55));
+  filter: $cutin-filter-epic;
   animation:
     cutin-pop 5s cubic-bezier(0.15, 0.85, 0.35, 1) forwards,
     epicShift 1.5s linear infinite;
@@ -134,11 +149,11 @@
 }
 
 .textRyuukyoku {
-  color: #4fc3f7;
-  text-shadow: 0 0 30px rgba(79,195,247,0.6), 0 0 60px rgba(79,195,247,0.3);
-  font-size: 100px;
+  color: $cutin-text-ryuukyoku;
+  text-shadow: $cutin-text-ryuukyoku-shadow;
+  font-size: calc(100px * var(--text-scale, 1));
   letter-spacing: 16px;
-  filter: drop-shadow(4px 4px 4px rgba(0,0,0,0.8));
+  filter: $cutin-filter-ryuukyoku;
 }
 
 @keyframes ryuukyoku-fade {

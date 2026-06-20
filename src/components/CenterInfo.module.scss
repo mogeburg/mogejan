@@ -1,13 +1,19 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
+
+$center-info-width: 540px;
+$center-info-height: 320px;
+$center-info-card-size: 150px;
+$center-info-border-color: $color-border-subtle;
 
 .container {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 540px;
-  height: 320px;
+  width: $center-info-width;
+  height: $center-info-height;
   z-index: 1;
 }
 
@@ -53,13 +59,13 @@
 }
 
 .infoCard {
-  @include card($radius-card, $shadow-card, $color-card-bg-90);
+  @include card($radius-lg, $shadow-3, $color-surface-soft);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 150px;
-  height: 150px;
+  width: $center-info-card-size;
+  height: $center-info-card-size;
 }
 
 .infoText {
@@ -69,33 +75,33 @@
 }
 
 .roundLabel {
-  font-size: $fs-small;
-  font-weight: $fw-black;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-black;
   color: $color-text-primary;
   line-height: 1;
   margin-bottom: 2px;
 }
 
 .honbaLabel {
-  font-size: $fs-xxs;
-  font-weight: $fw-bold;
+  font-size: $font-size-xxs;
+  font-weight: $font-weight-bold;
   color: $color-text-secondary;
-  margin-left: $gap-xs;
+  margin-left: $space-2;
 }
 
 .wallLabel {
-  font-size: $fs-xs;
+  font-size: $font-size-xs;
   color: $color-text-secondary;
-  font-weight: $fw-bold;
+  font-weight: $font-weight-bold;
   letter-spacing: 1px;
   display: flex;
   align-items: end;
 }
 
 .wallCount {
-  font-size: 33px;
+  font-size: calc(33px * var(--text-scale, 1));
   line-height: 1;
-  font-weight: $fw-black;
+  font-weight: $font-weight-black;
   color: $color-text-primary;
 }
 
@@ -103,8 +109,8 @@
   display: flex;
   gap: 0;
   align-items: center;
-  border-top: 1px solid $color-border-light;
-  padding-top: $gap-medium;
+  border-top: 1px solid $center-info-border-color;
+  padding-top: $space-4;
   width: 100%;
   justify-content: center;
 }
@@ -112,17 +118,15 @@
 .doraItem {
   display: flex;
   align-items: center;
-  gap: $gap-xs;
+  gap: $space-2;
 }
 
 .trendRow {
   display: flex;
   gap: 0;
   align-items: center;
-  border-top: 1px solid $color-border-light;
-  padding-top: $gap-medium;
+  border-top: 1px solid $center-info-border-color;
+  padding-top: $space-4;
   width: 100%;
   justify-content: center;
 }
-
-

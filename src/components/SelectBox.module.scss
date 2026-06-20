@@ -1,15 +1,24 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+
+$select-row-gap: $space-2;
+$select-padding: 6px 32px 6px 12px;
+$select-border-width: 2px;
+$select-focus-ring-size: 3px;
+$select-arrow-right: 10px;
+$select-disabled-opacity: 0.4;
+$select-focus-ring: rgba(21, 101, 192, 0.18);
 
 .row {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 4px;
+  gap: $select-row-gap;
 }
 
 .label {
-  font-size: $fs-body;
-  font-weight: $fw-bold;
+  font-size: $font-size-body;
+  font-weight: $font-weight-bold;
   color: $color-text-primary;
   white-space: normal;
   line-height: 1.35;
@@ -22,12 +31,12 @@
 
 .select {
   width: 100%;
-  font-size: $fs-body;
-  font-weight: $fw-bold;
-  padding: 6px 32px 6px 12px;
-  border: 2px solid $color-btn-normal-border;
+  font-size: $font-size-body;
+  font-weight: $font-weight-bold;
+  padding: $select-padding;
+  border: $select-border-width solid $color-action-neutral-border;
   border-radius: $radius-xs;
-  background: $color-white;
+  background: $color-action-neutral-bg;
   color: $color-text-primary;
   cursor: pointer;
   appearance: none;
@@ -36,17 +45,17 @@
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &:hover {
-    border-color: $color-btn-secondary-bg;
+    border-color: $color-accent-secondary;
   }
 
   &:focus {
     outline: none;
-    border-color: $color-btn-secondary-bg;
-    box-shadow: 0 0 0 3px $color-btn-secondary-focus-ring;
+    border-color: $color-accent-secondary;
+    box-shadow: 0 0 0 $select-focus-ring-size $select-focus-ring;
   }
 
   &:disabled {
-    opacity: 0.4;
+    opacity: $select-disabled-opacity;
     cursor: not-allowed;
   }
 }
@@ -54,7 +63,7 @@
 .arrow {
   position: absolute;
   top: 50%;
-  right: 10px;
+  right: $select-arrow-right;
   transform: translateY(-50%);
   color: $color-text-secondary;
   pointer-events: none;

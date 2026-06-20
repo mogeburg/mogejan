@@ -1,38 +1,46 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
 
+$game-result-title-margin: 0 0 $space-7;
+$game-result-row-gap: $space-4;
+$game-result-row-padding: 8px 16px;
+$game-result-winner-bg: #fff8e1;
+$game-result-player-gap: 10px;
+$game-result-button-margin-top: $space-7;
+
 .title {
-  font-size: $fs-xl;
-  margin: 0 0 24px;
+  font-size: $font-size-xl;
+  margin: $game-result-title-margin;
   color: $color-text-primary;
 }
 
 .playerList {
   display: flex;
   flex-direction: column;
-  gap: $gap-medium;
+  gap: $game-result-row-gap;
 }
 
 .playerRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $padding-result-row;
-  border-radius: $radius-small;
+  padding: $game-result-row-padding;
+  border-radius: $radius-sm;
 }
 
 .winnerRow {
-  background: #fff8e1;
+  background: $game-result-winner-bg;
 }
 
 .playerLeft {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: $game-result-player-gap;
 }
 
 .rankIcon {
-  font-size: $fs-lg;
+  font-size: $font-size-lg;
 }
 
 .avatar {
@@ -40,20 +48,20 @@
 }
 
 .playerName {
-  font-weight: $fw-bold;
-  font-size: $fs-md;
-  color: $color-text-light;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-md;
+  color: #333;
 }
 
 .playerScore {
-  font-size: 22px;
-  font-weight: $fw-bold;
+  font-size: calc(22px * var(--text-scale, 1));
+  font-weight: $font-weight-bold;
   color: $color-text-primary;
 }
 
 .buttonRow {
-  margin-top: 24px;
+  margin-top: $game-result-button-margin-top;
   display: flex;
-  gap: $gap-large;
+  gap: $space-5;
   justify-content: center;
 }

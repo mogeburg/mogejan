@@ -1,4 +1,19 @@
-@use "@/styles/variables" as *;
+@use "@/styles/layout" as *;
+
+$tile-blue-overlay-bg: rgba(0, 80, 255, 0.25);
+$tile-shine-opacity: 0.8;
+$tile-shine-gradient: linear-gradient(
+  115deg,
+  transparent 0%,
+  rgba(255, 255, 255, 0.05) 5%,
+  rgba(255, 255, 255, 0.1) 15%,
+  rgba(255, 255, 255, 0.2) 28%,
+  rgba(255, 255, 255, 0.9) 42%,
+  rgba(255, 255, 255, 0.95) 47%,
+  rgba(255, 255, 255, 0.15) 56%,
+  transparent 66%,
+  transparent 100%
+);
 
 .tile {
   flex-shrink: 0;
@@ -14,7 +29,7 @@
   position: absolute;
   inset: 0;
   border-radius: inherit;
-  background: rgba(0, 80, 255, 0.25);
+  background: $tile-blue-overlay-bg;
   pointer-events: none;
   z-index: 1;
 }
@@ -22,20 +37,9 @@
 .shineElement {
   position: absolute;
   inset: 0;
-  opacity: 0.8;
+  opacity: $tile-shine-opacity;
   border-radius: inherit;
-  background: linear-gradient(
-    115deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.05) 5%,
-    rgba(255, 255, 255, 0.1) 15%,
-    rgba(255, 255, 255, 0.2) 28%,
-    rgba(255, 255, 255, 0.9) 42%,
-    rgba(255, 255, 255, 0.95) 47%,
-    rgba(255, 255, 255, 0.15) 56%,
-    transparent 66%,
-    transparent 100%
-  );
+  background: $tile-shine-gradient;
   transform: translateX(var(--shine-pos, -200%));
   pointer-events: none;
   z-index: 1;

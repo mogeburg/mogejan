@@ -1,32 +1,24 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+@use "@/styles/mixins" as *;
+
+$checkbox-border-width: 2px;
+$checkbox-padding: 4px 14px;
 
 .base {
-  font-weight: $fw-bold;
-  border-radius: $radius-xs;
-  cursor: pointer;
-  letter-spacing: 1px;
-  box-shadow: $shadow-button;
-  font-size: $fs-small;
-  padding: $padding-btn-normal;
-  border: 2px solid $color-btn-normal-border;
-  transition: filter 0.1s;
-
-  &:hover {
-    filter: brightness(1.15);
-  }
-
-  &:active {
-    filter: brightness(0.85);
-  }
+  @include pressable-control;
+  font-size: $font-size-sm;
+  padding: $checkbox-padding;
+  border: $checkbox-border-width solid $color-action-neutral-border;
 }
 
 .checked {
-  background: $color-btn-primary-bg;
-  color: $color-white;
-  border-color: $color-btn-primary-border;
+  background: $color-accent;
+  color: $color-text-contrast;
+  border-color: $color-accent-strong;
 }
 
 .unchecked {
-  background: $color-btn-normal-bg;
-  color: $color-btn-normal-text;
+  background: $color-action-neutral-bg;
+  color: $color-action-neutral-text;
 }

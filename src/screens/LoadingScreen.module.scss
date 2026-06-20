@@ -1,12 +1,19 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
+
+$loading-bar-width: 240px;
+$loading-bar-height: 6px;
+$loading-bar-radius: 3px;
+$loading-bar-bg: rgba(255, 255, 255, 0.15);
+$loading-bar-margin-top: $space-5;
 
 .overlay {
   width: 100%;
   height: 100%;
   @include center-flex;
   cursor: pointer;
-  background: $color-overlay-dark;
+  background: $color-overlay-strong;
   user-select: none;
 }
 
@@ -19,37 +26,37 @@
 }
 
 .loadingText {
-  color: $color-text-tertiary;
-  font-size: $fs-md;
-  font-weight: $fw-bold;
+  color: #aaa;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
 }
 
 .barTrack {
-  width: 240px;
-  height: 6px;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 3px;
-  margin: 12px auto 0;
+  width: $loading-bar-width;
+  height: $loading-bar-height;
+  background: $loading-bar-bg;
+  border-radius: $loading-bar-radius;
+  margin: $loading-bar-margin-top auto 0;
   overflow: hidden;
 }
 
 .barFill {
   height: 100%;
-  background: $color-btn-primary-bg;
-  border-radius: 3px;
+  background: $color-accent;
+  border-radius: $loading-bar-radius;
   transition: width 0.15s ease-out;
 }
 
 .promptText {
-  color: $color-white;
-  font-size: $fs-lg;
-  font-weight: $fw-bold;
+  color: $color-text-contrast;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
   display: block;
 }
 
 .hintText {
-  color: $color-text-tertiary;
-  font-size: $fs-body;
+  color: #aaa;
+  font-size: $font-size-body;
   display: block;
-  margin-top: $gap-large;
+  margin-top: $space-5;
 }

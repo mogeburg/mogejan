@@ -1,0 +1,53 @@
+@use "sass:math";
+@use "tokens" as *;
+
+// Shared layout / typography tokens
+
+$space-1: $primitive-space-1;
+$space-2: $primitive-space-2;
+$space-3: $primitive-space-3;
+$space-4: $primitive-space-4;
+$space-5: $primitive-space-5;
+$space-6: $primitive-space-6;
+$space-7: $primitive-space-7;
+
+$radius-xs: $primitive-radius-xs;
+$radius-sm: $primitive-radius-sm;
+$radius-md: $primitive-radius-md;
+$radius-lg: $primitive-radius-lg;
+$radius-pill: $primitive-radius-pill;
+
+$shadow-1: $primitive-shadow-1;
+$shadow-2: $primitive-shadow-2;
+$shadow-3: $primitive-shadow-3;
+$shadow-4: $primitive-shadow-4;
+$shadow-5: $primitive-shadow-5;
+
+$font-size-huge: var(--fs-huge, 48px);
+$font-size-xxl: var(--fs-xxl, 36px);
+$font-size-xl: var(--fs-xl, 32px);
+$font-size-title: var(--fs-title, 28px);
+$font-size-lg: var(--fs-lg, 24px);
+$font-size-md: var(--fs-md, 18px);
+$font-size-body: var(--fs-body, 14px);
+$font-size-sm: var(--fs-small, 13px);
+$font-size-xs: var(--fs-xs, 12px);
+$font-size-xxs: var(--fs-xxs, 10px);
+$font-size-cutin: var(--fs-cutin, 150px);
+
+$font-weight-normal: $primitive-font-weight-normal;
+$font-weight-bold: $primitive-font-weight-bold;
+$font-weight-black: $primitive-font-weight-black;
+
+$layout-game-width: 1280px;
+$layout-game-height: 720px;
+$layout-player-box-width: 700px;
+$layout-player-box-height: 206px;
+$layout-player-box-rotate-offset: math.div(
+  $layout-player-box-width - $layout-player-box-height,
+  2
+);
+
+$tile-size-normal: 49px;
+$tile-size-small: 36px;
+$tile-size-mini: 24px;

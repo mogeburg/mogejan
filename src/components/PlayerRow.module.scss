@@ -1,20 +1,27 @@
-@use "@/styles/variables" as *;
+@use "@/styles/layout" as *;
+
+$player-row-action-bottom: 68px;
+$player-row-drawn-gap: $space-5;
+$player-row-discard-width: 60%;
+$player-row-discard-height: 50%;
+$player-row-discard-left: 20%;
+$player-row-discard-top: $space-6;
 
 .container {
   position: relative;
-  width: $player-box-w;
-  height: $player-box-h;
+  width: $layout-player-box-width;
+  height: $layout-player-box-height;
   overflow: hidden;
 }
 
 .actionRow {
   position: absolute;
-  bottom: 68px;
+  bottom: $player-row-action-bottom;
   left: 0;
   right: 0;
   display: flex;
   justify-content: center;
-  gap: $gap-medium;
+  gap: $space-4;
   z-index: 2;
 }
 
@@ -35,23 +42,23 @@
 
 .handTiles {
   display: flex;
-  gap: $gap-xxs;
+  gap: $space-1;
   flex-wrap: wrap;
 }
 
 .drawnTileGap {
-  margin-left: 12px;
+  margin-left: $player-row-drawn-gap;
 }
 
 .ponArea {
   display: flex;
-  gap: $gap-tile;
+  gap: 1px;
   margin-left: auto;
 }
 
 .ponMeld {
   display: flex;
-  gap: $gap-tile;
+  gap: 1px;
 }
 
 .discardArea {
@@ -60,10 +67,8 @@
   flex-wrap: wrap;
   align-content: flex-start;
   gap: 0;
-  width: 60%;
-  height: 50%;
-  left: 20%;
-  top: 16px;
+  width: $player-row-discard-width;
+  height: $player-row-discard-height;
+  left: $player-row-discard-left;
+  top: $player-row-discard-top;
 }
-
-

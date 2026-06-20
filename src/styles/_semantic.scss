@@ -1,0 +1,38 @@
+@use "tokens" as *;
+
+// Semantic color tokens
+
+$color-bg-canvas: $primitive-color-beige-100;
+$color-bg-board-start: $primitive-color-green-600;
+$color-bg-board-end: $primitive-color-green-700;
+
+$color-surface-base: $primitive-surface-white-95;
+$color-surface-strong: $primitive-surface-white-98;
+$color-surface-soft: $primitive-surface-white-90;
+
+$color-overlay-strong: $primitive-overlay-black-70;
+$color-overlay-medium: $primitive-overlay-black-50;
+$color-overlay-soft: $primitive-overlay-black-40;
+$color-overlay-chrome: $primitive-overlay-black-30;
+
+$color-text-primary: $primitive-color-gray-900;
+$color-text-secondary: $primitive-color-gray-400;
+$color-text-muted: $primitive-color-gray-500;
+$color-text-body: $primitive-color-gray-700;
+$color-text-contrast: $primitive-color-white;
+
+$color-border-subtle: $primitive-color-border-100;
+$color-border-default: $primitive-color-border-200;
+$color-border-strong: $primitive-color-border-300;
+
+$color-accent: $primitive-color-red-600;
+$color-accent-strong: $primitive-color-red-800;
+$color-accent-secondary: $primitive-color-blue-700;
+$color-accent-secondary-strong: $primitive-color-blue-900;
+
+$color-action-neutral-bg: $primitive-color-white;
+$color-action-neutral-text: $primitive-color-gray-900;
+$color-action-neutral-border: $primitive-color-gray-900;
+
+$color-score-positive: $primitive-color-green-positive;
+$color-score-negative: $primitive-color-red-700;

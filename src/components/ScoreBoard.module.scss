@@ -1,54 +1,60 @@
-@use "@/styles/variables" as *;
-@use "@/styles/mixins" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+
+$scoreboard-row-gap: $space-5;
+$scoreboard-button-margin-top: $space-7;
+$scoreboard-row-padding: 12px 16px;
+$scoreboard-name-size: 20px;
+$scoreboard-round-size: 20px;
 
 .roundTitle {
-  font-size: 20px;
-  font-weight: $fw-bold;
-  color: $color-text-gray;
-  margin-bottom: $gap-large;
+  font-size: calc(20px * var(--text-scale, 1));
+  font-weight: $font-weight-bold;
+  color: #555;
+  margin-bottom: $scoreboard-row-gap;
 }
 
 .playerList {
   display: flex;
   flex-direction: column;
-  gap: $gap-large;
+  gap: $scoreboard-row-gap;
 }
 
 .playerRow {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $padding-score-row;
-  border-radius: $radius-small;
+  padding: $scoreboard-row-padding;
+  border-radius: $radius-sm;
 }
 
 .playerLeft {
   display: flex;
   align-items: center;
-  gap: $gap-large;
+  gap: $scoreboard-row-gap;
 }
 
 .playerName {
-  font-weight: $fw-bold;
-  font-size: 20px;
-  color: $color-text-light;
+  font-weight: $font-weight-bold;
+  font-size: calc(#{$scoreboard-name-size} * var(--text-scale, 1));
+  color: #333;
 }
 
 .playerRight {
   display: flex;
   align-items: center;
-  gap: $gap-large;
+  gap: $scoreboard-row-gap;
 }
 
 .playerScore {
-  font-size: $fs-lg;
-  font-weight: $fw-bold;
+  font-size: $font-size-lg;
+  font-weight: $font-weight-bold;
   color: $color-text-primary;
 }
 
 .scoreDelta {
-  font-size: $fs-md;
-  font-weight: $fw-bold;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
 }
 
 .scoreDeltaPositive {
@@ -60,5 +66,5 @@
 }
 
 .buttonRow {
-  margin-top: 24px;
+  margin-top: $scoreboard-button-margin-top;
 }

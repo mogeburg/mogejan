@@ -1,51 +1,59 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+@use "@/styles/mixins" as *;
+
+$auto-action-offset: $space-4;
+$auto-action-gap: $space-1;
+$auto-action-label-padding: 2px 6px;
+$auto-action-button-padding: 3px 10px;
+$auto-action-button-border-width: 2px;
+$auto-action-label-bg: #222;
+$auto-action-label-text: $color-text-contrast;
 
 .container {
   position: absolute;
-  bottom: 8px;
-  right: 8px;
+  bottom: $auto-action-offset;
+  right: $auto-action-offset;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 2px;
+  gap: $auto-action-gap;
   z-index: 50;
 }
 
 .label {
-  font-weight: $fw-bold;
-  font-size: 11px;
+  font-weight: $font-weight-bold;
+  font-size: calc(11px * var(--text-scale, 1));
   letter-spacing: 1px;
-  color: $color-auto-label-text;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: $color-auto-label-bg;
+  color: $auto-action-label-text;
+  padding: $auto-action-label-padding;
+  border-radius: $space-2;
+  background: $auto-action-label-bg;
 }
 
 .btnRow {
   display: flex;
   flex-direction: row;
-  gap: 4px;
+  gap: $space-2;
 }
 
 .btn {
-  font-weight: $fw-bold;
-  font-size: 11px;
-  padding: 3px 10px;
+  @include pressable-control;
+  font-size: calc(11px * var(--text-scale, 1));
+  padding: $auto-action-button-padding;
   border-radius: $radius-xs;
-  border: 2px solid;
-  cursor: pointer;
-  letter-spacing: 1px;
+  border: $auto-action-button-border-width solid;
   user-select: none;
 }
 
 .on {
-  background: $color-btn-primary-bg;
-  color: $color-white;
-  border-color: $color-btn-primary-border;
+  background: $color-accent;
+  color: $color-text-contrast;
+  border-color: $color-accent-strong;
 }
 
 .off {
-  background: $color-btn-normal-bg;
-  color: $color-btn-normal-text;
-  border-color: $color-btn-normal-border;
+  background: $color-action-neutral-bg;
+  color: $color-action-neutral-text;
+  border-color: $color-action-neutral-border;
 }

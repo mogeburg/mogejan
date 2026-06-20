@@ -1,5 +1,13 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
+
+$title-version-margin: 0 0 $space-2 0;
+$title-version-padding-y: $space-2;
+$title-margin: -2px 0 20px 0;
+$title-letter-spacing: $space-2;
+$title-accent: #e74c3c;
+$title-grid-gap: $space-5;
 
 .modalCard {
   text-align: center;
@@ -7,43 +15,43 @@
 
 .version {
   text-align: right;
-  margin: 0 0 4px 0;
-  padding: 4px 0;
-  font-size: $fs-xs;
+  margin: $title-version-margin;
+  padding: $title-version-padding-y 0;
+  font-size: $font-size-xs;
   user-select: none;
 }
 
 .versionRed {
   text-align: right;
-  margin: 0 0 4px 0;
-  padding: 4px 0;
-  font-size: $fs-xs;
-  color: #e74c3c;
+  margin: $title-version-margin;
+  padding: $title-version-padding-y 0;
+  font-size: $font-size-xs;
+  color: $title-accent;
   user-select: none;
 }
 
 .title {
-  font-size: $fs-huge;
-  margin: -2px 0 20px 0;
+  font-size: $font-size-huge;
+  margin: $title-margin;
   line-height: 1;
   color: $color-text-primary;
-  letter-spacing: 4px;
-  font-weight: $fw-black;
+  letter-spacing: $title-letter-spacing;
+  font-weight: $font-weight-black;
 }
 
 .titleRed {
-  font-size: $fs-huge;
-  margin: -2px 0 20px 0;
+  font-size: $font-size-huge;
+  margin: $title-margin;
   line-height: 1;
-  color: #e74c3c;
-  letter-spacing: 4px;
-  font-weight: $fw-black;
+  color: $title-accent;
+  letter-spacing: $title-letter-spacing;
+  font-weight: $font-weight-black;
 }
 
 .charGrid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: $gap-large;
+  gap: $title-grid-gap;
   justify-items: center;
 }
 

@@ -1,29 +1,37 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+
+$speech-bubble-bg: $color-text-contrast;
+$speech-bubble-radius: $radius-sm;
+$speech-bubble-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+$speech-bubble-padding: 2px 10px;
+$speech-bubble-tail-size: 5px;
+$speech-bubble-tail-offset: -3px;
 
 .container {
   position: relative;
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
-  padding: 2px 10px;
+  background: $speech-bubble-bg;
+  border-radius: $speech-bubble-radius;
+  box-shadow: $speech-bubble-shadow;
+  padding: $speech-bubble-padding;
   white-space: nowrap;
 }
 
 .text {
-  font-size: $fs-small;
-  font-weight: $fw-black;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-black;
   color: $color-text-primary;
   line-height: 1.6;
 }
 
 .tail {
   position: absolute;
-  bottom: -3px;
+  bottom: $speech-bubble-tail-offset;
   left: 50%;
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 5px solid transparent;
-  border-right: 5px solid transparent;
-  border-top: 5px solid #fff;
+  border-left: $speech-bubble-tail-size solid transparent;
+  border-right: $speech-bubble-tail-size solid transparent;
+  border-top: $speech-bubble-tail-size solid $speech-bubble-bg;
 }

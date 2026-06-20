@@ -1,5 +1,27 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
+
+$player-info-width: 140px;
+$player-info-padding: 6px 14px 6px 10px;
+$player-info-bubble-gap: $space-2;
+$player-info-badge-offset-bottom: -12px;
+$player-info-badge-offset-left: -6px;
+$player-info-turn-bg: #c62828;
+$player-info-normal-bg: #222;
+$player-info-text: $color-text-contrast;
+$player-info-parent-bg: linear-gradient(135deg, #fff3e0, #ffe0b2);
+$player-info-parent-text: #bf360c;
+$player-info-parent-border: #ffcc80;
+$player-info-riichi-bg: linear-gradient(135deg, #ffebee, #ffcdd2);
+$player-info-riichi-text: #b71c1c;
+$player-info-riichi-border: #ef9a9a;
+$player-info-menzen-bg: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+$player-info-menzen-text: #1b5e20;
+$player-info-menzen-border: #a5d6a7;
+$player-info-ippatsu-bg: linear-gradient(135deg, #f3e5f5, #e1bee7);
+$player-info-ippatsu-text: #4a148c;
+$player-info-ippatsu-border: #ce93d8;
 
 .badge {
   @include badge-base;
@@ -7,49 +29,49 @@
 
 .badgeParent {
   @include badge-base;
-  background: $color-badge-parent-bg;
-  color: $color-badge-parent-text;
-  border: 1px solid $color-badge-parent-border;
+  background: $player-info-parent-bg;
+  color: $player-info-parent-text;
+  border: 1px solid $player-info-parent-border;
 }
 
 .badgeRiichi {
   @include badge-base;
-  background: $color-badge-riichi-bg;
-  color: $color-badge-riichi-text;
-  border: 1px solid $color-badge-riichi-border;
+  background: $player-info-riichi-bg;
+  color: $player-info-riichi-text;
+  border: 1px solid $player-info-riichi-border;
 }
 
 .badgeMenzen {
   @include badge-base;
-  background: $color-badge-menzen-bg;
-  color: $color-badge-menzen-text;
-  border: 1px solid $color-badge-menzen-border;
+  background: $player-info-menzen-bg;
+  color: $player-info-menzen-text;
+  border: 1px solid $player-info-menzen-border;
 }
 
 .badgeIppatsu {
   @include badge-base;
-  background: $color-badge-ippatsu-bg;
-  color: $color-badge-ippatsu-text;
-  border: 1px solid $color-badge-ippatsu-border;
+  background: $player-info-ippatsu-bg;
+  color: $player-info-ippatsu-text;
+  border: 1px solid $player-info-ippatsu-border;
 }
 
 .container {
   display: flex;
   align-items: center;
-  gap: $gap-medium;
-  padding: $padding-player-info;
+  gap: $space-4;
+  padding: $player-info-padding;
   position: relative;
-  border-radius: $radius-medium;
-  box-shadow: $shadow-player;
-  width: 140px;
+  border-radius: $radius-md;
+  box-shadow: $shadow-2;
+  width: $player-info-width;
 }
 
 .containerTurn {
-  background: $color-turn-bg;
+  background: $player-info-turn-bg;
 }
 
 .containerNormal {
-  background: $color-player-bg;
+  background: $player-info-normal-bg;
 }
 
 .avatarWrapper {
@@ -65,7 +87,7 @@
   display: flex;
   flex-direction: column-reverse;
   align-items: center;
-  gap: 4px;
+  gap: $player-info-bubble-gap;
   z-index: 10;
 }
 
@@ -73,33 +95,33 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  font-weight: $fw-bold;
+  font-weight: $font-weight-bold;
 }
 
 .name {
-  font-size: $fs-small;
-  color: $color-white;
+  font-size: $font-size-sm;
+  color: $player-info-text;
 }
 
 .personalityLabel {
-  font-size: 11px;
-  color: $color-white;
+  font-size: calc(11px * var(--text-scale, 1));
+  color: $player-info-text;
   line-height: 1;
 }
 
 .score {
-  font-size: 22px;
+  font-size: calc(22px * var(--text-scale, 1));
   line-height: 1.2;
-  color: $color-white;
+  color: $player-info-text;
   text-align: right;
 }
 
 .badgeRowBottom {
   position: absolute;
-  bottom: -12px;
-  left: -6px;
+  bottom: $player-info-badge-offset-bottom;
+  left: $player-info-badge-offset-left;
   display: flex;
-  gap: $gap-badge;
+  gap: 3px;
   flex-wrap: nowrap;
   white-space: nowrap;
 }

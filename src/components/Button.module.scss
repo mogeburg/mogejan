@@ -1,65 +1,62 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
 
+$button-border-width: 2px;
+$button-menu-border-width: 1px;
+$button-disabled-opacity: 0.4;
+$button-size-normal-padding: 4px 14px;
+$button-size-large-padding: 10px 32px;
+$button-tertiary-bg: #f5f5f5;
+$button-tertiary-text: #616161;
+$button-tertiary-border: #9e9e9e;
+
 .base {
-  font-weight: $fw-bold;
-  border-radius: $radius-xs;
-  cursor: pointer;
-  letter-spacing: 1px;
-  box-shadow: $shadow-button;
-  transition: filter 0.1s;
-
-  &:hover {
-    filter: brightness(1.15);
-  }
-
-  &:active {
-    filter: brightness(0.85);
-  }
+  @include pressable-control;
 }
 
 .normal {
-  background: $color-btn-normal-bg;
-  color: $color-btn-normal-text;
-  border: 2px solid $color-btn-normal-border;
+  background: $color-action-neutral-bg;
+  color: $color-action-neutral-text;
+  border: $button-border-width solid $color-action-neutral-border;
 }
 
 .primary {
-  background: $color-btn-primary-bg;
-  color: $color-white;
-  border: 2px solid $color-btn-primary-border;
+  background: $color-accent;
+  color: $color-text-contrast;
+  border: $button-border-width solid $color-accent-strong;
 }
 
 .secondary {
-  background: $color-btn-secondary-bg;
-  color: $color-white;
-  border: 2px solid $color-btn-secondary-border;
+  background: $color-accent-secondary;
+  color: $color-text-contrast;
+  border: $button-border-width solid $color-accent-secondary-strong;
 }
 
 .tertiary {
-  background: $color-btn-tertiary-bg;
-  color: $color-btn-tertiary-text;
-  border: 2px solid $color-btn-tertiary-border;
+  background: $button-tertiary-bg;
+  color: $button-tertiary-text;
+  border: $button-border-width solid $button-tertiary-border;
 }
 
 .menu {
-  background: $color-overlay-menu-btn;
-  color: $color-menu-btn-text;
-  border: 1px solid $color-menu-btn-border;
+  background: $color-overlay-chrome;
+  color: rgba(255, 255, 255, 0.7);
+  border: $button-menu-border-width solid rgba(255, 255, 255, 0.3);
 }
 
 .disabled {
-  opacity: 0.4;
+  opacity: $button-disabled-opacity;
   cursor: not-allowed;
   pointer-events: none;
 }
 
 .sizeNormal {
-  font-size: $fs-small;
-  padding: $padding-btn-normal;
+  font-size: $font-size-sm;
+  padding: $button-size-normal-padding;
 }
 
 .sizeLarge {
-  font-size: $fs-md;
-  padding: $padding-btn-large;
+  font-size: $font-size-md;
+  padding: $button-size-large-padding;
 }

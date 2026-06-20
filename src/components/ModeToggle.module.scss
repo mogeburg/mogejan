@@ -1,48 +1,65 @@
-@use "@/styles/variables" as *;
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+
+$toggle-row-margin-top: $space-5;
+$toggle-row-compact-margin-top: $space-3;
+$toggle-track-radius: $radius-xs;
+$toggle-track-padding: 3px;
+$toggle-track-gap: 3px;
+$toggle-button-radius: $space-2;
+$toggle-button-padding: 6px 16px;
+$toggle-active-shadow: $shadow-1;
+$toggle-inactive-bg: rgba(255, 255, 255, 0.72);
+$toggle-inactive-bg-hover: rgba(255, 255, 255, 0.92);
+$toggle-inactive-text: #666;
+$toggle-inactive-text-hover: #333;
+$toggle-disabled-bg: rgba(0, 0, 0, 0.16);
+$toggle-disabled-text: rgba(255, 255, 255, 0.72);
+$toggle-track-bg: #e8e8e8;
 
 .row {
   display: flex;
-  margin-top: $gap-large;
-  border-radius: 6px;
-  background: $color-toggle-track-bg;
-  padding: 3px;
-  gap: 3px;
+  margin-top: $toggle-row-margin-top;
+  border-radius: $toggle-track-radius;
+  background: $toggle-track-bg;
+  padding: $toggle-track-padding;
+  gap: $toggle-track-gap;
 }
 
 .rowCompact {
-  margin-top: 6px;
+  margin-top: $toggle-row-compact-margin-top;
 }
 
 .btn {
   flex: 1;
-  font-weight: $fw-bold;
-  font-size: $fs-small;
-  padding: 6px 16px;
+  font-weight: $font-weight-bold;
+  font-size: $font-size-sm;
+  padding: $toggle-button-padding;
   letter-spacing: 1px;
   border: none;
-  border-radius: 4px;
+  border-radius: $toggle-button-radius;
   cursor: pointer;
   transition: background 0.15s, color 0.15s, box-shadow 0.15s;
 }
 
 .active {
-  background: $color-btn-primary-bg;
-  color: $color-white;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  background: $color-accent;
+  color: $color-text-contrast;
+  box-shadow: $toggle-active-shadow;
 }
 
 .inactive {
-  background: $color-toggle-inactive-bg;
-  color: $color-toggle-inactive-text;
+  background: $toggle-inactive-bg;
+  color: $toggle-inactive-text;
 
   &:hover {
-    background: $color-toggle-inactive-bg-hover;
-    color: $color-toggle-inactive-text-hover;
+    background: $toggle-inactive-bg-hover;
+    color: $toggle-inactive-text-hover;
   }
 }
 
 .disabled {
-  background: $color-toggle-disabled-bg;
-  color: $color-toggle-disabled-text;
+  background: $toggle-disabled-bg;
+  color: $toggle-disabled-text;
   cursor: not-allowed;
 }

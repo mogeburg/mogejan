@@ -1,18 +1,20 @@
-@use "@/styles/variables" as *;
+@use "@/styles/layout" as *;
+
+$slider-input-width: 200px;
 
 .row {
-  margin-bottom: $gap-large;
+  margin-bottom: $space-5;
 }
 
 .label {
-  margin-bottom: $gap-xs;
+  margin-bottom: $space-2;
 }
 
 .slider {
-  width: 200px;
+  width: $slider-input-width;
 }
 
 .value {
-  margin-left: $gap-medium;
-  font-weight: $fw-bold;
+  margin-left: $space-4;
+  font-weight: $font-weight-bold;
 }
