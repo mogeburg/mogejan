@@ -1,6 +1,7 @@
 import type { CpuPersonality } from "@/ai/CpuController";
 import { generateRandomPersonality } from "@/ai/CpuController";
 import type { BgmKey } from "@/constants/game";
+import type { ScreenMode } from "@/constants/layout";
 import {
   BGM_VOLUME,
   DEFAULT_CPU_STRENGTH,
@@ -71,6 +72,7 @@ interface GameStore {
   bgmVolume: number;
   seVolume: number;
   voiceVolume: number;
+  screenMode: ScreenMode;
   riichiBgmSetting: BgmKey;
   normalBgmSetting: BgmKey;
   riichiAvatar: "none" | "kanimoge" | "burumoge";
@@ -127,6 +129,7 @@ interface GameStore {
   setBgmVolume: (volume: number) => void;
   setSeVolume: (volume: number) => void;
   setVoiceVolume: (volume: number) => void;
+  setScreenMode: (mode: ScreenMode) => void;
   setRiichiBgmSetting: (setting: BgmKey) => void;
   setNormalBgmSetting: (setting: BgmKey) => void;
   setRiichiAvatar: (avatar: "none" | "kanimoge" | "burumoge") => void;
@@ -573,6 +576,7 @@ function createDefaultSettingsState(): Pick<
   | "bgmVolume"
   | "seVolume"
   | "voiceVolume"
+  | "screenMode"
   | "riichiBgmSetting"
   | "normalBgmSetting"
   | "riichiAvatar"
@@ -590,6 +594,7 @@ function createDefaultSettingsState(): Pick<
     bgmVolume: BGM_VOLUME,
     seVolume: SE_VOLUME,
     voiceVolume: VOICE_VOLUME,
+    screenMode: "auto",
     riichiBgmSetting: "riichi" as const,
     normalBgmSetting: "game" as const,
     riichiAvatar: "kanimoge" as const,
@@ -617,6 +622,7 @@ export const useGameStore = create<GameStore>()(
       setBgmVolume: (bgmVolume) => set({ bgmVolume }),
       setSeVolume: (seVolume) => set({ seVolume }),
       setVoiceVolume: (voiceVolume) => set({ voiceVolume }),
+      setScreenMode: (screenMode) => set({ screenMode }),
       setRiichiBgmSetting: (setting) => set({ riichiBgmSetting: setting }),
       setNormalBgmSetting: (setting) => set({ normalBgmSetting: setting }),
       setRiichiAvatar: (avatar) => set({ riichiAvatar: avatar }),
@@ -1032,6 +1038,7 @@ export const useGameStore = create<GameStore>()(
         bgmVolume: state.bgmVolume,
         seVolume: state.seVolume,
         voiceVolume: state.voiceVolume,
+        screenMode: state.screenMode,
         riichiBgmSetting: state.riichiBgmSetting,
         normalBgmSetting: state.normalBgmSetting,
         riichiAvatar: state.riichiAvatar,

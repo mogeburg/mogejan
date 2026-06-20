@@ -105,7 +105,7 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
 
           <div className={styles.settingsSurface}>
             <FieldLabel className={styles.settingsSubLabel}>雷テスト</FieldLabel>
-            <div className={styles.sectionStack}>
+            <div className={styles.settingsInlineRow}>
               <SelectBox
                 label="開始"
                 value={lightningSourcePlayer}
@@ -118,7 +118,7 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
                 options={[...PLAYER_INDEX_OPTIONS]}
                 onChange={(value) => setLightningTargetPlayer(Number(value))}
               />
-              <div className={styles.settingsActions}>
+              <div className={styles.settingsInlineActions}>
                 <Button
                   label="ロン"
                   size="normal"

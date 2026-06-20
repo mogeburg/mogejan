@@ -5,6 +5,7 @@ import styles from "@/components/Panel.module.scss";
 import { Range } from "@/components/Range";
 import { SelectBox } from "@/components/SelectBox";
 import type { BgmKey, CpuStrength } from "@/constants/game";
+import type { ScreenMode } from "@/constants/layout";
 import {
   BGM,
   BGM_NORMAL_KEYS,
@@ -38,6 +39,12 @@ const SPEED_OPTIONS = [
   { value: 3, label: "普通" },
   { value: 4, label: "早い" },
   { value: 5, label: "爆速" },
+] as const;
+
+const SCREEN_MODE_OPTIONS = [
+  { value: "auto", label: "自動" },
+  { value: "portrait", label: "縦" },
+  { value: "landscape", label: "横" },
 ] as const;
 
 type ToggleOption<T extends string | number> = {
@@ -78,6 +85,29 @@ function ToggleSetting<T extends string | number>({
   );
 }
 
+function RangeSetting({
+  label,
+  min,
+  max,
+  value,
+  onChange,
+}: {
+  label: string;
+  min: number;
+  max: number;
+  value: number;
+  onChange: (value: number) => void;
+}) {
+  return (
+    <>
+      <FieldLabel className={`${styles.settingsSubLabel} ${styles.settingsSubLabelTight}`}>
+        {label}
+      </FieldLabel>
+      <Range min={min} max={max} value={value} onChange={onChange} />
+    </>
+  );
+}
+
 export function SettingsPanel() {
   const speed = useGameStore((s) => s.speed);
   const setSpeed = useGameStore((s) => s.setSpeed);
@@ -89,10 +119,12 @@ export function SettingsPanel() {
   const bgmVolume = useGameStore((s) => s.bgmVolume);
   const seVolume = useGameStore((s) => s.seVolume);
   const voiceVolume = useGameStore((s) => s.voiceVolume);
+  const screenMode = useGameStore((s) => s.screenMode);
   const setMasterVolume = useGameStore((s) => s.setMasterVolume);
   const setBgmVolume = useGameStore((s) => s.setBgmVolume);
   const setSeVolume = useGameStore((s) => s.setSeVolume);
   const setVoiceVolume = useGameStore((s) => s.setVoiceVolume);
+  const setScreenMode = useGameStore((s) => s.setScreenMode);
   const normalBgmSetting = useGameStore((s) => s.normalBgmSetting);
   const setNormalBgmSetting = useGameStore((s) => s.setNormalBgmSetting);
   const riichiBgmSetting = useGameStore((s) => s.riichiBgmSetting);
@@ -104,17 +136,8 @@ export function SettingsPanel() {
     <div className={styles.panelSettings}>
       <div className={styles.settingsColumns}>
         <div className={styles.settingsLeft}>
-          <MenuSection title="設定">
+          <MenuSection title="ゲーム設定">
             <div className={styles.sectionStack}>
-              <div className={styles.settingsSurface}>
-                <ToggleSetting
-                  label="文字サイズ"
-                  value={textSize}
-                  options={TEXT_SIZE_OPTIONS}
-                  onChange={(value) => setTextSize(value as typeof textSize)}
-                />
-              </div>
-
               <div className={styles.settingsSurface}>
                 <ToggleSetting
                   label="速度"
@@ -172,10 +195,32 @@ export function SettingsPanel() {
         </div>
 
         <div className={styles.settingsRight}>
+          <MenuSection title="表示設定">
+            <div className={styles.sectionStack}>
+              <div className={styles.settingsSurface}>
+                <ToggleSetting
+                  label="画面モード"
+                  value={screenMode}
+                  options={SCREEN_MODE_OPTIONS}
+                  onChange={(value) => setScreenMode(value as ScreenMode)}
+                />
+              </div>
+
+              <div className={styles.settingsSurface}>
+                <ToggleSetting
+                  label="文字サイズ"
+                  value={textSize}
+                  options={TEXT_SIZE_OPTIONS}
+                  onChange={(value) => setTextSize(value as typeof textSize)}
+                />
+              </div>
+            </div>
+          </MenuSection>
+
           <MenuSection title="音量">
             <div className={styles.sectionStack}>
               <div className={styles.settingsSurface}>
-                <Range
+                <RangeSetting
                   label="マスター音量"
                   min={0}
                   max={100}
@@ -184,7 +229,7 @@ export function SettingsPanel() {
                 />
               </div>
               <div className={styles.settingsSurface}>
-                <Range
+                <RangeSetting
                   label="BGM 音量"
                   min={0}
                   max={100}
@@ -193,7 +238,7 @@ export function SettingsPanel() {
                 />
               </div>
               <div className={styles.settingsSurface}>
-                <Range
+                <RangeSetting
                   label="SE 音量"
                   min={0}
                   max={100}
@@ -202,7 +247,7 @@ export function SettingsPanel() {
                 />
               </div>
               <div className={styles.settingsSurface}>
-                <Range
+                <RangeSetting
                   label="声 音量"
                   min={0}
                   max={100}

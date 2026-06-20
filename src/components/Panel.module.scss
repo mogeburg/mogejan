@@ -522,6 +522,24 @@ $panel-focus-ring: rgba(229, 57, 53, 0.35);
   line-height: 1.4;
 }
 
+.settingsSubLabelTight {
+  margin: 0;
+}
+
+.settingsInlineRow {
+  display: flex;
+  align-items: flex-end;
+  gap: $panel-inline-gap;
+  flex-wrap: wrap;
+}
+
+.settingsInlineActions {
+  display: flex;
+  align-items: flex-end;
+  gap: $panel-inline-gap;
+  flex-wrap: wrap;
+}
+
 .checkboxLabel {
   display: flex;
   align-items: center;

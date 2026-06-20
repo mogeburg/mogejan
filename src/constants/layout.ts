@@ -6,6 +6,8 @@ export type GameSize = {
   height: number;
 };
 
+export type ScreenMode = "auto" | "portrait" | "landscape";
+
 export type LayoutBox = GameSize & {
   left: number;
   top: number;
@@ -42,6 +44,34 @@ export const DEFAULT_GAME_SIZE: GameSize = {
   width: parsePixelValue(layoutTokens.gameWidth),
   height: parsePixelValue(layoutTokens.gameHeight),
 };
+
+export const LANDSCAPE_GAME_SIZE: GameSize = {
+  width: 1280,
+  height: 720,
+};
+
+export const PORTRAIT_GAME_SIZE: GameSize = {
+  width: 720,
+  height: 1280,
+};
+
+export function resolveScreenMode(
+  mode: ScreenMode,
+  viewportWidth: number,
+  viewportHeight: number,
+): Exclude<ScreenMode, "auto"> {
+  if (mode === "portrait" || mode === "landscape") return mode;
+  return viewportHeight >= viewportWidth ? "portrait" : "landscape";
+}
+
+export function getGameSizeForScreenMode(
+  mode: ScreenMode,
+  viewportWidth: number,
+  viewportHeight: number,
+): GameSize {
+  const resolvedMode = resolveScreenMode(mode, viewportWidth, viewportHeight);
+  return resolvedMode === "portrait" ? PORTRAIT_GAME_SIZE : LANDSCAPE_GAME_SIZE;
+}
 
 export const DEFAULT_LAYOUT_BOX: LayoutBox = {
   left: 0,

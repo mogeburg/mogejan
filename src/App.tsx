@@ -17,7 +17,7 @@ import { ScoreConfirmScreen } from "@/screens/ScoreConfirmScreen";
 import { ScoreDisplayScreen } from "@/screens/ScoreDisplayScreen";
 import { TitleScreen } from "@/screens/TitleScreen";
 import { YakuResultScreen } from "@/screens/YakuResultScreen";
-import { DEFAULT_GAME_SIZE } from "@/constants/layout";
+import { getGameSizeForScreenMode } from "@/constants/layout";
 import { useGameStore, type Screen } from "@/store";
 import { useEffect, useState, type ReactNode } from "react";
 
@@ -36,26 +36,32 @@ export default function App() {
   const goTo = useGameStore((s) => s.goTo);
   const resetData = useGameStore((s) => s.resetData);
   const textSize = useGameStore((s) => s.textSize);
+  const screenMode = useGameStore((s) => s.screenMode);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuTabIndex, setMenuTabIndex] = useState(0);
   const [resetConfirm, setResetConfirm] = useState(false);
   const [titleConfirm, setTitleConfirm] = useState(false);
   const [scale, setScale] = useState(1);
+  const [gameSize, setGameSize] = useState(() =>
+    getGameSizeForScreenMode(screenMode, window.innerWidth, window.innerHeight),
+  );
 
   useEffect(() => {
     function updateScale() {
       const ww = window.innerWidth;
       const wh = window.innerHeight;
+      const nextGameSize = getGameSizeForScreenMode(screenMode, ww, wh);
+      setGameSize(nextGameSize);
       const s = Math.min(
-        ww / DEFAULT_GAME_SIZE.width,
-        wh / DEFAULT_GAME_SIZE.height,
+        ww / nextGameSize.width,
+        wh / nextGameSize.height,
       );
       setScale(Math.min(s, 1));
     }
     updateScale();
     window.addEventListener("resize", updateScale);
     return () => window.removeEventListener("resize", updateScale);
-  }, []);
+  }, [screenMode]);
 
   return (
     <div className={styles.outer}>
@@ -63,6 +69,8 @@ export default function App() {
         className={styles.gameArea}
         data-text-size={textSize}
         style={{
+          width: gameSize.width,
+          height: gameSize.height,
           transform: `scale(${scale})`,
         }}
       >

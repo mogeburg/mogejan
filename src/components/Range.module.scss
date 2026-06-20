@@ -21,7 +21,6 @@ $range-fill: linear-gradient(
 .header {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
   margin-bottom: $range-header-margin-bottom;
 }
 
@@ -31,16 +30,24 @@ $range-fill: linear-gradient(
   color: $color-text-primary;
 }
 
+.body {
+  display: flex;
+  align-items: center;
+  gap: var(--ui-space-4, 8px);
+}
+
 .value {
   font-size: $font-size-md;
   font-weight: $font-weight-bold;
   color: $color-accent-secondary;
   min-width: calc(#{$range-value-min-width} * var(--ui-scale, 1));
   text-align: right;
+  flex-shrink: 0;
 }
 
 .trackWrap {
   position: relative;
+  flex: 1 1 auto;
   height: $range-track-height;
   border-radius: $range-track-radius;
   background: $color-border-strong;
