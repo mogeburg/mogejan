@@ -96,26 +96,31 @@ export function getSeatAnchor(
 ): LightningPoint {
   const xOffset = size.width / 3;
   const yOffset = size.height / 3;
+  const edgePush = 15;
 
   switch (playerIndex) {
     case 0:
       return {
         ...getAnchorPoint("bottom-center", size, offset),
         x: getAnchorPoint("bottom-center", size, offset).x + xOffset,
+        y: getAnchorPoint("bottom-center", size, offset).y + edgePush,
       };
     case 1:
       return {
         ...getAnchorPoint("middle-left", size, offset),
+        x: getAnchorPoint("middle-left", size, offset).x - edgePush,
         y: getAnchorPoint("middle-left", size, offset).y + yOffset,
       };
     case 2:
       return {
         ...getAnchorPoint("top-center", size, offset),
         x: getAnchorPoint("top-center", size, offset).x - xOffset,
+        y: getAnchorPoint("top-center", size, offset).y - edgePush,
       };
     case 3:
       return {
         ...getAnchorPoint("middle-right", size, offset),
+        x: getAnchorPoint("middle-right", size, offset).x + edgePush,
         y: getAnchorPoint("middle-right", size, offset).y - yOffset,
       };
     default:

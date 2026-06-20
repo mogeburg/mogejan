@@ -28,7 +28,6 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
   const showDebugCutin = useGameStore((s) => s.showDebugCutin);
   const [lightningSourcePlayer, setLightningSourcePlayer] = useState(0);
   const [lightningTargetPlayer, setLightningTargetPlayer] = useState(1);
-  const [lightningAnimateJitter, setLightningAnimateJitter] = useState(false);
 
   return (
     <div className={styles.panelSettings}>
@@ -87,15 +86,6 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
           <div className={styles.settingsSurface}>
             <p className={styles.settingsSubLabel}>雷テスト</p>
             <div className={styles.sectionStack}>
-              <div className={styles.settingsActions}>
-                <CheckboxButton
-                  label="再描画"
-                  checked={lightningAnimateJitter}
-                  onChange={() =>
-                    setLightningAnimateJitter((current) => !current)
-                  }
-                />
-              </div>
               <SelectBox
                 label="開始"
                 value={lightningSourcePlayer}
@@ -120,7 +110,6 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
                         sourcePlayer: lightningSourcePlayer,
                         targetPlayer: lightningTargetPlayer,
                         isRon: true,
-                        animateJitter: lightningAnimateJitter,
                       },
                       "normal",
                       "normal",
@@ -139,7 +128,6 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
                         sourcePlayer: lightningSourcePlayer,
                         targetPlayer: lightningSourcePlayer,
                         isRon: false,
-                        animateJitter: lightningAnimateJitter,
                       },
                       "normal",
                       "normal",

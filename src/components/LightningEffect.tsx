@@ -30,7 +30,6 @@ export interface LightningEffectProps {
   end: LightningPoint;
   durationMs: number;
   growDurationMs?: number;
-  animateJitter?: boolean;
   onComplete?: () => void;
 }
 
@@ -213,16 +212,16 @@ function buildBranch(
 }
 
 function buildImpactBurst(center: LightningPoint, index: number): string {
-  const spokeCount = 20 + Math.floor(Math.random() * 12);
+  const spokeCount = 34 + Math.floor(Math.random() * 18);
   const baseRotation = randomBetween(0, Math.PI * 2);
   const points: LightningPoint[] = [];
 
   for (let i = 0; i < spokeCount; i++) {
     const angle = baseRotation + (Math.PI * 2 * i) / spokeCount;
-    const innerRadius = randomBetween(7, 15);
-    const outerRadius = randomBetween(18, 44);
-    const innerAngleOffset = randomBetween(-0.1, 0.1);
-    const outerAngleOffset = randomBetween(-0.08, 0.08);
+    const innerRadius = randomBetween(3, 8);
+    const outerRadius = randomBetween(24, 52);
+    const innerAngleOffset = randomBetween(-0.04, 0.04);
+    const outerAngleOffset = randomBetween(-0.03, 0.03);
 
     points.push({
       x: center.x + Math.cos(angle + innerAngleOffset) * innerRadius,
@@ -390,7 +389,6 @@ export function LightningEffect({
   end,
   durationMs,
   growDurationMs = DEFAULT_GROW_DURATION_MS,
-  animateJitter = false,
   onComplete,
 }: LightningEffectProps) {
   const [viewportSize, setViewportSize] = useState(() => ({
@@ -406,7 +404,6 @@ export function LightningEffect({
   const [impactGlow, setImpactGlow] = useState(0);
   const [impactBurstOpacity, setImpactBurstOpacity] = useState(0);
   const [impactBurstScale, setImpactBurstScale] = useState(0.5);
-  const [impactBurstJitter, setImpactBurstJitter] = useState(1);
 
   useEffect(() => {
     function updateViewportSize() {
@@ -429,13 +426,6 @@ export function LightningEffect({
     setImpactGlow(0);
     setImpactBurstOpacity(0);
     setImpactBurstScale(0.5);
-    setImpactBurstJitter(1);
-
-    const intervalId = animateJitter
-      ? window.setInterval(() => {
-          setFrame(generateLightningFrame(start, mid, end));
-        }, 50)
-      : null;
 
     let animationFrameId = 0;
     const startedAt = performance.now();
@@ -453,7 +443,6 @@ export function LightningEffect({
       const impactElapsed =
         impactStartedAt == null ? 0 : Math.max(0, elapsed - impactStartedAt);
       setProgress(nextProgress);
-      setImpactBurstJitter(animateJitter ? 0.96 + Math.random() * 0.1 : 1);
 
       if (hasImpacted && impactElapsed <= IMPACT_PULSE_DURATION_MS) {
         const pulseRatio = impactElapsed / IMPACT_PULSE_DURATION_MS;
@@ -506,13 +495,10 @@ export function LightningEffect({
     }, totalDuration);
 
     return () => {
-      if (intervalId != null) {
-        window.clearInterval(intervalId);
-      }
       window.clearTimeout(timeoutId);
       window.cancelAnimationFrame(animationFrameId);
     };
-  }, [start, mid, end, durationMs, growDurationMs, animateJitter, onComplete]);
+  }, [start, mid, end, durationMs, growDurationMs, onComplete]);
 
   return (
     <div className={styles.overlay} style={{ opacity }}>
@@ -576,7 +562,7 @@ export function LightningEffect({
           <g
             filter="url(#lightning-impact-glow)"
             opacity={impactBurstOpacity}
-            transform={`translate(${end.x} ${end.y}) scale(${impactBurstScale * impactBurstJitter}) translate(${-end.x} ${-end.y})`}
+            transform={`translate(${end.x} ${end.y}) scale(${impactBurstScale}) translate(${-end.x} ${-end.y})`}
           >
             {frame.impactBursts.map((burstPath, index) => (
               <g key={`impact-burst-${index}`}>

@@ -233,7 +233,6 @@ export function CutIn() {
           end={segment.end}
           durationMs={LIGHTNING_DISPLAY_DURATION_MS}
           growDurationMs={LIGHTNING_GROW_DURATION_MS}
-          animateJitter={cutinPreview?.animateJitter ?? false}
         />
       ))}
       {show && cutinType !== "ryuukyoku" && imageUrl && (
