@@ -2,12 +2,12 @@
 @use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
 
-$title-version-margin: 0 0 $space-2 0;
-$title-version-padding-y: $space-2;
+$title-version-margin: 0 0 var(--ui-space-2, 4px) 0;
+$title-version-padding-y: var(--ui-space-2, 4px);
 $title-margin: -2px 0 20px 0;
-$title-letter-spacing: $space-2;
+$title-letter-spacing: var(--ui-space-2, 4px);
 $title-accent: #e74c3c;
-$title-grid-gap: $space-5;
+$title-grid-gap: var(--ui-space-5, 12px);
 
 .modalCard {
   text-align: center;

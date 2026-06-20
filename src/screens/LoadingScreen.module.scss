@@ -6,7 +6,7 @@ $loading-bar-width: 240px;
 $loading-bar-height: 6px;
 $loading-bar-radius: 3px;
 $loading-bar-bg: rgba(255, 255, 255, 0.15);
-$loading-bar-margin-top: $space-5;
+$loading-bar-margin-top: var(--ui-space-5, 12px);
 
 .overlay {
   width: 100%;
@@ -58,5 +58,5 @@ $loading-bar-margin-top: $space-5;
   color: #aaa;
   font-size: $font-size-body;
   display: block;
-  margin-top: $space-5;
+  margin-top: var(--ui-space-5, 12px);
 }

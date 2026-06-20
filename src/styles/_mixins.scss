@@ -29,7 +29,7 @@
 
 @mixin modal-card {
   @include card;
-  padding: 40px 48px;
+  padding: var(--ui-modal-padding-y, 40px) var(--ui-modal-padding-x, 48px);
   text-align: center;
 }
 

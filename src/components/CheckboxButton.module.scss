@@ -3,7 +3,7 @@
 @use "@/styles/mixins" as *;
 
 $checkbox-border-width: 2px;
-$checkbox-padding: 4px 14px;
+$checkbox-padding: var(--ui-space-2, 4px) calc(14px * var(--ui-scale, 1));
 
 .base {
   @include pressable-control;

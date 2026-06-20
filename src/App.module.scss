@@ -15,6 +15,7 @@
 .gameArea {
   --font-scale: 1;
   --text-scale: var(--font-scale);
+  --ui-scale: var(--font-scale);
   --fs-huge: calc(48px * var(--font-scale));
   --fs-xxl: calc(36px * var(--font-scale));
   --fs-xl: calc(32px * var(--font-scale));
@@ -26,6 +27,15 @@
   --fs-xs: calc(12px * var(--font-scale));
   --fs-xxs: calc(10px * var(--font-scale));
   --fs-cutin: calc(150px * var(--font-scale));
+  --ui-space-1: calc(2px * var(--ui-scale));
+  --ui-space-2: calc(4px * var(--ui-scale));
+  --ui-space-3: calc(6px * var(--ui-scale));
+  --ui-space-4: calc(8px * var(--ui-scale));
+  --ui-space-5: calc(12px * var(--ui-scale));
+  --ui-space-6: calc(16px * var(--ui-scale));
+  --ui-space-7: calc(24px * var(--ui-scale));
+  --ui-modal-padding-y: calc(40px * var(--ui-scale));
+  --ui-modal-padding-x: calc(48px * var(--ui-scale));
   width: $layout-game-width;
   height: $layout-game-height;
   overflow: hidden;

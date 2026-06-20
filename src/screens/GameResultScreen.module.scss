@@ -2,12 +2,12 @@
 @use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
 
-$game-result-title-margin: 0 0 $space-7;
-$game-result-row-gap: $space-4;
-$game-result-row-padding: 8px 16px;
+$game-result-title-margin: 0 0 var(--ui-space-7, 24px);
+$game-result-row-gap: var(--ui-space-4, 8px);
+$game-result-row-padding: var(--ui-space-4, 8px) calc(16px * var(--ui-scale, 1));
 $game-result-winner-bg: #fff8e1;
 $game-result-player-gap: 10px;
-$game-result-button-margin-top: $space-7;
+$game-result-button-margin-top: var(--ui-space-7, 24px);
 
 .title {
   font-size: $font-size-xl;
@@ -62,6 +62,6 @@ $game-result-button-margin-top: $space-7;
 .buttonRow {
   margin-top: $game-result-button-margin-top;
   display: flex;
-  gap: $space-5;
+  gap: var(--ui-space-5, 12px);
   justify-content: center;
 }

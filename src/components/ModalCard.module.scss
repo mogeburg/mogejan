@@ -9,4 +9,6 @@
 
 .card {
   @include modal-card;
+  max-height: 80%;
+  overflow: hidden;
 }

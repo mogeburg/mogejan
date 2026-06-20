@@ -1,0 +1,12 @@
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+
+.label {
+  display: inline-block;
+  margin: 0 0 var(--ui-space-3, 6px) 0;
+  font-size: $font-size-sm;
+  font-weight: $font-weight-bold;
+  color: $color-text-secondary;
+  white-space: normal;
+  line-height: 1.4;
+}

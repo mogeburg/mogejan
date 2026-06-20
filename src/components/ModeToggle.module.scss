@@ -1,13 +1,13 @@
 @use "@/styles/semantic" as *;
 @use "@/styles/layout" as *;
 
-$toggle-row-margin-top: $space-5;
-$toggle-row-compact-margin-top: $space-3;
+$toggle-row-margin-top: var(--ui-space-5, 12px);
+$toggle-row-compact-margin-top: var(--ui-space-3, 6px);
 $toggle-track-radius: $radius-xs;
-$toggle-track-padding: 3px;
-$toggle-track-gap: 3px;
-$toggle-button-radius: $space-2;
-$toggle-button-padding: 6px 16px;
+$toggle-track-padding: calc(3px * var(--ui-scale, 1));
+$toggle-track-gap: calc(3px * var(--ui-scale, 1));
+$toggle-button-radius: var(--ui-space-2, 4px);
+$toggle-button-padding: var(--ui-space-3, 6px) var(--ui-space-6, 16px);
 $toggle-active-shadow: $shadow-1;
 $toggle-inactive-bg: rgba(255, 255, 255, 0.72);
 $toggle-inactive-bg-hover: rgba(255, 255, 255, 0.92);

@@ -1,33 +1,33 @@
 @use "@/styles/semantic" as *;
 @use "@/styles/layout" as *;
 
-$panel-stack-gap: 12px;
-$panel-section-gap: 10px;
-$panel-inline-gap: 8px;
-$panel-space-xs: $space-2;
-$panel-space-sm: $space-3;
-$panel-space-md: $space-4;
-$panel-space-lg: $space-5;
-$panel-space-xl: $space-6;
-$panel-card-padding: 12px 14px;
-$panel-intro-padding: 14px 16px;
-$panel-section-header-padding: 10px 14px 9px;
-$panel-section-body-padding: 12px 14px;
-$panel-table-cell-padding: 6px 8px;
-$panel-settings-columns-gap: 20px;
-$panel-settings-sub-label-margin: 0 0 6px 0;
-$panel-link-chip-min-height: 34px;
-$panel-link-chip-padding-x: 12px;
-$panel-credit-list-padding-left: 18px;
-$panel-list-padding-left: 20px;
-$panel-tree-padding-left: 16px;
+$panel-stack-gap: var(--ui-space-5, 12px);
+$panel-section-gap: calc(10px * var(--ui-scale, 1));
+$panel-inline-gap: var(--ui-space-4, 8px);
+$panel-space-xs: var(--ui-space-2, 4px);
+$panel-space-sm: var(--ui-space-3, 6px);
+$panel-space-md: var(--ui-space-4, 8px);
+$panel-space-lg: var(--ui-space-5, 12px);
+$panel-space-xl: var(--ui-space-6, 16px);
+$panel-card-padding: var(--ui-space-5, 12px) calc(14px * var(--ui-scale, 1));
+$panel-intro-padding: calc(14px * var(--ui-scale, 1)) calc(16px * var(--ui-scale, 1));
+$panel-section-header-padding: calc(10px * var(--ui-scale, 1)) calc(14px * var(--ui-scale, 1)) calc(9px * var(--ui-scale, 1));
+$panel-section-body-padding: var(--ui-space-5, 12px) calc(14px * var(--ui-scale, 1));
+$panel-table-cell-padding: var(--ui-space-3, 6px) var(--ui-space-4, 8px);
+$panel-settings-columns-gap: calc(20px * var(--ui-scale, 1));
+$panel-settings-sub-label-margin: 0 0 var(--ui-space-3, 6px) 0;
+$panel-link-chip-min-height: calc(34px * var(--ui-scale, 1));
+$panel-link-chip-padding-x: var(--ui-space-5, 12px);
+$panel-credit-list-padding-left: calc(18px * var(--ui-scale, 1));
+$panel-list-padding-left: calc(20px * var(--ui-scale, 1));
+$panel-tree-padding-left: var(--ui-space-6, 16px);
 $panel-grid-min-width: 120px;
 $panel-table-center-width: 48px;
-$panel-metric-card-padding: 14px 16px;
+$panel-metric-card-padding: calc(14px * var(--ui-scale, 1)) calc(16px * var(--ui-scale, 1));
 $panel-h3-size: calc(16px * var(--text-scale, 1));
 $panel-credit-title-size: calc(14px * var(--text-scale, 1));
 $panel-metric-value-size: calc(18px * var(--text-scale, 1));
-$panel-settings-mobile-gap: 16px;
+$panel-settings-mobile-gap: var(--ui-space-6, 16px);
 $panel-surface-bg: rgba(255, 255, 255, 0.86);
 $panel-surface-muted-bg: rgba(255, 255, 255, 0.65);
 $panel-surface-strong-bg: rgba(255, 255, 255, 0.92);
@@ -544,3 +544,5 @@ $panel-focus-ring: rgba(229, 57, 53, 0.35);
     grid-template-columns: 1fr;
   }
 }
+
+

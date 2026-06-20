@@ -1,3 +1,4 @@
+import { FieldLabel } from "@/components/FieldLabel";
 import { MenuSection } from "@/components/MenuSection";
 import { ModeToggle } from "@/components/ModeToggle";
 import styles from "@/components/Panel.module.scss";
@@ -63,7 +64,7 @@ function ToggleSetting<T extends string | number>({
 
   return (
     <>
-      <p className={styles.settingsSubLabel}>{label}</p>
+      <FieldLabel className={styles.settingsSubLabel}>{label}</FieldLabel>
       <ModeToggle
         compact
         items={options.map((option) => ({

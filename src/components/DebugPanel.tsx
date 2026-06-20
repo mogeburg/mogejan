@@ -1,5 +1,6 @@
 import { Button } from "@/components/Button";
 import { CheckboxButton } from "@/components/CheckboxButton";
+import { FieldLabel } from "@/components/FieldLabel";
 import { MenuSection } from "@/components/MenuSection";
 import styles from "@/components/Panel.module.scss";
 import { SelectBox } from "@/components/SelectBox";
@@ -59,7 +60,9 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
           </div>
 
           <div className={styles.settingsSurface}>
-            <p className={styles.settingsSubLabel}>カットインテスト</p>
+            <FieldLabel className={styles.settingsSubLabel}>
+              カットインテスト
+            </FieldLabel>
             <div className={styles.settingsActions}>
               {CUTIN_TESTS.map((c) => (
                 <Button
@@ -84,7 +87,7 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
           </div>
 
           <div className={styles.settingsSurface}>
-            <p className={styles.settingsSubLabel}>雷テスト</p>
+            <FieldLabel className={styles.settingsSubLabel}>雷テスト</FieldLabel>
             <div className={styles.sectionStack}>
               <SelectBox
                 label="開始"

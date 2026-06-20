@@ -1,7 +1,7 @@
 @use "@/styles/semantic" as *;
 @use "@/styles/layout" as *;
 
-$range-header-margin-bottom: $space-3;
+$range-header-margin-bottom: var(--ui-space-3, 6px);
 $range-track-height: 6px;
 $range-track-radius: 3px;
 $range-value-min-width: 28px;
@@ -35,7 +35,7 @@ $range-fill: linear-gradient(
   font-size: $font-size-md;
   font-weight: $font-weight-bold;
   color: $color-accent-secondary;
-  min-width: $range-value-min-width;
+  min-width: calc(#{$range-value-min-width} * var(--ui-scale, 1));
   text-align: right;
 }
 

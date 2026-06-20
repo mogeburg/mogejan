@@ -1,3 +1,4 @@
+import { FieldLabel } from "@/components/FieldLabel";
 import styles from "@/components/SelectBox.module.scss";
 
 interface SelectOption {
@@ -15,7 +16,7 @@ interface SelectBoxProps {
 export function SelectBox({ label, value, options, onChange }: SelectBoxProps) {
   return (
     <div className={styles.row}>
-      {label && <span className={styles.label}>{label}</span>}
+      {label && <FieldLabel>{label}</FieldLabel>}
       <div className={styles.wrapper}>
         <select
           className={styles.select}
