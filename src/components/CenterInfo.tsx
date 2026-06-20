@@ -123,8 +123,7 @@ export function CenterInfo({
                 )}
               </span>
               <span className={styles.wallLabel}>
-                あと
-                <span className={styles.wallCount}>{wallLength}</span>枚
+                <span className={styles.wallCount}>{wallLength}</span>
               </span>
             </div>
             <div className={styles.tileColumn}>
