@@ -110,6 +110,7 @@ export function PlayerRow({
   onTileBlur,
 }: PlayerRowProps) {
   const YELLOW_GLOW = "0 0 0 2px #ffd700, 0 0 8px 3px rgba(255,215,0,0.35)";
+  const tileSize = index === 0 ? "normal" : "small";
 
   const HIGHLIGHT_SIDE_MAP = ["top", "right", "bottom", "left"] as const;
   const highlightSide = HIGHLIGHT_SIDE_MAP[index];
@@ -156,7 +157,7 @@ export function PlayerRow({
               >
                 <TileImage
                   id={id}
-                  size="normal"
+                  size={tileSize}
                   faceDown={faceDown}
                   highlightSide={highlightSide}
                   onClick={canDiscard ? () => onDiscard(id) : undefined}
@@ -174,7 +175,7 @@ export function PlayerRow({
                 >
                   <TileImage
                     id={drawnTile}
-                    size="normal"
+                    size={tileSize}
                     faceDown={faceDown}
                     highlightSide={highlightSide}
                     onClick={
@@ -194,7 +195,7 @@ export function PlayerRow({
                     <TileImage
                       key={`${mi}-${id}-${tileIndex}`}
                       id={id}
-                      size="normal"
+                      size={tileSize}
                       highlightSide={highlightSide}
                       blueOverlay={isFocusedColor(id)}
                       shine={isDoraTile(id)}

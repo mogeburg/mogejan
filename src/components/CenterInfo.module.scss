@@ -2,21 +2,25 @@
 @use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
 
-$center-info-card-size: 180px;
+$center-info-card-width: 240px;
+$center-info-card-height: 120px;
 $center-info-border-color: $color-border-subtle;
-$center-info-player-offset: -40%;
+$center-info-vertical-player-offset: -70%;
+$center-info-horizontal-player-offset: -34%;
 
 .container {
   position: absolute;
   top: 50%;
   left: 50%;
+  width: $center-info-card-width;
+  height: $center-info-card-height;
   transform: translate(-50%, -50%);
   z-index: 1;
 }
 
 .cpuTop {
   position: absolute;
-  top: $center-info-player-offset;
+  top: $center-info-vertical-player-offset;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
@@ -25,7 +29,7 @@ $center-info-player-offset: -40%;
 .cpuLeft {
   position: absolute;
   top: 50%;
-  left: $center-info-player-offset;
+  left: $center-info-horizontal-player-offset;
   transform: translateY(-50%);
   z-index: 2;
 }
@@ -33,14 +37,14 @@ $center-info-player-offset: -40%;
 .cpuRight {
   position: absolute;
   top: 50%;
-  right: $center-info-player-offset;
+  right: $center-info-horizontal-player-offset;
   transform: translateY(-50%);
   z-index: 2;
 }
 
 .playerBottom {
   position: absolute;
-  bottom: $center-info-player-offset;
+  bottom: $center-info-vertical-player-offset;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
@@ -58,17 +62,30 @@ $center-info-player-offset: -40%;
 .infoCard {
   @include card($radius-lg, $shadow-3, $color-surface-soft);
   display: flex;
-  flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
-  width: $center-info-card-size;
-  height: $center-info-card-size;
+  width: $center-info-card-width;
+  height: $center-info-card-height;
+  padding: $space-4;
+}
+
+.infoMain {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $space-3;
+  width: 100%;
+  height: 100%;
 }
 
 .infoText {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
 }
 
 .roundLabel {
@@ -76,54 +93,94 @@ $center-info-player-offset: -40%;
   font-weight: $font-weight-black;
   color: $color-text-primary;
   line-height: 1;
-  margin-bottom: 2px;
+  white-space: nowrap;
+  display: flex;
+  gap: 2px;
 }
 
 .honbaLabel {
   font-size: $font-size-xxs;
   font-weight: $font-weight-bold;
   color: $color-text-secondary;
-  margin-left: $space-2;
+  margin-left: 0;
+  display: block;
+  margin-top: 4px;
 }
 
 .wallLabel {
-  font-size: $font-size-xs;
+  font-size: $font-size-sm;
   color: $color-text-secondary;
   font-weight: $font-weight-bold;
-  letter-spacing: 1px;
+  letter-spacing: 0;
   display: flex;
-  align-items: end;
+  align-items: flex-end;
+  white-space: nowrap;
+  margin-top: auto;
 }
 
 .wallCount {
-  font-size: calc(33px * var(--text-scale, 1));
-  line-height: 1;
+  font-size: calc(48px * var(--text-scale, 1));
+  line-height: 0.9;
   font-weight: $font-weight-black;
   color: $color-text-primary;
 }
 
+.tileColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  gap: $space-1;
+  min-width: 0;
+}
+
+.tileSection {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.tileLabel {
+  font-size: $font-size-xxs;
+  font-weight: $font-weight-bold;
+  color: $color-text-secondary;
+  padding: 4px 2px;
+}
+
 .doraRow {
   display: flex;
-  gap: 0;
+  gap: $space-1;
   align-items: center;
-  border-top: 1px solid $center-info-border-color;
-  padding-top: $space-4;
-  width: 100%;
-  justify-content: center;
+  justify-content: flex-start;
+  flex: 1;
 }
 
 .doraItem {
   display: flex;
   align-items: center;
-  gap: $space-2;
 }
 
 .trendRow {
   display: flex;
-  gap: 0;
+  gap: $space-1;
   align-items: center;
-  border-top: 1px solid $center-info-border-color;
-  padding-top: $space-4;
-  width: 100%;
-  justify-content: center;
+  justify-content: flex-start;
+  flex: 1;
+  flex-wrap: nowrap;
+}
+
+.tileSection + .tileSection {
+  padding-top: $space-1;
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: calc($center-info-card-width * 0.92);
+  }
+
+  .infoCard {
+    width: 100%;
+  }
 }

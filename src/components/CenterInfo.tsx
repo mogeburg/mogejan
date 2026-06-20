@@ -1,9 +1,13 @@
 import type { CpuPersonality } from "@/ai/CpuController";
-import type { Player } from "@/store";
+import styles from "@/components/CenterInfo.module.scss";
 import { PlayerInfo } from "@/components/PlayerInfo";
 import { TileImage } from "@/components/TileImage";
-import { getTileColor, TREND_TILE_START, TREND_COPIES } from "@/constants/tiles";
-import styles from "@/components/CenterInfo.module.scss";
+import {
+  getTileColor,
+  TREND_COPIES,
+  TREND_TILE_START,
+} from "@/constants/tiles";
+import type { Player } from "@/store";
 
 const WIND_LABELS = ["東", "南"];
 
@@ -78,6 +82,7 @@ export function CenterInfo({
           isDoubleReach={doubleReach[1]}
           speechBubbles={getPlayerBubbles(1)}
           cpuPersonality={cpuPersonalities[1]}
+          badgeSide="left"
         />
       </div>
       <div className={styles.cpuRight}>
@@ -108,59 +113,71 @@ export function CenterInfo({
       </div>
       <div className={styles.centerBox}>
         <div className={styles.infoCard}>
-          <div className={styles.infoText}>
-            <span className={styles.roundLabel}>
-              {WIND_LABELS[round]}
-              {kyoku + 1}局
-              {honba > 0 && (
-                <span className={styles.honbaLabel}>
-                  {honba}本場
-                </span>
-              )}
-            </span>
-            <span className={styles.wallLabel}>
-              あと
-              <span className={styles.wallCount}>
-                {wallLength}
+          <div className={styles.infoMain}>
+            <div className={styles.infoText}>
+              <span className={styles.roundLabel}>
+                {WIND_LABELS[round]}
+                {kyoku + 1}局
+                {honba > 0 && (
+                  <span className={styles.honbaLabel}>{honba}本場</span>
+                )}
               </span>
-              枚
-            </span>
-          </div>
-          {(doraTile != null || uradoraTile != null) && (
-            <div className={styles.doraRow}>
-              {doraTile != null && (
-                <TileImage
-                  id={doraTile}
-                  size="mini"
-                  shine
-                  blueOverlay={focusedTileColor != null && getTileColor(doraTile) === focusedTileColor}
-                />
+              <span className={styles.wallLabel}>
+                あと
+                <span className={styles.wallCount}>{wallLength}</span>枚
+              </span>
+            </div>
+            <div className={styles.tileColumn}>
+              {(doraTile != null || uradoraTile != null) && (
+                <div className={styles.tileSection}>
+                  <span className={styles.tileLabel}>ドラ</span>
+                  <div className={styles.doraRow}>
+                    {doraTile != null && (
+                      <TileImage
+                        id={doraTile}
+                        size="mini"
+                        shine
+                        blueOverlay={
+                          focusedTileColor != null &&
+                          getTileColor(doraTile) === focusedTileColor
+                        }
+                      />
+                    )}
+                    {uradoraTile != null && (
+                      <div className={styles.doraItem}>
+                        <TileImage
+                          id={uradoraTile}
+                          size="mini"
+                          faceDown={
+                            !(
+                              showAllTiles ||
+                              (winner != null &&
+                                riichi[winner] &&
+                                ponMelds[winner].length === 0)
+                            )
+                          }
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
-              {uradoraTile != null && (
-                <div className={styles.doraItem}>
-                  <TileImage
-                    id={uradoraTile}
-                    size="mini"
-                    faceDown={
-                      !(
-                        showAllTiles ||
-                        (winner != null &&
-                          riichi[winner] &&
-                          ponMelds[winner].length === 0)
-                      )
-                    }
-                  />
+              {trendTypes.length > 0 && (
+                <div className={styles.tileSection}>
+                  <span className={styles.tileLabel}>流行</span>
+                  <div className={styles.trendRow}>
+                    {trendTypes.map((t) => (
+                      <TileImage
+                        key={t}
+                        id={TREND_TILE_START + t * TREND_COPIES}
+                        size="mini"
+                      />
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
-          )}
-          {trendTypes.length > 0 && (
-            <div className={styles.trendRow}>
-              {trendTypes.map((t) => (
-                <TileImage key={t} id={TREND_TILE_START + t * TREND_COPIES} size="mini" />
-              ))}
-            </div>
-          )}
+          </div>
         </div>
       </div>
     </div>

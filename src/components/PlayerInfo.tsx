@@ -16,6 +16,7 @@ interface PlayerInfoProps {
   isDoubleReach: boolean;
   speechBubbles: { id: number; text: string }[];
   cpuPersonality?: CpuPersonality | null;
+  badgeSide?: "left" | "right";
 }
 
 export function PlayerInfo({
@@ -28,6 +29,7 @@ export function PlayerInfo({
   isDoubleReach,
   speechBubbles,
   cpuPersonality,
+  badgeSide = "right",
 }: PlayerInfoProps) {
   const showCpuPersonalities = useGameStore(
     (s) => s.debugFlags.showCpuPersonalities,
@@ -74,9 +76,13 @@ export function PlayerInfo({
           <span className={styles.personalityLabel}>{personalityLabel}</span>
         )}
       </div>
-      <div className={styles.statusRow}>
+      <div
+        className={`${styles.statusRow} ${badgeSide === "left" ? styles.statusRowLeft : styles.statusRowRight}`}
+      >
         {badgeItems.length > 0 && (
-          <div className={styles.badgeColumnRight}>
+          <div
+            className={badgeSide === "left" ? styles.badgeColumnLeft : styles.badgeColumnRight}
+          >
             {badgeItems.map((badge) => (
               <span key={badge} className={styles.badge}>
                 {badge}
