@@ -34,6 +34,7 @@ export interface LightningEffectProps {
   };
   durationMs: number;
   growDurationMs?: number;
+  lightweightMode?: boolean;
   onComplete?: () => void;
 }
 
@@ -44,6 +45,7 @@ const IMPACT_PULSE_DURATION_MS = 50;
 const IMPACT_BURST_POP_DURATION_MS = 50;
 const IMPACT_TRIGGER_PROGRESS = 0.96;
 const LIGHTNING_WIDTH_SCALE = 1.28;
+const LIGHTNING_ROOT_WIDTH_SCALE = 3;
 
 function easeOutImpact(value: number): number {
   return 1 - (1 - value) ** 5;
@@ -347,38 +349,45 @@ function generateLightningFrame(
   start: LightningPoint,
   mid: LightningPoint | undefined,
   end: LightningPoint,
+  lightweightMode: boolean,
 ): LightningFrame {
   const distance = pointToPointDistance(start, end);
-  const segmentCount = clamp(Math.round(distance / 36), 6, 24);
+  const segmentCount = lightweightMode
+    ? clamp(Math.round(distance / 60), 4, 12)
+    : clamp(Math.round(distance / 36), 6, 24);
   const mainPoints = buildJaggedPoints(
     start,
     mid,
     end,
     segmentCount,
-    clamp(distance * 0.06, 18, 54),
+    clamp(distance * (lightweightMode ? 0.035 : 0.06), 12, lightweightMode ? 28 : 54),
   );
 
   const branches: LightningBranch[] = [];
-  const impactBursts = Array.from(
-    { length: 2 + Math.floor(Math.random() * 2) },
-    (_, index) => buildImpactBurst(end, index),
-  ).map((entry) => entry.slice(entry.indexOf(":") + 1));
+  const impactBursts = lightweightMode
+    ? []
+    : Array.from(
+        { length: 2 + Math.floor(Math.random() * 2) },
+        (_, index) => buildImpactBurst(end, index),
+      ).map((entry) => entry.slice(entry.indexOf(":") + 1));
   const branchAttempts = clamp(Math.floor(distance / 120), 2, 6);
 
-  for (let i = 1; i < mainPoints.length - 2; i++) {
-    if (branches.length >= branchAttempts) break;
-    if (Math.random() > 0.38) continue;
+  if (!lightweightMode) {
+    for (let i = 1; i < mainPoints.length - 2; i++) {
+      if (branches.length >= branchAttempts) break;
+      if (Math.random() > 0.38) continue;
 
-    const anchor = mainPoints[i];
-    const next = mainPoints[i + 1];
-    branches.push(
-      buildBranch(
-        anchor,
-        { x: next.x - anchor.x, y: next.y - anchor.y },
-        i,
-        i / (mainPoints.length - 1),
-      ),
-    );
+      const anchor = mainPoints[i];
+      const next = mainPoints[i + 1];
+      branches.push(
+        buildBranch(
+          anchor,
+          { x: next.x - anchor.x, y: next.y - anchor.y },
+          i,
+          i / (mainPoints.length - 1),
+        ),
+      );
+    }
   }
 
   return {
@@ -401,10 +410,11 @@ export function LightningEffect({
   viewportSize,
   durationMs,
   growDurationMs = DEFAULT_GROW_DURATION_MS,
+  lightweightMode = false,
   onComplete,
 }: LightningEffectProps) {
   const [frame, setFrame] = useState<LightningFrame>(() =>
-    generateLightningFrame(start, mid, end),
+    generateLightningFrame(start, mid, end, lightweightMode),
   );
   const [progress, setProgress] = useState(0);
   const [opacity, setOpacity] = useState(1);
@@ -414,7 +424,7 @@ export function LightningEffect({
   const [impactBurstScale, setImpactBurstScale] = useState(0.5);
 
   useEffect(() => {
-    setFrame(generateLightningFrame(start, mid, end));
+    setFrame(generateLightningFrame(start, mid, end, lightweightMode));
     setProgress(0);
     setOpacity(1);
     setImpactScale(1);
@@ -493,7 +503,7 @@ export function LightningEffect({
       window.clearTimeout(timeoutId);
       window.cancelAnimationFrame(animationFrameId);
     };
-  }, [start, mid, end, durationMs, growDurationMs, onComplete]);
+  }, [start, mid, end, durationMs, growDurationMs, lightweightMode, onComplete]);
 
   return (
     <div className={styles.overlay} style={{ opacity }}>
@@ -503,57 +513,59 @@ export function LightningEffect({
         preserveAspectRatio="none"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <defs>
-          <filter
-            id="lightning-glow"
-            x="-50%"
-            y="-50%"
-            width="200%"
-            height="200%"
-          >
-            <feGaussianBlur stdDeviation="3.5" result="blurA" />
-            <feGaussianBlur
-              in="SourceGraphic"
-              stdDeviation="8"
-              result="blurB"
-            />
-            <feMerge>
-              <feMergeNode in="blurB" />
-              <feMergeNode in="blurA" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-          <filter
-            id="lightning-impact-glow"
-            x="-80%"
-            y="-80%"
-            width="260%"
-            height="260%"
-          >
-            <feGaussianBlur stdDeviation="8" result="blurA" />
-            <feGaussianBlur
-              in="SourceGraphic"
-              stdDeviation="18"
-              result="blurB"
-            />
-            <feColorMatrix
-              in="blurB"
-              type="matrix"
-              values="1 0 0 0 0
-                      0 1 0 0 0
-                      0 0 1 0 0
-                      0 0 0 1.3 0"
-              result="boosted"
-            />
-            <feMerge>
-              <feMergeNode in="boosted" />
-              <feMergeNode in="blurA" />
-              <feMergeNode in="SourceGraphic" />
-            </feMerge>
-          </filter>
-        </defs>
+        {!lightweightMode && (
+          <defs>
+            <filter
+              id="lightning-glow"
+              x="-50%"
+              y="-50%"
+              width="200%"
+              height="200%"
+            >
+              <feGaussianBlur stdDeviation="3.5" result="blurA" />
+              <feGaussianBlur
+                in="SourceGraphic"
+                stdDeviation="8"
+                result="blurB"
+              />
+              <feMerge>
+                <feMergeNode in="blurB" />
+                <feMergeNode in="blurA" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+            <filter
+              id="lightning-impact-glow"
+              x="-80%"
+              y="-80%"
+              width="260%"
+              height="260%"
+            >
+              <feGaussianBlur stdDeviation="8" result="blurA" />
+              <feGaussianBlur
+                in="SourceGraphic"
+                stdDeviation="18"
+                result="blurB"
+              />
+              <feColorMatrix
+                in="blurB"
+                type="matrix"
+                values="1 0 0 0 0
+                        0 1 0 0 0
+                        0 0 1 0 0
+                        0 0 0 1.3 0"
+                result="boosted"
+              />
+              <feMerge>
+                <feMergeNode in="boosted" />
+                <feMergeNode in="blurA" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+        )}
 
-        {impactBurstOpacity > 0.01 && (
+        {!lightweightMode && impactBurstOpacity > 0.01 && (
           <g
             filter="url(#lightning-impact-glow)"
             opacity={impactBurstOpacity}
@@ -596,9 +608,11 @@ export function LightningEffect({
           <g
             key={branch.id}
             filter={
-              impactGlow > 0.02
-                ? "url(#lightning-impact-glow)"
-                : "url(#lightning-glow)"
+              lightweightMode
+                ? undefined
+                : impactGlow > 0.02
+                  ? "url(#lightning-impact-glow)"
+                  : "url(#lightning-glow)"
             }
           >
             {(() => {
@@ -671,26 +685,28 @@ export function LightningEffect({
           );
           const corePath = buildRibbonPath(
             visibleMainPoints,
-            frame.mainCoreWidth * 1.65 * impactScale,
+            frame.mainCoreWidth * 1.65 * LIGHTNING_ROOT_WIDTH_SCALE * impactScale,
             frame.mainCoreWidth * 0.14 * impactScale,
           );
           const accentPath = buildRibbonPath(
             visibleMainPoints,
-            frame.mainAccentWidth * 1.55 * impactScale,
+            frame.mainAccentWidth * 1.55 * LIGHTNING_ROOT_WIDTH_SCALE * impactScale,
             frame.mainAccentWidth * 0.16 * impactScale,
           );
 
           return (
             <g
               filter={
-                impactGlow > 0.02
-                  ? "url(#lightning-impact-glow)"
-                  : "url(#lightning-glow)"
+                lightweightMode
+                  ? undefined
+                  : impactGlow > 0.02
+                    ? "url(#lightning-impact-glow)"
+                    : "url(#lightning-glow)"
               }
             >
-              <path d={outerPath} fill="rgba(110, 214, 255, 0.42)" />
+              <path d={outerPath} fill={lightweightMode ? "rgba(110, 214, 255, 0.26)" : "rgba(110, 214, 255, 0.42)"} />
               <path d={corePath} fill="#ffffff" />
-              <path d={accentPath} fill="#9fe7ff" />
+              {!lightweightMode && <path d={accentPath} fill="#9fe7ff" />}
             </g>
           );
         })()}

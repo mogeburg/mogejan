@@ -10,7 +10,14 @@ function tick() {
   rafId = requestAnimationFrame(tick);
 }
 
-export function startShineSync() {
+export function startShineSync(lightweightMode = false) {
+  stopShineSync();
+
+  if (lightweightMode) {
+    document.documentElement.style.setProperty("--shine-pos", `18%`);
+    return;
+  }
+
   if (rafId != null) return;
   rafId = requestAnimationFrame(tick);
 }

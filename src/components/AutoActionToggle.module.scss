@@ -3,37 +3,90 @@
 @use "@/styles/mixins" as *;
 
 $auto-action-offset: var(--ui-space-4, 8px);
-$auto-action-gap: var(--ui-space-1, 2px);
-$auto-action-label-padding: var(--ui-space-1, 2px) var(--ui-space-3, 6px);
-$auto-action-button-padding: calc(3px * var(--ui-scale, 1)) calc(10px * var(--ui-scale, 1));
+$auto-action-gap: var(--ui-space-1, 8px);
+$auto-action-label-padding: calc(4px * var(--ui-scale, 1)) calc(10px * var(--ui-scale, 1));
+$auto-action-button-padding: calc(7px * var(--ui-scale, 1)) calc(16px * var(--ui-scale, 1));
 $auto-action-button-border-width: 2px;
-$auto-action-label-bg: #222;
 $auto-action-label-text: $color-text-contrast;
+$auto-action-tray-bg: $color-overlay-chrome;
+$auto-action-tray-shadow: 0 12px 24px rgba(0, 0, 0, 0.28);
+$auto-action-panel-width: calc(160px * var(--ui-scale, 1));
+$auto-action-panel-padding: calc(12px * var(--ui-scale, 1));
+$auto-action-panel-slide-width: calc(
+  #{$auto-action-panel-width} + (#{$auto-action-panel-padding} * 2)
+);
 
 .container {
   position: absolute;
   bottom: 90px;
-  right: $auto-action-offset;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: $auto-action-gap;
+  right: 0;
   z-index: 50;
 }
 
-.label {
+.wrapper {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  transition: transform 180ms ease;
+  filter: drop-shadow($auto-action-tray-shadow);
+  background: $auto-action-tray-bg;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-right: 0;
+  border-radius: 16px 0 0 16px;
+  overflow: hidden;
+}
+
+.toggle {
+  @include pressable-control;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: $font-weight-bold;
-  font-size: calc(11px * var(--text-scale, 1));
+  font-size: calc(14px * var(--text-scale, 1));
   letter-spacing: 1px;
   color: $auto-action-label-text;
-  padding: $auto-action-label-padding;
-  border-radius: var(--ui-space-2, 4px);
-  background: $auto-action-label-bg;
+  padding: calc(10px * var(--ui-scale, 1)) calc(8px * var(--ui-scale, 1));
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+  min-height: calc(136px * var(--ui-scale, 1));
+  min-width: calc(44px * var(--ui-scale, 1));
+  margin: auto;
+  position: relative;
+  z-index: 1;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: $auto-action-gap;
+  padding: $auto-action-panel-padding;
+  background: transparent;
+  width: $auto-action-panel-width;
+}
+
+.open .wrapper {
+  transform: translateX(0);
+}
+
+.closed .wrapper {
+  transform: translateX($auto-action-panel-slide-width);
+}
+
+.open .panel {
+  pointer-events: auto;
+}
+
+.closed .panel {
+  pointer-events: none;
 }
 
 .btn {
   @include pressable-control;
-  font-size: calc(12px * var(--text-scale, 1));
+  font-size: calc(15px * var(--text-scale, 1));
   padding: $auto-action-button-padding;
   border-radius: $radius-xs;
   border: $auto-action-button-border-width solid;

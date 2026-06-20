@@ -132,6 +132,7 @@ export function CenterInfo({
                 <TileImage
                   id={doraTile}
                   size="mini"
+                  shine
                   blueOverlay={focusedTileColor != null && getTileColor(doraTile) === focusedTileColor}
                 />
               )}

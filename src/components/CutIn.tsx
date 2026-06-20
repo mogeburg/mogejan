@@ -253,6 +253,7 @@ export function CutIn() {
   const ronTarget = useGameStore((s) => s.ronTarget);
   const cutinPreview = useGameStore((s) => s.cutinPreview);
   const referenceGameSize = useGameStore((s) => s.gameSize);
+  const lightweightMode = useGameStore((s) => s.lightweightMode);
   const [show, setShow] = useState(false);
   const [imageFallback, setImageFallback] = useState(false);
   const isPortrait = isPortraitGameSize(referenceGameSize);
@@ -320,6 +321,7 @@ export function CutIn() {
           viewportSize={referenceGameSize}
           durationMs={LIGHTNING_DISPLAY_DURATION_MS}
           growDurationMs={LIGHTNING_GROW_DURATION_MS}
+          lightweightMode={lightweightMode}
         />
       ))}
       {show && cutinType !== "ryuukyoku" && imageUrl && (
@@ -336,7 +338,7 @@ export function CutIn() {
       )}
       {show && (
         <div
-          className={`${styles.text} ${isPortrait && cutinType !== "ryuukyoku" ? styles.textPortrait : ""} ${cutinType === "ryuukyoku" ? styles.textCenter : ""} ${TEXT_STYLE_MAP[cutinType]}`}
+          className={`${styles.text} ${isPortrait && cutinType !== "ryuukyoku" ? styles.textPortrait : ""} ${cutinType === "ryuukyoku" ? styles.textCenter : ""} ${TEXT_STYLE_MAP[cutinType]} ${lightweightMode && cutinType === "epic" ? styles.textEpicLite : ""}`}
         >
           {cutin}
         </div>

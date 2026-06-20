@@ -42,18 +42,23 @@ const SCREEN_MODE_OPTIONS = [
   { value: "landscape", label: "横" },
 ] as const;
 
+const LIGHTWEIGHT_MODE_OPTIONS = [
+  { value: false, label: "OFF" },
+  { value: true, label: "ON" },
+] as const;
+
 const TEXT_SIZE_OPTIONS = TEXT_SIZES.map((size) => ({
   value: size,
   label: TEXT_SIZE_LABELS[size],
 }));
 
-type ToggleOption<T extends string | number> = {
+type ToggleOption<T extends string | number | boolean> = {
   value: T;
   label: string;
   disabled?: boolean;
 };
 
-function ToggleSetting<T extends string | number>({
+function ToggleSetting<T extends string | number | boolean>({
   label,
   value,
   options,
@@ -120,11 +125,13 @@ export function SettingsPanel() {
   const seVolume = useGameStore((s) => s.seVolume);
   const voiceVolume = useGameStore((s) => s.voiceVolume);
   const screenMode = useGameStore((s) => s.screenMode);
+  const lightweightMode = useGameStore((s) => s.lightweightMode);
   const setMasterVolume = useGameStore((s) => s.setMasterVolume);
   const setBgmVolume = useGameStore((s) => s.setBgmVolume);
   const setSeVolume = useGameStore((s) => s.setSeVolume);
   const setVoiceVolume = useGameStore((s) => s.setVoiceVolume);
   const setScreenMode = useGameStore((s) => s.setScreenMode);
+  const setLightweightMode = useGameStore((s) => s.setLightweightMode);
   const normalBgmSetting = useGameStore((s) => s.normalBgmSetting);
   const setNormalBgmSetting = useGameStore((s) => s.setNormalBgmSetting);
   const riichiBgmSetting = useGameStore((s) => s.riichiBgmSetting);
@@ -212,6 +219,15 @@ export function SettingsPanel() {
                   value={textSize}
                   options={TEXT_SIZE_OPTIONS}
                   onChange={(value) => setTextSize(value as TextSize)}
+                />
+              </div>
+
+              <div className={styles.settingsSurface}>
+                <ToggleSetting
+                  label="軽量モード"
+                  value={lightweightMode}
+                  options={LIGHTWEIGHT_MODE_OPTIONS}
+                  onChange={(value) => setLightweightMode(value as boolean)}
                 />
               </div>
             </div>

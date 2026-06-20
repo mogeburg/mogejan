@@ -75,6 +75,7 @@ interface GameStore {
   voiceVolume: number;
   screenMode: ScreenMode;
   gameSize: GameSize;
+  lightweightMode: boolean;
   riichiBgmSetting: BgmKey;
   normalBgmSetting: BgmKey;
   riichiAvatar: "none" | "kanimoge" | "burumoge";
@@ -94,6 +95,7 @@ interface GameStore {
     riichi: boolean;
     cancel: boolean;
   };
+  autoActionTrayOpen: boolean;
   cutin: string | null;
   cutinPlayer: number | null;
   cutinType: "normal" | "rare" | "epic" | "ryuukyoku";
@@ -133,6 +135,7 @@ interface GameStore {
   setVoiceVolume: (volume: number) => void;
   setScreenMode: (mode: ScreenMode) => void;
   setGameSize: (gameSize: GameSize) => void;
+  setLightweightMode: (lightweightMode: boolean) => void;
   setRiichiBgmSetting: (setting: BgmKey) => void;
   setNormalBgmSetting: (setting: BgmKey) => void;
   setRiichiAvatar: (avatar: "none" | "kanimoge" | "burumoge") => void;
@@ -140,6 +143,7 @@ interface GameStore {
     key: "showAllTiles" | "manualCpu" | "alwaysTsumogiri" | "showCpuPersonalities",
   ) => void;
   toggleAutoAction: (key: "ronTsumo" | "pon" | "riichi" | "cancel") => void;
+  setAutoActionTrayOpen: (open: boolean) => void;
   addYakuCounts: (yakus: { name: string }[]) => void;
   goTo: (screen: Screen) => void;
   updateScore: (index: number, score: number) => void;
@@ -581,11 +585,13 @@ function createDefaultSettingsState(): Pick<
   | "voiceVolume"
   | "screenMode"
   | "gameSize"
+  | "lightweightMode"
   | "riichiBgmSetting"
   | "normalBgmSetting"
   | "riichiAvatar"
   | "debugFlags"
   | "autoActions"
+  | "autoActionTrayOpen"
   | "yakuCounts"
   | "simulationMode"
   | "cpuPersonalities"
@@ -600,11 +606,13 @@ function createDefaultSettingsState(): Pick<
     voiceVolume: VOICE_VOLUME,
     screenMode: "auto",
     gameSize: DEFAULT_GAME_SIZE,
+    lightweightMode: false,
     riichiBgmSetting: "riichi" as const,
     normalBgmSetting: "game" as const,
     riichiAvatar: "kanimoge" as const,
     debugFlags: createDefaultDebugFlags(),
     autoActions: createDefaultAutoActions(),
+    autoActionTrayOpen: true,
     yakuCounts: initialYakuCounts(),
     simulationMode: false,
     cpuPersonalities: [null, null, null, null] as (CpuPersonality | null)[],
@@ -629,6 +637,7 @@ export const useGameStore = create<GameStore>()(
       setVoiceVolume: (voiceVolume) => set({ voiceVolume }),
       setScreenMode: (screenMode) => set({ screenMode }),
       setGameSize: (gameSize) => set({ gameSize }),
+      setLightweightMode: (lightweightMode) => set({ lightweightMode }),
       setRiichiBgmSetting: (setting) => set({ riichiBgmSetting: setting }),
       setNormalBgmSetting: (setting) => set({ normalBgmSetting: setting }),
       setRiichiAvatar: (avatar) => set({ riichiAvatar: avatar }),
@@ -651,6 +660,7 @@ export const useGameStore = create<GameStore>()(
           }
           return { autoActions: { ...state.autoActions, [key]: newVal } };
         }),
+      setAutoActionTrayOpen: (autoActionTrayOpen) => set({ autoActionTrayOpen }),
       setSimulationMode: (active) => set({ simulationMode: active }),
       addYakuCounts: (yakus) =>
         set((state) => {
@@ -1045,11 +1055,13 @@ export const useGameStore = create<GameStore>()(
         seVolume: state.seVolume,
         voiceVolume: state.voiceVolume,
         screenMode: state.screenMode,
+        lightweightMode: state.lightweightMode,
         riichiBgmSetting: state.riichiBgmSetting,
         normalBgmSetting: state.normalBgmSetting,
         riichiAvatar: state.riichiAvatar,
         debugFlags: state.debugFlags,
         autoActions: state.autoActions,
+        autoActionTrayOpen: state.autoActionTrayOpen,
         yakuCounts: state.yakuCounts,
       }),
       merge: (persisted, current) => {

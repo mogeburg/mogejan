@@ -142,7 +142,7 @@ export default function App() {
         <Button
           label="メニュー"
           color="menu"
-          size="normal"
+          size="large"
           onClick={() => setMenuOpen(!menuOpen)}
           style={{
             position: "absolute",

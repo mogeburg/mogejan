@@ -3,10 +3,10 @@ import styles from "@/components/Panel.module.scss";
 import { TileImage } from "@/components/TileImage";
 import {
   TileData,
-  TrendTileData,
   TREND_COPIES,
   TREND_KINDS_PER_ROUND,
   TREND_TILE_START,
+  TrendTileData,
 } from "@/constants/tiles";
 
 export function RulesPanel() {
@@ -57,17 +57,18 @@ export function RulesPanel() {
 
         <MenuSection title="牌について">
           <p className={styles.compactNote}>
-            使用する牌は基本牌81枚（9種 x 9枚）と流行牌16枚（4種 x 4枚）の計97枚。
+            使用する牌は基本牌81枚（9種 x 9枚）と流行牌16枚（4種 x
+            4枚）の計97枚。
           </p>
           <div className={styles.tileGridPanelTight}>
             {TileData.map((tile, i) => (
-              <TileImage key={tile.id} id={i * 9 + 1} size="normal" />
+              <TileImage key={tile.id} id={i * 9 + 1} size="small" />
             ))}
             {TrendTileData.slice(0, TREND_KINDS_PER_ROUND).map((tile, i) => (
               <TileImage
                 key={tile.id}
                 id={TREND_TILE_START + i * 2 * TREND_COPIES}
-                size="normal"
+                size="small"
               />
             ))}
           </div>
@@ -79,7 +80,7 @@ export function RulesPanel() {
               <TileImage
                 key={tile.id}
                 id={TREND_TILE_START + i * TREND_COPIES}
-                size="normal"
+                size="small"
               />
             ))}
           </div>

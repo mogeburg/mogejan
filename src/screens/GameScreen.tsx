@@ -77,6 +77,7 @@ const PLAYER_LAYOUTS = [
 
 export function GameScreen() {
   const s = useGameScreenStore();
+  const lightweightMode = useGameStore((state) => state.lightweightMode);
 
   const [focusedTileColor, setFocusedTileColor] = useState<number | null>(null);
   const handleTileFocus = useCallback((tileId: number) => {
@@ -93,9 +94,9 @@ export function GameScreen() {
   useBgm(normalBgmPath);
 
   useEffect(() => {
-    startShineSync();
+    startShineSync(lightweightMode);
     return () => stopShineSync();
-  }, []);
+  }, [lightweightMode]);
 
   const perPlayerCanRon = useMemo(() => {
     if (s.pendingRon == null) return Array(4).fill(false);

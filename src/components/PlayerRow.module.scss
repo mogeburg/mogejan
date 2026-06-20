@@ -35,8 +35,7 @@ $player-row-discard-top: $space-7;
 
 .handInner {
   display: flex;
-  margin: auto;
-  width: 95%;
+  width: 100%;
 }
 
 .handTiles {
@@ -69,5 +68,4 @@ $player-row-discard-top: $space-7;
   width: $player-row-discard-width;
   height: $player-row-discard-height;
   top: $player-row-discard-top;
-  
 }
