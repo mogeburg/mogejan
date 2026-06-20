@@ -10,12 +10,19 @@ import {
   BGM_SELECTABLE_KEYS,
   CPU_STRENGTH_LABELS,
   CPU_STRENGTHS,
+  TEXT_SIZE_LABELS,
+  TEXT_SIZES,
 } from "@/constants/game";
 import { useGameStore } from "@/store";
 
 const CPU_STRENGTH_OPTIONS = CPU_STRENGTHS.map((strength) => ({
   value: strength,
   label: CPU_STRENGTH_LABELS[strength],
+}));
+
+const TEXT_SIZE_OPTIONS = TEXT_SIZES.map((textSize) => ({
+  value: textSize,
+  label: TEXT_SIZE_LABELS[textSize],
 }));
 
 const RIICHI_AVATAR_OPTIONS = [
@@ -73,6 +80,8 @@ function ToggleSetting<T extends string | number>({
 export function SettingsPanel() {
   const speed = useGameStore((s) => s.speed);
   const setSpeed = useGameStore((s) => s.setSpeed);
+  const textSize = useGameStore((s) => s.textSize);
+  const setTextSize = useGameStore((s) => s.setTextSize);
   const cpuStrength = useGameStore((s) => s.cpuStrength);
   const setCpuStrength = useGameStore((s) => s.setCpuStrength);
   const masterVolume = useGameStore((s) => s.masterVolume);
@@ -96,6 +105,15 @@ export function SettingsPanel() {
         <div className={styles.settingsLeft}>
           <MenuSection title="設定">
             <div className={styles.sectionStack}>
+              <div className={styles.settingsSurface}>
+                <ToggleSetting
+                  label="文字サイズ"
+                  value={textSize}
+                  options={TEXT_SIZE_OPTIONS}
+                  onChange={(value) => setTextSize(value as typeof textSize)}
+                />
+              </div>
+
               <div className={styles.settingsSurface}>
                 <ToggleSetting
                   label="速度"

@@ -35,6 +35,7 @@ export default function App() {
   const currentScreen = useGameStore((s) => s.currentScreen);
   const goTo = useGameStore((s) => s.goTo);
   const resetData = useGameStore((s) => s.resetData);
+  const textSize = useGameStore((s) => s.textSize);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuTabIndex, setMenuTabIndex] = useState(0);
   const [resetConfirm, setResetConfirm] = useState(false);
@@ -60,6 +61,7 @@ export default function App() {
     <div className={styles.outer}>
       <div
         className={styles.gameArea}
+        data-text-size={textSize}
         style={{
           transform: `scale(${scale})`,
         }}

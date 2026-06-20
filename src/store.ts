@@ -5,6 +5,7 @@ import {
   BGM_VOLUME,
   DEFAULT_CPU_STRENGTH,
   DEFAULT_SPEED,
+  DEFAULT_TEXT_SIZE,
   INITIAL_SCORE,
   MASTER_VOLUME,
   PLAYER_CONFIGS,
@@ -12,6 +13,7 @@ import {
   SE_VOLUME,
   VOICE_VOLUME,
   type CpuStrength,
+  type TextSize,
 } from "@/constants/game";
 import { SPECIAL_YAKU } from "@/constants/specialYaku";
 import { isSameColorLikeTile } from "@/constants/tiles";
@@ -63,6 +65,7 @@ interface GameStore {
   kyoku: number;
   honba: number;
   speed: number;
+  textSize: TextSize;
   cpuStrength: CpuStrength;
   masterVolume: number;
   bgmVolume: number;
@@ -118,6 +121,7 @@ interface GameStore {
   trendTypes: number[];
   cpuPersonalities: (CpuPersonality | null)[];
   setSpeed: (speed: number) => void;
+  setTextSize: (textSize: TextSize) => void;
   setCpuStrength: (cpuStrength: CpuStrength) => void;
   setMasterVolume: (volume: number) => void;
   setBgmVolume: (volume: number) => void;
@@ -301,6 +305,7 @@ function createRoundState() {
 function createDefaultSettingsState(): Pick<
   GameStore,
   | "speed"
+  | "textSize"
   | "cpuStrength"
   | "masterVolume"
   | "bgmVolume"
@@ -317,6 +322,7 @@ function createDefaultSettingsState(): Pick<
 > {
   return {
     speed: DEFAULT_SPEED,
+    textSize: DEFAULT_TEXT_SIZE,
     cpuStrength: DEFAULT_CPU_STRENGTH,
     masterVolume: MASTER_VOLUME,
     bgmVolume: BGM_VOLUME,
@@ -343,6 +349,7 @@ export const useGameStore = create<GameStore>()(
       ...createDefaultSettingsState(),
       currentDealWallLength: 0,
       setSpeed: (speed) => set({ speed }),
+      setTextSize: (textSize) => set({ textSize }),
       setCpuStrength: (cpuStrength) => set({ cpuStrength }),
       setMasterVolume: (masterVolume) => set({ masterVolume }),
       setBgmVolume: (bgmVolume) => set({ bgmVolume }),
@@ -717,6 +724,7 @@ export const useGameStore = create<GameStore>()(
       name: createStorageKey("settings"),
       partialize: (state) => ({
         speed: state.speed,
+        textSize: state.textSize,
         masterVolume: state.masterVolume,
         bgmVolume: state.bgmVolume,
         seVolume: state.seVolume,

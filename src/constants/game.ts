@@ -20,6 +20,14 @@ export const READY_HAND_TILE_COUNT = INITIAL_HAND_TILE_COUNT + 1;
 export const INITIAL_SCORE = 500;
 export const DEFAULT_SPEED = 3;
 export const DEFAULT_CPU_STRENGTH = "normal";
+export const TEXT_SIZES = ["normal", "large", "max"] as const;
+export type TextSize = (typeof TEXT_SIZES)[number];
+export const DEFAULT_TEXT_SIZE: TextSize = "normal";
+export const TEXT_SIZE_LABELS: Record<TextSize, string> = {
+  normal: "標準",
+  large: "大",
+  max: "最大",
+};
 
 export const CPU_STRENGTHS = ["easy", "normal", "hard"] as const;
 export type CpuStrength = (typeof CPU_STRENGTHS)[number];
@@ -103,11 +111,6 @@ export function resolveBgmPath(
 }
 
 export type BgmKey = keyof typeof BGM;
-
-export const PLAYER_BOX_WIDTH = 560;
-export const PLAYER_BOX_HEIGHT = 220;
-export const PLAYER_BOX_ROTATE_OFFSET =
-  (PLAYER_BOX_WIDTH - PLAYER_BOX_HEIGHT) / 2;
 
 export const PLAYER_CONFIGS = TileData.slice(0, PLAYER_COUNT).map(
   ({ id, colorHex, name }) => ({
