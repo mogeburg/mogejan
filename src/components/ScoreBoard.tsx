@@ -1,8 +1,8 @@
-import type { Player } from "@/store";
 import { AvatarIcon } from "@/components/AvatarIcon";
 import { Button } from "@/components/Button";
 import { ModalCard } from "@/components/ModalCard";
 import styles from "@/components/ScoreBoard.module.scss";
+import type { Player } from "@/store";
 
 const WIND_LABELS = ["東", "南"];
 
@@ -28,7 +28,8 @@ export function ScoreBoard({
   return (
     <ModalCard style={{ minWidth: 400 }}>
       <div className={styles.roundTitle}>
-        {WIND_LABELS[round]}{kyoku + 1}局{honba > 0 ? ` ${honba}本場` : ""}
+        {WIND_LABELS[round]}
+        {kyoku + 1}局{honba > 0 ? ` ${honba}本場` : ""}
       </div>
       <div className={styles.playerList}>
         {players.map((p, i) => (
@@ -38,18 +39,13 @@ export function ScoreBoard({
                 imageUrl={p.imageUrl}
                 colorHex={p.colorHex}
                 size={32}
-                border="2px solid #000"
                 crown={parentIndex === i}
                 crownSize={24}
               />
-              <span className={styles.playerName}>
-                {p.name}
-              </span>
+              <span className={styles.playerName}>{p.name}</span>
             </div>
             <div className={styles.playerRight}>
-              <span className={styles.playerScore}>
-                {p.score}
-              </span>
+              <span className={styles.playerScore}>{p.score}</span>
               {scoreDeltas[i] !== 0 && (
                 <span
                   className={`${styles.scoreDelta} ${scoreDeltas[i] > 0 ? styles.scoreDeltaPositive : styles.scoreDeltaNegative}`}

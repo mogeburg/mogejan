@@ -436,6 +436,22 @@ $panel-focus-ring: rgba(229, 57, 53, 0.35);
   border-collapse: collapse;
 }
 
+.tableResponsive {
+  width: 100%;
+}
+
+.colName {
+  width: auto;
+}
+
+.colValue {
+  width: $panel-table-center-width;
+}
+
+.colDesc {
+  width: auto;
+}
+
 .th {
   text-align: left;
   padding: $panel-table-cell-padding;
@@ -477,6 +493,56 @@ $panel-focus-ring: rgba(229, 57, 53, 0.35);
   padding: $panel-table-cell-padding;
   color: $color-text-muted;
   font-size: $font-size-sm;
+}
+
+.dataList {
+  --yaku-name-col: 9em;
+  --yaku-value-col: 2em;
+  display: flex;
+  flex-direction: column;
+  background: $panel-surface-strong-bg;
+}
+
+.dataListRow {
+  display: grid;
+  grid-template-columns:
+    minmax(0, var(--yaku-name-col))
+    minmax(0, var(--yaku-value-col))
+    minmax(0, 1fr);
+  column-gap: $panel-inline-gap;
+  align-items: center;
+  border-bottom: 1px solid $color-border-subtle;
+}
+
+.dataListHead {
+  border-bottom: 1px solid $color-border-default;
+}
+
+.dataListCell {
+  padding: $panel-table-cell-padding;
+}
+
+.dataListCellName {
+  font-weight: $font-weight-bold;
+  overflow: hidden;
+}
+
+.dataListCellValue {
+  text-align: center;
+  white-space: nowrap;
+  font-weight: $font-weight-bold;
+}
+
+.dataListCellDesc {
+  color: $color-text-muted;
+  font-size: $font-size-sm;
+  min-width: 0;
+}
+
+.yakuTileCombo {
+  display: flex;
+  gap: 2px;
+  flex-wrap: wrap;
 }
 
 .settingsRow {
@@ -557,6 +623,37 @@ $panel-focus-ring: rgba(229, 57, 53, 0.35);
 }
 
 @media (max-width: 900px) {
+  .dataList {
+    --yaku-name-col: 6.6em;
+    --yaku-value-col: 2.8em;
+  }
+
+  .dataListRow {
+    column-gap: $panel-space-sm;
+  }
+
+  .dataListCellDesc {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
+  .tableResponsive {
+    table-layout: fixed;
+  }
+
+  .colName {
+    width: 7.2em;
+  }
+
+  .colValue {
+    width: 3.2em;
+  }
+
+  .tdDesc {
+    overflow-wrap: anywhere;
+    word-break: normal;
+  }
+
   .settingsColumns {
     flex-direction: column;
     gap: $panel-settings-mobile-gap;
@@ -568,6 +665,21 @@ $panel-focus-ring: rgba(229, 57, 53, 0.35);
 
   .creditGrid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .dataList {
+    --yaku-name-col: 5.8em;
+    --yaku-value-col: 2.4em;
+  }
+
+  .dataListCell {
+    padding: $panel-space-sm $panel-space-xs;
+  }
+
+  .dataListCellValue {
+    text-align: right;
   }
 }
 

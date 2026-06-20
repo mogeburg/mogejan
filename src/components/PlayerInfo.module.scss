@@ -2,68 +2,32 @@
 @use "@/styles/layout" as *;
 @use "@/styles/mixins" as *;
 
-$player-info-width: 140px;
-$player-info-padding: 6px 14px 6px 10px;
+$player-info-padding: 10px;
 $player-info-bubble-gap: $space-2;
-$player-info-badge-offset-bottom: -12px;
-$player-info-badge-offset-left: -6px;
+$player-info-badge-bg: #fff;
+$player-info-badge-text: #111;
+$player-info-badge-border: rgba(0, 0, 0, 0.22);
 $player-info-turn-bg: #c62828;
 $player-info-normal-bg: #222;
 $player-info-text: $color-text-contrast;
-$player-info-parent-bg: linear-gradient(135deg, #fff3e0, #ffe0b2);
-$player-info-parent-text: #bf360c;
-$player-info-parent-border: #ffcc80;
-$player-info-riichi-bg: linear-gradient(135deg, #ffebee, #ffcdd2);
-$player-info-riichi-text: #b71c1c;
-$player-info-riichi-border: #ef9a9a;
-$player-info-menzen-bg: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-$player-info-menzen-text: #1b5e20;
-$player-info-menzen-border: #a5d6a7;
-$player-info-ippatsu-bg: linear-gradient(135deg, #f3e5f5, #e1bee7);
-$player-info-ippatsu-text: #4a148c;
-$player-info-ippatsu-border: #ce93d8;
 
 .badge {
   @include badge-base;
-}
-
-.badgeParent {
-  @include badge-base;
-  background: $player-info-parent-bg;
-  color: $player-info-parent-text;
-  border: 1px solid $player-info-parent-border;
-}
-
-.badgeRiichi {
-  @include badge-base;
-  background: $player-info-riichi-bg;
-  color: $player-info-riichi-text;
-  border: 1px solid $player-info-riichi-border;
-}
-
-.badgeMenzen {
-  @include badge-base;
-  background: $player-info-menzen-bg;
-  color: $player-info-menzen-text;
-  border: 1px solid $player-info-menzen-border;
-}
-
-.badgeIppatsu {
-  @include badge-base;
-  background: $player-info-ippatsu-bg;
-  color: $player-info-ippatsu-text;
-  border: 1px solid $player-info-ippatsu-border;
+  background: $player-info-badge-bg;
+  color: $player-info-badge-text;
+  border: 1px solid $player-info-badge-border;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
 }
 
 .container {
   display: flex;
-  align-items: center;
-  gap: $space-4;
+  align-items: flex-start;
   padding: $player-info-padding;
   position: relative;
-  border-radius: $radius-md;
+  border-radius: 16px;
   box-shadow: $shadow-2;
-  width: $player-info-width;
+  box-sizing: border-box;
 }
 
 .containerTurn {
@@ -79,6 +43,27 @@ $player-info-ippatsu-border: #ce93d8;
   flex-shrink: 0;
 }
 
+.identityStack {
+  position: absolute;
+  left: 50%;
+  bottom: -1.1rem;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.avatarColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-2;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
 .bubbleStack {
   position: absolute;
   bottom: calc(100% + 4px);
@@ -91,37 +76,59 @@ $player-info-ippatsu-border: #ce93d8;
   z-index: 10;
 }
 
-.info {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  font-weight: $font-weight-bold;
+.statusRow {
+  position: absolute;
+  top: 50%;
+  left: calc(100% - 8px);
+  transform: translateY(-50%);
 }
 
 .name {
   font-size: $font-size-sm;
   color: $player-info-text;
+  font-weight: $font-weight-bold;
+  line-height: 1.15;
+  white-space: nowrap;
+  text-shadow:
+    -1px -1px 0 rgba(0, 0, 0, 0.95),
+    1px -1px 0 rgba(0, 0, 0, 0.95),
+    -1px 1px 0 rgba(0, 0, 0, 0.95),
+    1px 1px 0 rgba(0, 0, 0, 0.95),
+    0 2px 4px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .personalityLabel {
   font-size: calc(11px * var(--text-scale, 1));
   color: $player-info-text;
   line-height: 1;
+  text-shadow:
+    -1px -1px 0 rgba(0, 0, 0, 0.95),
+    1px -1px 0 rgba(0, 0, 0, 0.95),
+    -1px 1px 0 rgba(0, 0, 0, 0.95),
+    1px 1px 0 rgba(0, 0, 0, 0.95),
+    0 2px 4px rgba(0, 0, 0, 0.45);
 }
 
 .score {
-  font-size: calc(22px * var(--text-scale, 1));
-  line-height: 1.2;
+  font-size: calc(18px * var(--text-scale, 1));
+  line-height: 1;
   color: $player-info-text;
-  text-align: right;
+  text-align: center;
+  letter-spacing: 0.01em;
+  font-weight: $font-weight-black;
+  text-shadow:
+    -1px -1px 0 rgba(0, 0, 0, 0.95),
+    1px -1px 0 rgba(0, 0, 0, 0.95),
+    -1px 1px 0 rgba(0, 0, 0, 0.95),
+    1px 1px 0 rgba(0, 0, 0, 0.95),
+    0 2px 4px rgba(0, 0, 0, 0.45);
 }
 
-.badgeRowBottom {
-  position: absolute;
-  bottom: $player-info-badge-offset-bottom;
-  left: $player-info-badge-offset-left;
+.badgeColumnRight {
   display: flex;
-  gap: 3px;
-  flex-wrap: nowrap;
-  white-space: nowrap;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
 }

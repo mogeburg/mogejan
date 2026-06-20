@@ -12,19 +12,12 @@ import {
   BGM_SELECTABLE_KEYS,
   CPU_STRENGTH_LABELS,
   CPU_STRENGTHS,
-  TEXT_SIZE_LABELS,
-  TEXT_SIZES,
 } from "@/constants/game";
 import { useGameStore } from "@/store";
 
 const CPU_STRENGTH_OPTIONS = CPU_STRENGTHS.map((strength) => ({
   value: strength,
   label: CPU_STRENGTH_LABELS[strength],
-}));
-
-const TEXT_SIZE_OPTIONS = TEXT_SIZES.map((textSize) => ({
-  value: textSize,
-  label: TEXT_SIZE_LABELS[textSize],
 }));
 
 const RIICHI_AVATAR_OPTIONS = [
@@ -111,8 +104,6 @@ function RangeSetting({
 export function SettingsPanel() {
   const speed = useGameStore((s) => s.speed);
   const setSpeed = useGameStore((s) => s.setSpeed);
-  const textSize = useGameStore((s) => s.textSize);
-  const setTextSize = useGameStore((s) => s.setTextSize);
   const cpuStrength = useGameStore((s) => s.cpuStrength);
   const setCpuStrength = useGameStore((s) => s.setCpuStrength);
   const masterVolume = useGameStore((s) => s.masterVolume);
@@ -203,15 +194,6 @@ export function SettingsPanel() {
                   value={screenMode}
                   options={SCREEN_MODE_OPTIONS}
                   onChange={(value) => setScreenMode(value as ScreenMode)}
-                />
-              </div>
-
-              <div className={styles.settingsSurface}>
-                <ToggleSetting
-                  label="文字サイズ"
-                  value={textSize}
-                  options={TEXT_SIZE_OPTIONS}
-                  onChange={(value) => setTextSize(value as typeof textSize)}
                 />
               </div>
             </div>

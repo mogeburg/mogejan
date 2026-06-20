@@ -38,44 +38,53 @@ export function PlayerInfo({
         return "⚔️".repeat(a) + "🛡️".repeat(6 - a);
       })()
     : null;
+  const badgeItems = [
+    isMenzen ? "メンゼン" : null,
+    isDoubleReach ? "Wリーチ" : isRiichi ? "リーチ" : null,
+    isIppatsu ? "イッパツ" : null,
+  ].filter((badge): badge is string => badge != null);
+
   return (
     <div
       className={`${styles.container} ${isTurn ? styles.containerTurn : styles.containerNormal}`}
     >
-      <div className={styles.avatarWrapper}>
-        <AvatarIcon
-          imageUrl={player.imageUrl}
-          colorHex={player.colorHex}
-          size={40}
-          border="2px solid #fff"
-          crown={isParent}
-          crownSize={24}
-          crownOffset={6}
-        />
-        <div className={styles.bubbleStack}>
-          <AnimatePresence>
-            {speechBubbles.map((bubble) => (
-              <SpeechBubble key={bubble.id} text={bubble.text} />
-            ))}
-          </AnimatePresence>
+      <div className={styles.avatarColumn}>
+        <div className={styles.avatarWrapper}>
+          <AvatarIcon
+            imageUrl={player.imageUrl}
+            colorHex={player.colorHex}
+            size={52}
+            crown={isParent}
+            crownSize={24}
+            crownOffset={6}
+          />
+          <div className={styles.bubbleStack}>
+            <AnimatePresence>
+              {speechBubbles.map((bubble) => (
+                <SpeechBubble key={bubble.id} text={bubble.text} />
+              ))}
+            </AnimatePresence>
+          </div>
+          <div className={styles.identityStack}>
+            <span className={styles.name}>{player.name}</span>
+            <span className={styles.score}>{player.score}</span>
+          </div>
         </div>
-      </div>
-      <div className={styles.info}>
         {showCpuPersonalities && personalityLabel && (
           <span className={styles.personalityLabel}>{personalityLabel}</span>
         )}
-        <span className={styles.name}>{player.name}</span>
-        <span className={styles.score}>{player.score}</span>
       </div>
-      {isRiichi && (
-        <div className={styles.badgeRowBottom}>
-          {isMenzen && <span className={styles.badgeMenzen}>メンゼン</span>}
-          <span className={styles.badgeRiichi}>
-            {isDoubleReach ? "Wリーチ" : "リーチ"}
-          </span>
-          {isIppatsu && <span className={styles.badgeIppatsu}>イッパツ</span>}
-        </div>
-      )}
+      <div className={styles.statusRow}>
+        {badgeItems.length > 0 && (
+          <div className={styles.badgeColumnRight}>
+            {badgeItems.map((badge) => (
+              <span key={badge} className={styles.badge}>
+                {badge}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
