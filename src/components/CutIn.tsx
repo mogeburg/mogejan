@@ -4,17 +4,16 @@ import {
   type LightningPoint,
 } from "@/components/LightningEffect";
 import {
-  DEFAULT_GAME_SIZE,
-  DEFAULT_LAYOUT_BOX,
+  getAnchorPoint,
   getGameCenter,
-  getLayoutBox,
-  getSeatAnchor,
+  type GameSize,
+  type LayoutAnchor,
   type LayoutBox,
 } from "@/constants/layout";
 import { useGameStore, type CutinPreview } from "@/store";
 import { cutinImageUrl as getCutinImageUrl, seAudioUrl } from "@/utils/assets";
 import { playSe, stopBgm } from "@/utils/audio";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 
 const TEXT_STYLE_MAP: Record<string, string> = {
   normal: styles.textNormal,
@@ -32,18 +31,48 @@ type LightningSegment = {
   end: LightningPoint;
 };
 
+const PLAYER_EDGE_ANCHOR_MAP: Record<number, LayoutAnchor> = {
+  0: "bottom-center",
+  1: "middle-left",
+  2: "top-center",
+  3: "middle-right",
+};
+
+const PLAYER_EDGE_OFFSET_MAP: Record<number, { x: number; y: number }> = {
+  0: { x: 120, y: 0 },
+  1: { x: 0, y: 120 },
+  2: { x: -120, y: 0 },
+  3: { x: 0, y: -120 },
+};
+
+function getPlayerEdgeAnchor(
+  playerIndex: number,
+  layoutBox: LayoutBox,
+): LightningPoint {
+  const anchorPoint = getAnchorPoint(
+    PLAYER_EDGE_ANCHOR_MAP[playerIndex] ?? "bottom-center",
+    layoutBox,
+  );
+  const offset = PLAYER_EDGE_OFFSET_MAP[playerIndex] ?? { x: 0, y: 0 };
+  return {
+    x: anchorPoint.x + offset.x,
+    y: anchorPoint.y + offset.y,
+  };
+}
+
 function buildRonMidpoint(
   fromPlayer: number,
   toPlayer: number,
   layoutBox: LayoutBox,
+  referenceGameSize: GameSize,
 ): LightningPoint {
-  const center = getGameCenter(layoutBox, layoutBox);
+  const center = getGameCenter(layoutBox);
   const pairSeed = fromPlayer * 10 + toPlayer;
   const jitterXBase = pairSeed % 2 === 0 ? -32 : 32;
   const jitterYBase = pairSeed % 3 === 0 ? -24 : 24;
   return {
-    x: center.x + (jitterXBase / DEFAULT_GAME_SIZE.width) * layoutBox.width,
-    y: center.y + (jitterYBase / DEFAULT_GAME_SIZE.height) * layoutBox.height,
+    x: center.x + (jitterXBase / referenceGameSize.width) * layoutBox.width,
+    y: center.y + (jitterYBase / referenceGameSize.height) * layoutBox.height,
   };
 }
 
@@ -51,10 +80,11 @@ function buildTsumoMidpoint(
   start: LightningPoint,
   end: LightningPoint,
   layoutBox: LayoutBox,
+  referenceGameSize: GameSize,
   fromPlayer: number,
   toPlayer: number,
 ): LightningPoint {
-  const center = getGameCenter(layoutBox, layoutBox);
+  const center = getGameCenter(layoutBox);
   const midpoint = {
     x: (start.x + end.x) / 2,
     y: (start.y + end.y) / 2,
@@ -68,11 +98,11 @@ function buildTsumoMidpoint(
     x:
       midpoint.x * (1 - centerPull) +
       center.x * centerPull +
-      (jitterXBase / DEFAULT_GAME_SIZE.width) * layoutBox.width,
+      (jitterXBase / referenceGameSize.width) * layoutBox.width,
     y:
       midpoint.y * (1 - centerPull) +
       center.y * centerPull +
-      (jitterYBase / DEFAULT_GAME_SIZE.height) * layoutBox.height,
+      (jitterYBase / referenceGameSize.height) * layoutBox.height,
   };
 }
 
@@ -82,13 +112,10 @@ function buildLightningSegments(
   ronTarget: number | null,
   layoutBox: LayoutBox,
   cutinPreview: CutinPreview | null,
+  referenceGameSize: GameSize,
 ): LightningSegment[] {
   if (cutinPreview != null) {
-    const start = getSeatAnchor(
-      cutinPreview.sourcePlayer,
-      layoutBox,
-      layoutBox,
-    );
+    const start = getPlayerEdgeAnchor(cutinPreview.sourcePlayer, layoutBox);
     const targetPlayers = cutinPreview.isRon
       ? [cutinPreview.targetPlayer]
       : [0, 1, 2, 3].filter(
@@ -96,15 +123,21 @@ function buildLightningSegments(
         );
 
     return targetPlayers.map((targetPlayer) => {
-      const end = getSeatAnchor(targetPlayer, layoutBox, layoutBox);
+      const end = getPlayerEdgeAnchor(targetPlayer, layoutBox);
       return {
         start,
         mid: cutinPreview.isRon
-          ? buildRonMidpoint(cutinPreview.sourcePlayer, targetPlayer, layoutBox)
+          ? buildRonMidpoint(
+              cutinPreview.sourcePlayer,
+              targetPlayer,
+              layoutBox,
+              referenceGameSize,
+            )
           : buildTsumoMidpoint(
               start,
               end,
               layoutBox,
+              referenceGameSize,
               cutinPreview.sourcePlayer,
               targetPlayer,
             ),
@@ -115,7 +148,7 @@ function buildLightningSegments(
 
   if (winner == null) return [];
 
-  const start = getSeatAnchor(winner, layoutBox, layoutBox);
+  const start = getPlayerEdgeAnchor(winner, layoutBox);
   const targetPlayers = isRon
     ? ronTarget != null
       ? [ronTarget]
@@ -123,12 +156,19 @@ function buildLightningSegments(
     : [0, 1, 2, 3].filter((playerIndex) => playerIndex !== winner);
 
   return targetPlayers.map((targetPlayer) => {
-    const end = getSeatAnchor(targetPlayer, layoutBox, layoutBox);
+    const end = getPlayerEdgeAnchor(targetPlayer, layoutBox);
     return {
       start,
       mid: isRon
-        ? buildRonMidpoint(winner, targetPlayer, layoutBox)
-        : buildTsumoMidpoint(start, end, layoutBox, winner, targetPlayer),
+        ? buildRonMidpoint(winner, targetPlayer, layoutBox, referenceGameSize)
+        : buildTsumoMidpoint(
+            start,
+            end,
+            layoutBox,
+            referenceGameSize,
+            winner,
+            targetPlayer,
+          ),
       end,
     };
   });
@@ -147,10 +187,15 @@ export function CutIn() {
   const isRon = useGameStore((s) => s.isRon);
   const ronTarget = useGameStore((s) => s.ronTarget);
   const cutinPreview = useGameStore((s) => s.cutinPreview);
-  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const referenceGameSize = useGameStore((s) => s.gameSize);
   const [show, setShow] = useState(false);
   const [imageFallback, setImageFallback] = useState(false);
-  const [layoutBox, setLayoutBox] = useState<LayoutBox>(DEFAULT_LAYOUT_BOX);
+  const layoutBox: LayoutBox = {
+    left: 0,
+    top: 0,
+    width: referenceGameSize.width,
+    height: referenceGameSize.height,
+  };
 
   useEffect(() => {
     if (cutin != null) {
@@ -174,31 +219,6 @@ export function CutIn() {
     return () => clearTimeout(timer);
   }, [cutin, simulationMode, speed, hideCutin]);
 
-  useEffect(() => {
-    const element = overlayRef.current;
-    if (!element) return;
-
-    const updateLayoutBox = () => {
-      setLayoutBox(getLayoutBox(element));
-    };
-
-    updateLayoutBox();
-
-    const observer = new ResizeObserver(() => {
-      updateLayoutBox();
-    });
-    observer.observe(element);
-
-    window.addEventListener("resize", updateLayoutBox);
-    window.addEventListener("scroll", updateLayoutBox, true);
-
-    return () => {
-      observer.disconnect();
-      window.removeEventListener("resize", updateLayoutBox);
-      window.removeEventListener("scroll", updateLayoutBox, true);
-    };
-  }, []);
-
   if (cutin == null) return null;
 
   const imageUrl =
@@ -216,12 +236,12 @@ export function CutIn() {
           ronTarget,
           layoutBox,
           cutinPreview,
+          referenceGameSize,
         )
       : [];
 
   return (
     <div
-      ref={overlayRef}
       onClick={hideCutin}
       className={`${styles.overlay} ${cutinType === "ryuukyoku" ? styles.overlayDark : ""}`}
     >
@@ -231,6 +251,7 @@ export function CutIn() {
           start={segment.start}
           mid={segment.mid}
           end={segment.end}
+          viewportSize={referenceGameSize}
           durationMs={LIGHTNING_DISPLAY_DURATION_MS}
           growDurationMs={LIGHTNING_GROW_DURATION_MS}
         />

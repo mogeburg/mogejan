@@ -37,14 +37,13 @@ export default function App() {
   const resetData = useGameStore((s) => s.resetData);
   const textSize = useGameStore((s) => s.textSize);
   const screenMode = useGameStore((s) => s.screenMode);
+  const gameSize = useGameStore((s) => s.gameSize);
+  const setGameSize = useGameStore((s) => s.setGameSize);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuTabIndex, setMenuTabIndex] = useState(0);
   const [resetConfirm, setResetConfirm] = useState(false);
   const [titleConfirm, setTitleConfirm] = useState(false);
   const [scale, setScale] = useState(1);
-  const [gameSize, setGameSize] = useState(() =>
-    getGameSizeForScreenMode(screenMode, window.innerWidth, window.innerHeight),
-  );
 
   useEffect(() => {
     function updateScale() {

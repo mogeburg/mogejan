@@ -42,7 +42,7 @@ $font-weight-black: $primitive-font-weight-black;
 $layout-game-width: 1280px;
 $layout-game-height: 720px;
 $layout-player-box-width: 700px;
-$layout-player-box-height: 206px;
+$layout-player-box-height: 200px;
 $layout-player-box-rotate-offset: math.div(
   $layout-player-box-width - $layout-player-box-height,
   2

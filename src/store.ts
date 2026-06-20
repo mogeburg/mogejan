@@ -1,7 +1,8 @@
 import type { CpuPersonality } from "@/ai/CpuController";
 import { generateRandomPersonality } from "@/ai/CpuController";
 import type { BgmKey } from "@/constants/game";
-import type { ScreenMode } from "@/constants/layout";
+import type { GameSize, ScreenMode } from "@/constants/layout";
+import { DEFAULT_GAME_SIZE } from "@/constants/layout";
 import {
   BGM_VOLUME,
   DEFAULT_CPU_STRENGTH,
@@ -73,6 +74,7 @@ interface GameStore {
   seVolume: number;
   voiceVolume: number;
   screenMode: ScreenMode;
+  gameSize: GameSize;
   riichiBgmSetting: BgmKey;
   normalBgmSetting: BgmKey;
   riichiAvatar: "none" | "kanimoge" | "burumoge";
@@ -130,6 +132,7 @@ interface GameStore {
   setSeVolume: (volume: number) => void;
   setVoiceVolume: (volume: number) => void;
   setScreenMode: (mode: ScreenMode) => void;
+  setGameSize: (gameSize: GameSize) => void;
   setRiichiBgmSetting: (setting: BgmKey) => void;
   setNormalBgmSetting: (setting: BgmKey) => void;
   setRiichiAvatar: (avatar: "none" | "kanimoge" | "burumoge") => void;
@@ -577,6 +580,7 @@ function createDefaultSettingsState(): Pick<
   | "seVolume"
   | "voiceVolume"
   | "screenMode"
+  | "gameSize"
   | "riichiBgmSetting"
   | "normalBgmSetting"
   | "riichiAvatar"
@@ -595,6 +599,7 @@ function createDefaultSettingsState(): Pick<
     seVolume: SE_VOLUME,
     voiceVolume: VOICE_VOLUME,
     screenMode: "auto",
+    gameSize: DEFAULT_GAME_SIZE,
     riichiBgmSetting: "riichi" as const,
     normalBgmSetting: "game" as const,
     riichiAvatar: "kanimoge" as const,
@@ -623,6 +628,7 @@ export const useGameStore = create<GameStore>()(
       setSeVolume: (seVolume) => set({ seVolume }),
       setVoiceVolume: (voiceVolume) => set({ voiceVolume }),
       setScreenMode: (screenMode) => set({ screenMode }),
+      setGameSize: (gameSize) => set({ gameSize }),
       setRiichiBgmSetting: (setting) => set({ riichiBgmSetting: setting }),
       setNormalBgmSetting: (setting) => set({ normalBgmSetting: setting }),
       setRiichiAvatar: (avatar) => set({ riichiAvatar: avatar }),

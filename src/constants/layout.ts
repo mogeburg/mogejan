@@ -123,37 +123,39 @@ export function getSeatAnchor(
   playerIndex: number,
   size: GameSize = DEFAULT_GAME_SIZE,
   offset?: Pick<LayoutBox, "left" | "top">,
+  referenceSize: GameSize = DEFAULT_GAME_SIZE,
 ): LightningPoint {
-  const xOffset = size.width / 3;
-  const yOffset = size.height / 3;
-  const edgePush = 15;
+  const center = getGameCenter(size, offset);
+  const scaleX = size.width / referenceSize.width;
+  const scaleY = size.height / referenceSize.height;
+  const xOffset = 540 * 0.5 * scaleX;
+  const yOffset = 320 * 0.5 * scaleY;
 
   switch (playerIndex) {
     case 0:
       return {
-        ...getAnchorPoint("bottom-center", size, offset),
-        x: getAnchorPoint("bottom-center", size, offset).x + xOffset,
-        y: getAnchorPoint("bottom-center", size, offset).y + edgePush,
+        x: center.x,
+        y: center.y + yOffset,
       };
     case 1:
       return {
-        ...getAnchorPoint("middle-left", size, offset),
-        x: getAnchorPoint("middle-left", size, offset).x - edgePush,
-        y: getAnchorPoint("middle-left", size, offset).y + yOffset,
+        x: center.x - xOffset,
+        y: center.y,
       };
     case 2:
       return {
-        ...getAnchorPoint("top-center", size, offset),
-        x: getAnchorPoint("top-center", size, offset).x - xOffset,
-        y: getAnchorPoint("top-center", size, offset).y - edgePush,
+        x: center.x,
+        y: center.y - yOffset,
       };
     case 3:
       return {
-        ...getAnchorPoint("middle-right", size, offset),
-        x: getAnchorPoint("middle-right", size, offset).x + edgePush,
-        y: getAnchorPoint("middle-right", size, offset).y - yOffset,
+        x: center.x + xOffset,
+        y: center.y,
       };
     default:
-      return getAnchorPoint("bottom-center", size, offset);
+      return {
+        x: center.x,
+        y: center.y + yOffset,
+      };
   }
 }

@@ -1,7 +1,7 @@
-import { findTileDataById } from "@/constants/tiles";
 import styles from "@/components/TileImage.module.scss";
+import { findTileDataById } from "@/constants/tiles";
 
-const SIZE_MAP = { normal: 49, small: 36, mini: 24 } as const;
+const SIZE_MAP = { normal: 66, small: 36, mini: 24 } as const;
 
 export type TileSize = keyof typeof SIZE_MAP;
 

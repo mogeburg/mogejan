@@ -1,11 +1,10 @@
 @use "@/styles/layout" as *;
 
-$player-row-action-bottom: 68px;
+$player-row-action-bottom: 84px;
 $player-row-drawn-gap: $space-5;
-$player-row-discard-width: 60%;
-$player-row-discard-height: 50%;
-$player-row-discard-left: 20%;
-$player-row-discard-top: $space-6;
+$player-row-discard-width: 100%;
+$player-row-discard-height: 45%;
+$player-row-discard-top: $space-7;
 
 .container {
   position: relative;
@@ -69,6 +68,6 @@ $player-row-discard-top: $space-6;
   gap: 0;
   width: $player-row-discard-width;
   height: $player-row-discard-height;
-  left: $player-row-discard-left;
   top: $player-row-discard-top;
+  
 }

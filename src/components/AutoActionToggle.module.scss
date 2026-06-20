@@ -12,7 +12,7 @@ $auto-action-label-text: $color-text-contrast;
 
 .container {
   position: absolute;
-  bottom: $auto-action-offset;
+  bottom: 90px;
   right: $auto-action-offset;
   display: flex;
   flex-direction: column;
@@ -31,15 +31,9 @@ $auto-action-label-text: $color-text-contrast;
   background: $auto-action-label-bg;
 }
 
-.btnRow {
-  display: flex;
-  flex-direction: row;
-  gap: var(--ui-space-2, 4px);
-}
-
 .btn {
   @include pressable-control;
-  font-size: calc(11px * var(--text-scale, 1));
+  font-size: calc(12px * var(--text-scale, 1));
   padding: $auto-action-button-padding;
   border-radius: $radius-xs;
   border: $auto-action-button-border-width solid;

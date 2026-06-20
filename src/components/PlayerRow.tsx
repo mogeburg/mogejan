@@ -1,10 +1,10 @@
-import { motion } from "framer-motion";
-import type { Player } from "@/store";
-import { useGameStore } from "@/store";
 import { Button } from "@/components/Button";
+import styles from "@/components/PlayerRow.module.scss";
 import { TileImage } from "@/components/TileImage";
 import { getTileColor, isDoraLikeTile } from "@/constants/tiles";
-import styles from "@/components/PlayerRow.module.scss";
+import type { Player } from "@/store";
+import { useGameStore } from "@/store";
+import { motion } from "framer-motion";
 
 export type ActionLabel = "キャンセル" | "リーチ" | "ポン" | "ロン" | "ツモ";
 
@@ -16,7 +16,10 @@ const ACTION_BUTTONS: ActionLabel[] = [
   "ツモ",
 ];
 
-const ACTION_COLOR_MAP: Record<ActionLabel, "normal" | "primary" | "secondary" | "tertiary"> = {
+const ACTION_COLOR_MAP: Record<
+  ActionLabel,
+  "normal" | "primary" | "secondary" | "tertiary"
+> = {
   ツモ: "primary",
   ロン: "primary",
   リーチ: "primary",
@@ -112,8 +115,10 @@ export function PlayerRow({
   const highlightSide = HIGHLIGHT_SIDE_MAP[index];
   const riichiHighlightSide = HIGHLIGHT_SIDE_MAP[(index + 3) % 4];
 
-  const isDoraTile = (id: number) => doraTile != null && isDoraLikeTile(id, doraTile);
-  const isFocusedColor = (id: number) => focusedTileColor != null && getTileColor(id) === focusedTileColor;
+  const isDoraTile = (id: number) =>
+    doraTile != null && isDoraLikeTile(id, doraTile);
+  const isFocusedColor = (id: number) =>
+    focusedTileColor != null && getTileColor(id) === focusedTileColor;
   return (
     <div className={styles.container}>
       {(player.type === "human" || manualCpu) && (
@@ -131,6 +136,7 @@ export function PlayerRow({
             <Button
               key={label}
               label={label}
+              size="large"
               color={ACTION_COLOR_MAP[label]}
               disabled={isActionDisabled(label)}
               onClick={() => onAction(label, index)}
@@ -161,13 +167,20 @@ export function PlayerRow({
             ))}
             {isTurn && drawnTile != null && (
               <div className={styles.drawnTileGap}>
-                <motion.div whileHover={canDiscard ? { y: -4 } : undefined} transition={{ duration: 0.03 }} onMouseEnter={() => onTileFocus?.(drawnTile)} onMouseLeave={onTileBlur}>
+                <motion.div
+                  whileHover={canDiscard ? { y: -4 } : undefined}
+                  transition={{ duration: 0.03 }}
+                  onMouseEnter={() => onTileFocus?.(drawnTile)}
+                  onMouseLeave={onTileBlur}
+                >
                   <TileImage
                     id={drawnTile}
                     size="normal"
                     faceDown={faceDown}
                     highlightSide={highlightSide}
-                    onClick={canDiscard ? () => onDiscard(drawnTile) : undefined}
+                    onClick={
+                      canDiscard ? () => onDiscard(drawnTile) : undefined
+                    }
                     shine={!faceDown && isDoraTile(drawnTile)}
                   />
                 </motion.div>
@@ -179,7 +192,14 @@ export function PlayerRow({
               {ponMelds.map((meld, mi) => (
                 <div key={mi} className={styles.ponMeld}>
                   {meld.map((id, tileIndex) => (
-                    <TileImage key={`${mi}-${id}-${tileIndex}`} id={id} size="normal" highlightSide={highlightSide} blueOverlay={isFocusedColor(id)} shine={isDoraTile(id)} />
+                    <TileImage
+                      key={`${mi}-${id}-${tileIndex}`}
+                      id={id}
+                      size="normal"
+                      highlightSide={highlightSide}
+                      blueOverlay={isFocusedColor(id)}
+                      shine={isDoraTile(id)}
+                    />
                   ))}
                 </div>
               ))}
@@ -193,8 +213,16 @@ export function PlayerRow({
             key={`${id}-${j}`}
             id={id}
             size="small"
-            highlightSide={riichiDiscardPosition === j ? riichiHighlightSide : highlightSide}
-            glow={lastDiscardTileId != null && id === lastDiscardTileId && j === playerDiscards.length - 1 ? YELLOW_GLOW : undefined}
+            highlightSide={
+              riichiDiscardPosition === j ? riichiHighlightSide : highlightSide
+            }
+            glow={
+              lastDiscardTileId != null &&
+              id === lastDiscardTileId &&
+              j === playerDiscards.length - 1
+                ? YELLOW_GLOW
+                : undefined
+            }
             blueOverlay={isFocusedColor(id)}
             shine={isDoraTile(id)}
             style={{

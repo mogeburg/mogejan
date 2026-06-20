@@ -28,6 +28,10 @@ export interface LightningEffectProps {
   start: LightningPoint;
   mid?: LightningPoint;
   end: LightningPoint;
+  viewportSize: {
+    width: number;
+    height: number;
+  };
   durationMs: number;
   growDurationMs?: number;
   onComplete?: () => void;
@@ -387,14 +391,11 @@ export function LightningEffect({
   start,
   mid,
   end,
+  viewportSize,
   durationMs,
   growDurationMs = DEFAULT_GROW_DURATION_MS,
   onComplete,
 }: LightningEffectProps) {
-  const [viewportSize, setViewportSize] = useState(() => ({
-    width: typeof window !== "undefined" ? Math.max(window.innerWidth, 1) : 1,
-    height: typeof window !== "undefined" ? Math.max(window.innerHeight, 1) : 1,
-  }));
   const [frame, setFrame] = useState<LightningFrame>(() =>
     generateLightningFrame(start, mid, end),
   );
@@ -404,19 +405,6 @@ export function LightningEffect({
   const [impactGlow, setImpactGlow] = useState(0);
   const [impactBurstOpacity, setImpactBurstOpacity] = useState(0);
   const [impactBurstScale, setImpactBurstScale] = useState(0.5);
-
-  useEffect(() => {
-    function updateViewportSize() {
-      setViewportSize({
-        width: Math.max(window.innerWidth, 1),
-        height: Math.max(window.innerHeight, 1),
-      });
-    }
-
-    updateViewportSize();
-    window.addEventListener("resize", updateViewportSize);
-    return () => window.removeEventListener("resize", updateViewportSize);
-  }, []);
 
   useEffect(() => {
     setFrame(generateLightningFrame(start, mid, end));
