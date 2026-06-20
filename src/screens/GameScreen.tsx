@@ -8,11 +8,7 @@ import { AutoActionToggle } from "@/components/AutoActionToggle";
 import { CenterInfo } from "@/components/CenterInfo";
 import { DanceAvatar } from "@/components/DanceAvatar";
 import { PlayerRow, type ActionLabel } from "@/components/PlayerRow";
-import {
-  PLAYER_BOX_HEIGHT,
-  PLAYER_BOX_ROTATE_OFFSET,
-  resolveBgmPath,
-} from "@/constants/game";
+import { resolveBgmPath } from "@/constants/game";
 import { getTileColor } from "@/constants/tiles";
 import styles from "@/screens/GameScreen.module.scss";
 import { useGameStore } from "@/store";
@@ -30,6 +26,10 @@ import {
 import { startShineSync, stopShineSync } from "@/utils/shineSync";
 import { getTilesWithDrawnTile } from "@/utils/tiles";
 import { useCallback, useEffect, useMemo, useState } from "react";
+
+const PLAYER_BOX_WIDTH = 500;
+const PLAYER_BOX_HEIGHT = 200;
+const PLAYER_BOX_ROTATE_OFFSET = (PLAYER_BOX_WIDTH - PLAYER_BOX_HEIGHT) / 2;
 
 const PLAYER_LAYOUTS = [
   {
@@ -343,13 +343,7 @@ export function GameScreen() {
     if (!canRiichi || s.winner != null || s.ryuukyoku) return;
 
     executeRiichiAction(s.turnIndex);
-  }, [
-    s.turnIndex,
-    canRiichi,
-    s.winner,
-    s.ryuukyoku,
-    s.autoActions,
-  ]);
+  }, [s.turnIndex, canRiichi, s.winner, s.ryuukyoku, s.autoActions]);
 
   useEffect(() => {
     if (!useGameStore.getState().autoActions.ronTsumo) return;
