@@ -128,7 +128,7 @@ export function YakuResultScreen() {
           {yaku.map((y, i) => (
             <div
               key={i}
-              className={`${styles.yakuRow} ${i % 2 === 0 ? styles.yakuRowAlt : ""}`}
+              className={styles.yakuRow}
             >
               <span className={styles.yakuName}>{y.name}</span>
               <span className={styles.yakuValue}>{y.yaku}役</span>
