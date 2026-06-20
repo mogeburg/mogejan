@@ -42,6 +42,11 @@ $cutin-filter-ryuukyoku: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.8));
   animation: slide-in-left 5s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
 }
 
+.imagePortrait {
+  left: 45%;
+  height: 75%;
+}
+
 @keyframes slide-in-left {
   0% {
     transform: translateX(-150%);
@@ -67,6 +72,11 @@ $cutin-filter-ryuukyoku: drop-shadow(4px 4px 4px rgba(0, 0, 0, 0.8));
   user-select: none;
   letter-spacing: $cutin-text-letter-spacing;
   animation: cutin-pop 5s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+}
+
+.textPortrait {
+  top: 5%;
+  bottom: auto;
 }
 
 .textCenter {

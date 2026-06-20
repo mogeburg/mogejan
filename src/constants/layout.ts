@@ -73,6 +73,10 @@ export function getGameSizeForScreenMode(
   return resolvedMode === "portrait" ? PORTRAIT_GAME_SIZE : LANDSCAPE_GAME_SIZE;
 }
 
+export function isPortraitGameSize(size: GameSize): boolean {
+  return size.height > size.width;
+}
+
 export const DEFAULT_LAYOUT_BOX: LayoutBox = {
   left: 0,
   top: 0,

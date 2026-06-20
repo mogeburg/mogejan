@@ -136,7 +136,6 @@ export function PlayerRow({
             <Button
               key={label}
               label={label}
-              size="large"
               color={ACTION_COLOR_MAP[label]}
               disabled={isActionDisabled(label)}
               onClick={() => onAction(label, index)}

@@ -216,16 +216,23 @@ function buildBranch(
 }
 
 function buildImpactBurst(center: LightningPoint, index: number): string {
-  const spokeCount = 34 + Math.floor(Math.random() * 18);
+  const spokeCount = 40 + Math.floor(Math.random() * 20);
   const baseRotation = randomBetween(0, Math.PI * 2);
   const points: LightningPoint[] = [];
 
   for (let i = 0; i < spokeCount; i++) {
     const angle = baseRotation + (Math.PI * 2 * i) / spokeCount;
-    const innerRadius = randomBetween(3, 8);
-    const outerRadius = randomBetween(24, 52);
-    const innerAngleOffset = randomBetween(-0.04, 0.04);
-    const outerAngleOffset = randomBetween(-0.03, 0.03);
+    const isMajorSpike = i % 3 === 0;
+    const innerRadius = isMajorSpike
+      ? randomBetween(2, 6)
+      : randomBetween(5, 11);
+    const outerRadius = isMajorSpike
+      ? randomBetween(48, 84)
+      : randomBetween(26, 48);
+    const innerAngleOffset = randomBetween(-0.05, 0.05);
+    const outerAngleOffset = isMajorSpike
+      ? randomBetween(-0.02, 0.02)
+      : randomBetween(-0.04, 0.04);
 
     points.push({
       x: center.x + Math.cos(angle + innerAngleOffset) * innerRadius,

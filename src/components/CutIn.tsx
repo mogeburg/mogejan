@@ -6,6 +6,7 @@ import {
 import {
   getAnchorPoint,
   getGameCenter,
+  isPortraitGameSize,
   type GameSize,
   type LayoutAnchor,
   type LayoutBox,
@@ -31,6 +32,20 @@ type LightningSegment = {
   end: LightningPoint;
 };
 
+type OffsetAxisValue = number | `${number}%`;
+
+type EdgeOffsetValue =
+  | OffsetAxisValue
+  | {
+      portrait?: OffsetAxisValue;
+      landscape?: OffsetAxisValue;
+    };
+
+type EdgeOffset = {
+  x: EdgeOffsetValue;
+  y: EdgeOffsetValue;
+};
+
 const PLAYER_EDGE_ANCHOR_MAP: Record<number, LayoutAnchor> = {
   0: "bottom-center",
   1: "middle-left",
@@ -38,25 +53,67 @@ const PLAYER_EDGE_ANCHOR_MAP: Record<number, LayoutAnchor> = {
   3: "middle-right",
 };
 
-const PLAYER_EDGE_OFFSET_MAP: Record<number, { x: number; y: number }> = {
-  0: { x: 120, y: 0 },
-  1: { x: 0, y: 120 },
-  2: { x: -120, y: 0 },
-  3: { x: 0, y: -120 },
+const PLAYER_EDGE_OFFSET_MAP: Record<number, EdgeOffset> = {
+  0: {
+    x: "25%",
+    y: 10,
+  },
+  1: {
+    x: -10,
+    y: "25%",
+  },
+  2: {
+    x: "-25%",
+    y: -10,
+  },
+  3: {
+    x: 10,
+    y: "-25%",
+  },
 };
+
+function resolveAxisOffset(
+  value: EdgeOffsetValue,
+  axisSize: number,
+  isPortrait: boolean,
+): number {
+  const resolvedValue =
+    typeof value === "object"
+      ? ((isPortrait ? value.portrait : value.landscape) ??
+        value.landscape ??
+        value.portrait ??
+        0)
+      : value;
+
+  if (typeof resolvedValue === "string" && resolvedValue.endsWith("%")) {
+    return (Number.parseFloat(resolvedValue) / 100) * axisSize;
+  }
+
+  if (typeof resolvedValue === "string") {
+    return Number.parseFloat(resolvedValue) || 0;
+  }
+
+  return resolvedValue;
+}
 
 function getPlayerEdgeAnchor(
   playerIndex: number,
   layoutBox: LayoutBox,
+  referenceGameSize: GameSize,
 ): LightningPoint {
   const anchorPoint = getAnchorPoint(
     PLAYER_EDGE_ANCHOR_MAP[playerIndex] ?? "bottom-center",
     layoutBox,
   );
   const offset = PLAYER_EDGE_OFFSET_MAP[playerIndex] ?? { x: 0, y: 0 };
+  const isPortrait = isPortraitGameSize(referenceGameSize);
   return {
-    x: anchorPoint.x + offset.x,
-    y: anchorPoint.y + offset.y,
+    x:
+      anchorPoint.x +
+      resolveAxisOffset(offset.x, referenceGameSize.width, isPortrait),
+    y:
+      anchorPoint.y +
+      resolveAxisOffset(offset.y, referenceGameSize.height, isPortrait),
   };
 }
 
@@ -115,7 +172,11 @@ function buildLightningSegments(
   referenceGameSize: GameSize,
 ): LightningSegment[] {
   if (cutinPreview != null) {
-    const start = getPlayerEdgeAnchor(cutinPreview.sourcePlayer, layoutBox);
+    const start = getPlayerEdgeAnchor(
+      cutinPreview.sourcePlayer,
+      layoutBox,
+      referenceGameSize,
+    );
     const targetPlayers = cutinPreview.isRon
       ? [cutinPreview.targetPlayer]
       : [0, 1, 2, 3].filter(
@@ -123,7 +184,11 @@ function buildLightningSegments(
         );
 
     return targetPlayers.map((targetPlayer) => {
-      const end = getPlayerEdgeAnchor(targetPlayer, layoutBox);
+      const end = getPlayerEdgeAnchor(
+        targetPlayer,
+        layoutBox,
+        referenceGameSize,
+      );
       return {
         start,
         mid: cutinPreview.isRon
@@ -148,7 +213,7 @@ function buildLightningSegments(
 
   if (winner == null) return [];
 
-  const start = getPlayerEdgeAnchor(winner, layoutBox);
+  const start = getPlayerEdgeAnchor(winner, layoutBox, referenceGameSize);
   const targetPlayers = isRon
     ? ronTarget != null
       ? [ronTarget]
@@ -156,7 +221,7 @@ function buildLightningSegments(
     : [0, 1, 2, 3].filter((playerIndex) => playerIndex !== winner);
 
   return targetPlayers.map((targetPlayer) => {
-    const end = getPlayerEdgeAnchor(targetPlayer, layoutBox);
+    const end = getPlayerEdgeAnchor(targetPlayer, layoutBox, referenceGameSize);
     return {
       start,
       mid: isRon
@@ -190,6 +255,7 @@ export function CutIn() {
   const referenceGameSize = useGameStore((s) => s.gameSize);
   const [show, setShow] = useState(false);
   const [imageFallback, setImageFallback] = useState(false);
+  const isPortrait = isPortraitGameSize(referenceGameSize);
   const layoutBox: LayoutBox = {
     left: 0,
     top: 0,
@@ -260,7 +326,7 @@ export function CutIn() {
         <img
           src={imageUrl}
           alt=""
-          className={styles.image}
+          className={`${styles.image} ${isPortrait ? styles.imagePortrait : ""}`}
           onError={() => {
             if (!imageFallback && cutinImageVariant !== "normal") {
               setImageFallback(true);
@@ -270,7 +336,7 @@ export function CutIn() {
       )}
       {show && (
         <div
-          className={`${styles.text} ${cutinType === "ryuukyoku" ? styles.textCenter : ""} ${TEXT_STYLE_MAP[cutinType]}`}
+          className={`${styles.text} ${isPortrait && cutinType !== "ryuukyoku" ? styles.textPortrait : ""} ${cutinType === "ryuukyoku" ? styles.textCenter : ""} ${TEXT_STYLE_MAP[cutinType]}`}
         >
           {cutin}
         </div>
