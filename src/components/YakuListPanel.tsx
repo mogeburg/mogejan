@@ -15,7 +15,7 @@ function YakuRow({
 }) {
   return (
     <tr className={styles.tr}>
-      <td className={styles.td}>{name}</td>
+      <td className={`${styles.td} ${styles.tdNowrap}`}>{name}</td>
       <td className={styles.tdCenter}>{yaku}</td>
       <td className={styles.tdDesc}>{desc}</td>
     </tr>
@@ -25,7 +25,7 @@ function YakuRow({
 const tableHead = (
   <thead>
     <tr className={styles.trHead}>
-      <th className={styles.th}>役名</th>
+      <th className={`${styles.th} ${styles.thNowrap}`}>役名</th>
       <th className={styles.thCenter}>役</th>
       <th className={styles.th}>条件</th>
     </tr>
@@ -67,7 +67,7 @@ export function YakuListPanel() {
             <table className={styles.table}>
               <thead>
                 <tr className={styles.trHead}>
-                  <th className={styles.th}>役名</th>
+                  <th className={`${styles.th} ${styles.thNowrap}`}>役名</th>
                   <th className={styles.thCenter}>役</th>
                   <th className={styles.th}>組み合わせ</th>
                 </tr>
@@ -75,7 +75,7 @@ export function YakuListPanel() {
               <tbody>
                 {Object.values(SPECIAL_YAKU).map((s) => (
                   <tr key={s.id} className={styles.tr}>
-                    <td className={styles.td}>{s.name}</td>
+                    <td className={`${styles.td} ${styles.tdNowrap}`}>{s.name}</td>
                     <td className={styles.tdCenter}>{s.yakuValue}</td>
                     <td className={styles.td}>
                       <div style={{ display: "flex", gap: 2, flexWrap: "wrap" }}>

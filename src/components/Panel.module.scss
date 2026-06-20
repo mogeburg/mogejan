@@ -441,6 +441,10 @@ $panel-focus-ring: rgba(229, 57, 53, 0.35);
   padding: $panel-table-cell-padding;
 }
 
+.thNowrap {
+  white-space: nowrap;
+}
+
 .thCenter {
   text-align: center;
   padding: $panel-table-cell-padding;
@@ -458,6 +462,10 @@ $panel-focus-ring: rgba(229, 57, 53, 0.35);
 .td {
   padding: $panel-table-cell-padding;
   font-weight: $font-weight-bold;
+}
+
+.tdNowrap {
+  white-space: nowrap;
 }
 
 .tdCenter {
