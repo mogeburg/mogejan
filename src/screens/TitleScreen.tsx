@@ -26,17 +26,14 @@ export function TitleScreen() {
   const [modeIndex, setModeIndex] = useState(0);
   const [showDance, setShowDance] = useState(false);
   const [danceUnlocked, setDanceUnlocked] = useState(false);
-  const [simUnlocked, setSimUnlocked] = useState(false);
   const {
     riichiBgmSetting,
     riichiAvatar,
     simulationMode,
     setSimulationMode,
-    initGame,
   } = useTitleScreenStore();
 
   const danceClicks = useRef(0);
-  const simClicks = useRef(0);
 
   const handleTitleClick = useCallback((event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
@@ -51,33 +48,6 @@ export function TitleScreen() {
       setShowDance(true);
     }
   }, [danceUnlocked]);
-
-  const handleVersionClick = useCallback((event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    if (simUnlocked) {
-      if (simulationMode) {
-        setSimulationMode(false);
-      } else {
-        setSimulationMode(true);
-        const shuffled = shuffle(TileData);
-        const cpuPlayers = shuffled.slice(0, PLAYER_COUNT).map((c) => ({
-          name: c.name,
-          score: INITIAL_SCORE,
-          type: "cpu" as const,
-          imageUrl: getImageUrl(c.id),
-          colorHex: c.colorHex,
-          charId: c.id,
-        }));
-        initGame(cpuPlayers);
-      }
-      return;
-    }
-    simClicks.current++;
-    if (simClicks.current >= 3) {
-      simClicks.current = 0;
-      setSimUnlocked(true);
-    }
-  }, [simUnlocked, simulationMode, setSimulationMode, initGame]);
 
   const bgm =
     showDance && riichiBgmSetting !== "none"
@@ -119,9 +89,7 @@ export function TitleScreen() {
     <>
       <ModalCard className={styles.modalCard}>
         <p
-          className={simUnlocked ? styles.versionRed : styles.version}
-          onClick={handleVersionClick}
-          style={{ cursor: "pointer" }}
+          className={styles.version}
         >
           ver {VERSION}{simulationMode ? " 🎲" : ""}
         </p>

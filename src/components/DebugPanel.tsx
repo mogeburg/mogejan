@@ -4,6 +4,8 @@ import { FieldLabel } from "@/components/FieldLabel";
 import { MenuSection } from "@/components/MenuSection";
 import styles from "@/components/Panel.module.scss";
 import { SelectBox } from "@/components/SelectBox";
+import { INITIAL_SCORE, PLAYER_COUNT } from "@/constants/game";
+import { getImageUrl, TileData } from "@/constants/tiles";
 import { useGameStore } from "@/store";
 import { useState } from "react";
 
@@ -25,12 +27,38 @@ const PLAYER_INDEX_OPTIONS = [
 export function DebugPanel({ onClose }: { onClose?: () => void }) {
   const debugFlags = useGameStore((s) => s.debugFlags);
   const players = useGameStore((s) => s.players);
+  const initGame = useGameStore((s) => s.initGame);
+  const setSimulationMode = useGameStore((s) => s.setSimulationMode);
   const toggleDebugFlag = useGameStore((s) => s.toggleDebugFlag);
   const showCutinTest = useGameStore((s) => s.showCutin);
   const showDebugCutin = useGameStore((s) => s.showDebugCutin);
   const startDebugMidgame = useGameStore((s) => s.startDebugMidgame);
   const [lightningSourcePlayer, setLightningSourcePlayer] = useState(0);
   const [lightningTargetPlayer, setLightningTargetPlayer] = useState(1);
+
+  function shuffle<T>(arr: T[]): T[] {
+    const next = [...arr];
+    for (let i = next.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [next[i], next[j]] = [next[j], next[i]];
+    }
+    return next;
+  }
+
+  function startCpuSimulation() {
+    const shuffled = shuffle(TileData);
+    const cpuPlayers = shuffled.slice(0, PLAYER_COUNT).map((character) => ({
+      name: character.name,
+      score: INITIAL_SCORE,
+      type: "cpu" as const,
+      imageUrl: getImageUrl(character.id),
+      colorHex: character.colorHex,
+      charId: character.id,
+    }));
+    setSimulationMode(true);
+    initGame(cpuPlayers);
+    onClose?.();
+  }
 
   return (
     <div className={styles.panelSettings}>
@@ -62,8 +90,14 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
           </div>
 
           <div className={styles.settingsSurface}>
-            <FieldLabel className={styles.settingsSubLabel}>局面ショートカット</FieldLabel>
+            <FieldLabel className={styles.settingsSubLabel}>対局デバッグ</FieldLabel>
             <div className={styles.settingsActions}>
+              <Button
+                label="CPUシミュレーション"
+                size="normal"
+                color="secondary"
+                onClick={startCpuSimulation}
+              />
               <Button
                 label="今のメンツで中盤へ"
                 size="normal"
