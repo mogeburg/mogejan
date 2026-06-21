@@ -13,6 +13,7 @@ export function AutoActionToggle() {
   const toggle = useGameStore((s) => s.toggleAutoAction);
   const open = useGameStore((s) => s.autoActionTrayOpen);
   const setOpen = useGameStore((s) => s.setAutoActionTrayOpen);
+  const toggleLabel = open ? "▶自動操作" : "◀自動操作";
 
   return (
     <div
@@ -24,7 +25,7 @@ export function AutoActionToggle() {
           onClick={() => setOpen(!open)}
           type="button"
         >
-          自動操作
+          {toggleLabel}
         </button>
         <div className={styles.panel}>
           {(["ronTsumo", "riichi", "pon", "cancel"] as const).map((key) => (

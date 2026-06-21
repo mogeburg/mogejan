@@ -612,7 +612,7 @@ function createDefaultSettingsState(): Pick<
     riichiAvatar: "kanimoge" as const,
     debugFlags: createDefaultDebugFlags(),
     autoActions: createDefaultAutoActions(),
-    autoActionTrayOpen: true,
+    autoActionTrayOpen: false,
     yakuCounts: initialYakuCounts(),
     simulationMode: false,
     cpuPersonalities: [null, null, null, null] as (CpuPersonality | null)[],
