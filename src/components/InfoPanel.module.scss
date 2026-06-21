@@ -1,0 +1,60 @@
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+@use "@/styles/mixins" as *;
+
+.container {
+  @include card($radius-md, $shadow-2, $color-surface-soft);
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-3;
+  z-index: 2;
+}
+
+.roundRow {
+  display: flex;
+  align-items: baseline;
+  gap: $space-2;
+  min-width: 0;
+}
+
+.roundLabel {
+  font-size: $font-size-sm;
+  font-weight: $font-weight-black;
+  color: $color-text-primary;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.honbaLabel {
+  font-size: $font-size-xxs;
+  font-weight: $font-weight-bold;
+  color: $color-text-secondary;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0;
+}
+
+.label {
+  font-size: $font-size-xxs;
+  font-weight: $font-weight-bold;
+  color: $color-text-secondary;
+  line-height: 1;
+}
+
+.tileRow {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+  min-width: 0;
+}

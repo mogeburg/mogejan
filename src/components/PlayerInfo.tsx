@@ -69,10 +69,10 @@ export function PlayerInfo({
               ))}
             </AnimatePresence>
           </div>
-          <div className={styles.identityStack}>
-            <span className={styles.name}>{player.name}</span>
-            <span className={styles.score}>{player.score}</span>
-          </div>
+        </div>
+        <div className={styles.identityStack}>
+          <span className={styles.name}>{player.name}</span>
+          <span className={styles.score}>{player.score}</span>
         </div>
         {showCpuPersonalities && personalityLabel && (
           <span className={styles.personalityLabel}>{personalityLabel}</span>

@@ -16,68 +16,43 @@ $center-info-horizontal-player-offset-portrait: -70%;
   position: absolute;
   top: 50%;
   left: 50%;
-  width: $center-info-card-width;
-  height: $center-info-card-height;
   transform: translate(-50%, -50%);
   z-index: 1;
 }
 
-.containerPortrait {
-  width: $center-info-card-width-portrait;
-  height: $center-info-card-height-portrait;
-}
-
 .cpuTop {
   position: absolute;
-  top: $center-info-vertical-player-offset;
+  top: 4px;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%,-100%);
   z-index: 2;
-}
-
-.cpuTopPortrait {
-  top: $center-info-vertical-player-offset-portrait;
 }
 
 .cpuLeft {
   position: absolute;
   top: 50%;
-  left: $center-info-horizontal-player-offset;
-  transform: translateY(-50%);
+  left: 4px;
+  transform: translate(-100%,-50%);
   z-index: 2;
-}
-
-.cpuLeftPortrait {
-  left: $center-info-horizontal-player-offset-portrait;
 }
 
 .cpuRight {
   position: absolute;
   top: 50%;
-  right: $center-info-horizontal-player-offset;
-  transform: translateY(-50%);
+  right: 4px;
+  transform: translate(100%,-50%);
   z-index: 2;
-}
-
-.cpuRightPortrait {
-  right: $center-info-horizontal-player-offset-portrait;
 }
 
 .playerBottom {
   position: absolute;
-  bottom: $center-info-vertical-player-offset;
   left: 50%;
-  transform: translateX(-50%);
+  bottom: 4px;
+  transform: translate(-50%,100%);
   z-index: 2;
 }
 
-.playerBottomPortrait {
-  bottom: $center-info-vertical-player-offset-portrait;
-}
-
 .centerBox {
-  width: 100%;
-  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -87,31 +62,22 @@ $center-info-horizontal-player-offset-portrait: -70%;
 .infoCard {
   @include card($radius-lg, $shadow-3, $color-surface-soft);
   display: flex;
-  align-items: stretch;
+  align-items: center;
   justify-content: center;
-  width: $center-info-card-width;
-  height: $center-info-card-height;
-  padding: $space-4;
-}
-
-.infoCardPortrait {
-  width: $center-info-card-width-portrait;
-  height: $center-info-card-height-portrait;
+  padding: $space-7;
 }
 
 .infoMain {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: $space-3;
+  justify-content: center;
   width: 100%;
   height: 100%;
 }
 
 .infoMainPortrait {
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
 }
 
 .infoText {
@@ -121,26 +87,6 @@ $center-info-horizontal-player-offset-portrait: -70%;
   align-items: center;
   gap: 2px;
   min-width: 0;
-  flex: 1;
-}
-
-.roundLabel {
-  font-size: $font-size-sm;
-  font-weight: $font-weight-black;
-  color: $color-text-primary;
-  line-height: 1;
-  white-space: nowrap;
-  display: flex;
-  gap: 2px;
-}
-
-.honbaLabel {
-  font-size: $font-size-xxs;
-  font-weight: $font-weight-bold;
-  color: $color-text-secondary;
-  margin-left: 0;
-  display: block;
-  margin-top: 4px;
 }
 
 .wallLabel {
@@ -160,52 +106,9 @@ $center-info-horizontal-player-offset-portrait: -70%;
   color: $color-text-primary;
 }
 
-.tileColumn {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: center;
-  gap: $space-1;
-  min-width: 0;
-}
-
-.tileSection {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  justify-content: space-between;
-  min-width: 0;
-}
-
-.tileLabel {
-  font-size: $font-size-xxs;
-  font-weight: $font-weight-bold;
+.wallUnit {
+  font-size: $font-size-sm;
   color: $color-text-secondary;
-  padding: 4px 2px;
-}
-
-.doraRow {
-  display: flex;
-  gap: $space-1;
-  align-items: center;
-  justify-content: flex-start;
-  flex: 1;
-}
-
-.doraItem {
-  display: flex;
-  align-items: center;
-}
-
-.trendRow {
-  display: flex;
-  gap: $space-1;
-  align-items: center;
-  justify-content: flex-start;
-  flex: 1;
-  flex-wrap: nowrap;
-}
-
-.tileSection + .tileSection {
-  padding-top: $space-1;
+  font-weight: $font-weight-bold;
+  line-height: 1;
 }

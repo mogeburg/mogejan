@@ -7,6 +7,7 @@ import {
 import { AutoActionToggle } from "@/components/AutoActionToggle";
 import { CenterInfo } from "@/components/CenterInfo";
 import { DanceAvatar } from "@/components/DanceAvatar";
+import { InfoPanel } from "@/components/InfoPanel";
 import { PlayerRow, type ActionLabel } from "@/components/PlayerRow";
 import { resolveBgmPath } from "@/constants/game";
 import { isPortraitGameSize } from "@/constants/layout";
@@ -410,25 +411,29 @@ export function GameScreen() {
           <PlayerRow {...playerRowProps(index)} />
         </div>
       ))}
-      <CenterInfo
-        players={s.players}
-        turnIndex={s.turnIndex}
-        parentIndex={s.parentIndex}
+      <InfoPanel
         round={s.round}
         kyoku={s.kyoku}
         honba={s.honba}
-        riichi={s.riichi}
-        ippatsu={s.ippatsu}
-        doubleReach={s.doubleReach}
-        ponMelds={s.ponMelds}
-        wallLength={s.wall.length}
         doraTile={s.doraTile}
         uradoraTile={s.uradoraTile}
         trendTypes={s.trendTypes}
         showAllTiles={s.showAllTiles}
         winner={s.winner}
-        speechBubbles={s.speechBubbles}
+        riichi={s.riichi}
+        ponMelds={s.ponMelds}
         focusedTileColor={focusedTileColor}
+      />
+      <CenterInfo
+        players={s.players}
+        turnIndex={s.turnIndex}
+        parentIndex={s.parentIndex}
+        riichi={s.riichi}
+        ippatsu={s.ippatsu}
+        doubleReach={s.doubleReach}
+        ponMelds={s.ponMelds}
+        wallLength={s.wall.length}
+        speechBubbles={s.speechBubbles}
         cpuPersonalities={s.cpuPersonalities}
       />
       <AutoActionToggle />
