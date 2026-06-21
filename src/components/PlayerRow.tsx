@@ -241,31 +241,51 @@ export function PlayerRow({
       <div
         className={`${styles.discardArea} ${!isCpuRow ? styles.discardAreaPlayer : ""}`}
       >
-        {playerDiscards.map((id, j) => (
-          <TileImage
-            key={`${id}-${j}`}
-            id={id}
-            size="small"
-            highlightSide={
-              riichiDiscardPosition === j ? riichiHighlightSide : highlightSide
-            }
-            glow={
-              lastDiscardTileId != null &&
-              id === lastDiscardTileId &&
-              j === playerDiscards.length - 1
-                ? YELLOW_GLOW
-                : undefined
-            }
-            blueOverlay={isFocusedColor(id)}
-            shine={isDoraTile(id)}
-            style={{
-              ...(riichiDiscardPosition === j
-                ? { transform: "rotate(-90deg)" }
-                : undefined),
-              ...(takenDiscards[j] ? { opacity: 0.35 } : undefined),
-            }}
-          />
-        ))}
+        {playerDiscards.map((id, j) => {
+          const isLatestDiscard =
+            lastDiscardTileId != null &&
+            id === lastDiscardTileId &&
+            j === playerDiscards.length - 1;
+          const transforms = [
+            riichiDiscardPosition === j ? "rotate(-90deg)" : null,
+          ].filter((value): value is string => value != null);
+
+          return (
+            <motion.div
+              key={`${id}-${j}`}
+              animate={isLatestDiscard ? { scale: [1, 1.15, 1] } : { scale: 1 }}
+              transition={
+                isLatestDiscard
+                  ? {
+                      duration: 0.75,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "easeInOut",
+                    }
+                  : undefined
+              }
+              style={{ transformOrigin: "center center" }}
+            >
+              <TileImage
+                id={id}
+                size="small"
+                highlightSide={
+                  riichiDiscardPosition === j
+                    ? riichiHighlightSide
+                    : highlightSide
+                }
+                glow={isLatestDiscard ? YELLOW_GLOW : undefined}
+                blueOverlay={isFocusedColor(id)}
+                shine={isDoraTile(id)}
+                style={{
+                  ...(transforms.length > 0
+                    ? { transform: transforms.join(" ") }
+                    : undefined),
+                  ...(takenDiscards[j] ? { opacity: 0.35 } : undefined),
+                }}
+              />
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );
