@@ -11,7 +11,6 @@ const audioCache = new Map<string, Howl>();
 function getOrCreateHowl(src: string, loop = false): Howl {
   const cached = audioCache.get(src);
   if (cached) {
-    cached.loop(loop);
     return cached;
   }
 
@@ -72,6 +71,7 @@ export function playBgm(src: string, loop = true) {
   currentBgm = getOrCreateHowl(src, loop);
   currentBgmSrc = src;
   currentBgm.stop();
+  currentBgm.loop(loop);
   currentBgm.volume(calcVolume("bgm"));
   currentBgm.play();
 }
