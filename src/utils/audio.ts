@@ -18,7 +18,7 @@ function getOrCreateHowl(src: string, loop = false): Howl {
   const howl = new Howl({
     src,
     loop,
-    preload: true,
+    preload: false,
   });
   audioCache.set(src, howl);
   return howl;

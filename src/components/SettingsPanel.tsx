@@ -5,7 +5,6 @@ import styles from "@/components/Panel.module.scss";
 import { Range } from "@/components/Range";
 import { SelectBox } from "@/components/SelectBox";
 import type { BgmKey, CpuStrength, TextSize } from "@/constants/game";
-import type { ScreenMode } from "@/constants/layout";
 import {
   BGM,
   BGM_NORMAL_KEYS,
@@ -15,6 +14,7 @@ import {
   TEXT_SIZE_LABELS,
   TEXT_SIZES,
 } from "@/constants/game";
+import type { ScreenMode } from "@/constants/layout";
 import { useGameStore } from "@/store";
 
 const CPU_STRENGTH_OPTIONS = CPU_STRENGTHS.map((strength) => ({
@@ -105,7 +105,9 @@ function RangeSetting({
 }) {
   return (
     <>
-      <FieldLabel className={`${styles.settingsSubLabel} ${styles.settingsSubLabelTight}`}>
+      <FieldLabel
+        className={`${styles.settingsSubLabel} ${styles.settingsSubLabelTight}`}
+      >
         {label}
       </FieldLabel>
       <Range min={min} max={max} value={value} onChange={onChange} />
@@ -224,7 +226,7 @@ export function SettingsPanel() {
 
               <div className={styles.settingsSurface}>
                 <ToggleSetting
-                  label="軽量モード"
+                  label="軽量モード(演出簡略化・BGM遅延読込）"
                   value={lightweightMode}
                   options={LIGHTWEIGHT_MODE_OPTIONS}
                   onChange={(value) => setLightweightMode(value as boolean)}

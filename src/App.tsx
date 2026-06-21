@@ -9,7 +9,7 @@ import { RiichiCutin } from "@/components/RiichiCutin";
 import { RulesPanel } from "@/components/RulesPanel";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { YakuListPanel } from "@/components/YakuListPanel";
-import { IS_DEBUG } from "@/constants/game";
+import { getPreloadBgmPaths, IS_DEBUG } from "@/constants/game";
 import { GameResultScreen } from "@/screens/GameResultScreen";
 import { GameScreen } from "@/screens/GameScreen";
 import { LoadingScreen } from "@/screens/LoadingScreen";
@@ -19,6 +19,7 @@ import { TitleScreen } from "@/screens/TitleScreen";
 import { YakuResultScreen } from "@/screens/YakuResultScreen";
 import { getGameSizeForScreenMode } from "@/constants/layout";
 import { useGameStore, type Screen } from "@/store";
+import { preloadAudioFiles } from "@/utils/audio";
 import { useEffect, useState, type ReactNode } from "react";
 
 const screens: Record<Screen, ReactNode> = {
@@ -38,6 +39,9 @@ export default function App() {
   const textSize = useGameStore((s) => s.textSize);
   const screenMode = useGameStore((s) => s.screenMode);
   const gameSize = useGameStore((s) => s.gameSize);
+  const lightweightMode = useGameStore((s) => s.lightweightMode);
+  const normalBgmSetting = useGameStore((s) => s.normalBgmSetting);
+  const riichiBgmSetting = useGameStore((s) => s.riichiBgmSetting);
   const setGameSize = useGameStore((s) => s.setGameSize);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuTabIndex, setMenuTabIndex] = useState(0);
@@ -61,6 +65,16 @@ export default function App() {
     window.addEventListener("resize", updateScale);
     return () => window.removeEventListener("resize", updateScale);
   }, [screenMode]);
+
+  useEffect(() => {
+    if (!lightweightMode) return;
+    const bgmFiles = getPreloadBgmPaths(
+      true,
+      normalBgmSetting,
+      riichiBgmSetting,
+    );
+    void preloadAudioFiles(bgmFiles);
+  }, [lightweightMode, normalBgmSetting, riichiBgmSetting]);
 
   return (
     <div className={styles.outer}>

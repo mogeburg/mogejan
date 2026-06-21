@@ -1,6 +1,8 @@
 import { Howler } from "howler";
 import { useRef, useState } from "react";
-import { BGM } from "@/constants/game";
+import {
+  getPreloadBgmPaths,
+} from "@/constants/game";
 import { useGameStore } from "@/store";
 import {
   cutinImageUrl,
@@ -12,8 +14,7 @@ import {
 import { preloadAudioFiles } from "@/utils/audio";
 import styles from "@/screens/LoadingScreen.module.scss";
 
-const audioFiles = [
-  ...(Object.values(BGM).filter((b) => b.path).map((b) => b.path)),
+const BASE_AUDIO_FILES = [
   seAudioUrl("atari.opus"),
   seAudioUrl("drop.opus"),
   seAudioUrl("end.opus"),
@@ -61,7 +62,6 @@ const tileIds = [
 ];
 
 const totalImages = tileIds.length + charIds.length * 2 + 2;
-const totalItems = totalImages + audioFiles.length;
 
 const preloadedImages: HTMLImageElement[] = [];
 
@@ -93,11 +93,21 @@ function preloadImages(onProgress: () => void): Promise<void> {
 }
 
 function preloadAudio(onProgress: () => void): Promise<void> {
+  const state = useGameStore.getState();
+  const bgmFiles = getPreloadBgmPaths(
+    state.lightweightMode,
+    state.normalBgmSetting,
+    state.riichiBgmSetting,
+  );
+  const audioFiles = [...bgmFiles, ...BASE_AUDIO_FILES];
   return preloadAudioFiles(audioFiles, onProgress);
 }
 
 export function LoadingScreen() {
   const goTo = useGameStore((s) => s.goTo);
+  const lightweightMode = useGameStore((s) => s.lightweightMode);
+  const normalBgmSetting = useGameStore((s) => s.normalBgmSetting);
+  const riichiBgmSetting = useGameStore((s) => s.riichiBgmSetting);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const started = useRef(false);
@@ -110,6 +120,15 @@ export function LoadingScreen() {
     const ctx = Howler.ctx;
     if (ctx?.state === "suspended") ctx.resume();
     setLoading(true);
+
+    const totalAudioItems =
+      BASE_AUDIO_FILES.length +
+      getPreloadBgmPaths(
+        lightweightMode,
+        normalBgmSetting,
+        riichiBgmSetting,
+      ).length;
+    const totalItems = totalImages + totalAudioItems;
 
     const inc = () => {
       loadedRef.current++;

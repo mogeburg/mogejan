@@ -51,8 +51,18 @@ export const BGM = {
   aimoge: { label: "あいもげのテーマ", path: bgmAudioUrl("aimoge.opus") },
   kanimoge: { label: "かにもげのテーマ", path: bgmAudioUrl("kanimoge.opus") },
   hassan: { label: "ハッサンのテーマ", path: bgmAudioUrl("hassan.opus") },
+  sabachang: {
+    label: "鯖ちゃんのテーマ",
+    path: bgmAudioUrl("sabachang.opus"),
+  },
   random: { label: "ランダム", path: "" },
 } as const;
+
+export type BgmKey = keyof typeof BGM;
+
+function isBgmKey(value: string): value is BgmKey {
+  return value in BGM;
+}
 
 // BGM一覧から選択肢に表示するキー（op, win は固定BGMのため除外）
 export const BGM_SELECTABLE_KEYS: BgmKey[] = [
@@ -64,6 +74,7 @@ export const BGM_SELECTABLE_KEYS: BgmKey[] = [
   "aimoge",
   "kanimoge",
   "hassan",
+  "sabachang",
 ];
 export const BGM_NORMAL_KEYS: BgmKey[] = [
   "random",
@@ -73,6 +84,7 @@ export const BGM_NORMAL_KEYS: BgmKey[] = [
   "aimoge",
   "kanimoge",
   "hassan",
+  "sabachang",
 ];
 
 // BGM_MUSIC_KEYS: 実際に音楽が存在するキー（none/random/op/win を除く）
@@ -83,6 +95,7 @@ export const BGM_MUSIC_KEYS: BgmKey[] = [
   "aimoge",
   "kanimoge",
   "hassan",
+  "sabachang",
 ];
 
 export function resolveBgmKey(
@@ -90,6 +103,8 @@ export function resolveBgmKey(
   exclude: BgmKey,
   excludePath?: string,
 ): BgmKey {
+  if (!isBgmKey(setting)) return "game";
+  if (!isBgmKey(exclude)) exclude = "none";
   if (setting !== "random") return setting;
   const pool = BGM_MUSIC_KEYS.filter(
     (k) => k !== exclude && BGM[k].path !== excludePath,
@@ -108,10 +123,38 @@ export function resolveBgmPath(
 ): string {
   const resolved = resolveBgmKey(setting, exclude, excludePath);
   if (resolved === "none") return "";
-  return BGM[resolved].path;
+  return BGM[resolved]?.path ?? BGM.game.path;
 }
 
-export type BgmKey = keyof typeof BGM;
+export function getPreloadBgmPaths(
+  lightweightMode: boolean,
+  normalBgmSetting: BgmKey,
+  riichiBgmSetting: BgmKey,
+): string[] {
+  if (!lightweightMode) {
+    return Object.values(BGM)
+      .filter((bgm) => bgm.path)
+      .map((bgm) => bgm.path);
+  }
+
+  const files = new Set<string>();
+  files.add(BGM.op.path);
+  files.add(BGM.win.path);
+
+  const addIfPresent = (path: string) => {
+    if (path) files.add(path);
+  };
+
+  if (normalBgmSetting !== "random") {
+    addIfPresent(resolveBgmPath(normalBgmSetting, "riichi"));
+  }
+
+  if (riichiBgmSetting !== "random") {
+    addIfPresent(resolveBgmPath(riichiBgmSetting, "game"));
+  }
+
+  return [...files];
+}
 
 export const PLAYER_CONFIGS = TileData.slice(0, PLAYER_COUNT).map(
   ({ id, colorHex, name }) => ({
