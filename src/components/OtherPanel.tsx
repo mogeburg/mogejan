@@ -69,24 +69,6 @@ export function OtherPanel() {
         <MenuSection title="クレジット">
           <div className={styles.creditGrid}>
             <div className={styles.creditCard}>
-              <h4 className={styles.creditTitle}>キャラクターなど</h4>
-              <div className={styles.creditBody}>
-                <ul className={styles.creditList}>
-                  <li>
-                    <a
-                      className={styles.creditLink}
-                      href="https://nijiurachan.net/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      二次元裏@αimg(あいもげ)
-                    </a>
-                  </li>
-                </ul>
-              </div>
-            </div>
-
-            <div className={styles.creditCard}>
               <h4 className={styles.creditTitle}>BGM</h4>
               <div className={styles.creditBody}>
                 <ul className={styles.creditList}>
@@ -137,6 +119,34 @@ export function OtherPanel() {
                       rel="noopener noreferrer"
                     >
                       音読さん
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className={styles.creditCard}>
+              <h4 className={styles.creditTitle}>その他</h4>
+              <div className={styles.creditBody}>
+                <ul className={styles.creditList}>
+                  <li>
+                    <a
+                      className={styles.creditLink}
+                      href="https://nijiurachan.net/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      二次元裏@αimg(あいもげ)
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      className={styles.creditLink}
+                      href="https://mogeburg.github.io/mogejan/versions/"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      前バージョン
                     </a>
                   </li>
                 </ul>
