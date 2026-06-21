@@ -4,9 +4,13 @@
 
 $center-info-card-width: 240px;
 $center-info-card-height: 120px;
+$center-info-card-width-portrait: 130px;
+$center-info-card-height-portrait: 240px;
 $center-info-border-color: $color-border-subtle;
-$center-info-vertical-player-offset: -70%;
+$center-info-vertical-player-offset: -75%;
 $center-info-horizontal-player-offset: -34%;
+$center-info-vertical-player-offset-portrait: -40%;
+$center-info-horizontal-player-offset-portrait: -20%;
 
 .container {
   position: absolute;
@@ -18,12 +22,21 @@ $center-info-horizontal-player-offset: -34%;
   z-index: 1;
 }
 
+.containerPortrait {
+  width: $center-info-card-width-portrait;
+  height: $center-info-card-height-portrait;
+}
+
 .cpuTop {
   position: absolute;
   top: $center-info-vertical-player-offset;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
+}
+
+.cpuTopPortrait {
+  top: $center-info-vertical-player-offset-portrait;
 }
 
 .cpuLeft {
@@ -34,6 +47,10 @@ $center-info-horizontal-player-offset: -34%;
   z-index: 2;
 }
 
+.cpuLeftPortrait {
+  left: $center-info-horizontal-player-offset-portrait;
+}
+
 .cpuRight {
   position: absolute;
   top: 50%;
@@ -42,12 +59,20 @@ $center-info-horizontal-player-offset: -34%;
   z-index: 2;
 }
 
+.cpuRightPortrait {
+  right: $center-info-horizontal-player-offset-portrait;
+}
+
 .playerBottom {
   position: absolute;
   bottom: $center-info-vertical-player-offset;
   left: 50%;
   transform: translateX(-50%);
   z-index: 2;
+}
+
+.playerBottomPortrait {
+  bottom: $center-info-vertical-player-offset-portrait;
 }
 
 .centerBox {
@@ -69,6 +94,11 @@ $center-info-horizontal-player-offset: -34%;
   padding: $space-4;
 }
 
+.infoCardPortrait {
+  width: $center-info-card-width-portrait;
+  height: $center-info-card-height-portrait;
+}
+
 .infoMain {
   display: flex;
   align-items: center;
@@ -76,6 +106,12 @@ $center-info-horizontal-player-offset: -34%;
   gap: $space-3;
   width: 100%;
   height: 100%;
+}
+
+.infoMainPortrait {
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: space-between;
 }
 
 .infoText {
@@ -115,7 +151,6 @@ $center-info-horizontal-player-offset: -34%;
   display: flex;
   align-items: flex-end;
   white-space: nowrap;
-  margin-top: auto;
 }
 
 .wallCount {
@@ -178,9 +213,5 @@ $center-info-horizontal-player-offset: -34%;
 @media (max-width: 768px) {
   .container {
     width: calc($center-info-card-width * 0.92);
-  }
-
-  .infoCard {
-    width: 100%;
   }
 }

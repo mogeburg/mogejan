@@ -3,7 +3,7 @@
 @use "@/styles/mixins" as *;
 
 $auto-action-offset: var(--ui-space-4, 8px);
-$auto-action-gap: var(--ui-space-1, 8px);
+$auto-action-gap: var(--ui-space-1, 12px);
 $auto-action-label-padding: calc(4px * var(--ui-scale, 1)) calc(10px * var(--ui-scale, 1));
 $auto-action-button-padding: calc(7px * var(--ui-scale, 1)) calc(16px * var(--ui-scale, 1));
 $auto-action-button-border-width: 2px;
@@ -18,7 +18,7 @@ $auto-action-panel-slide-width: calc(
 
 .container {
   position: absolute;
-  bottom: 90px;
+  bottom: 100px;
   right: 0;
   z-index: 50;
 }
@@ -28,7 +28,6 @@ $auto-action-panel-slide-width: calc(
   align-items: flex-start;
   justify-content: flex-end;
   transition: transform 180ms ease;
-  filter: drop-shadow($auto-action-tray-shadow);
   background: $auto-action-tray-bg;
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-right: 0;
@@ -66,6 +65,7 @@ $auto-action-panel-slide-width: calc(
   padding: $auto-action-panel-padding;
   background: transparent;
   width: $auto-action-panel-width;
+  filter: drop-shadow($auto-action-tray-shadow);
 }
 
 .open .wrapper {

@@ -1,16 +1,24 @@
 @use "@/styles/layout" as *;
 
-$player-row-action-bottom: 84px;
+$player-row-action-bottom: 100px;
 $player-row-drawn-gap: $space-5;
 $player-row-discard-width: 100%;
 $player-row-discard-height: 45%;
-$player-row-discard-top: $space-7;
+$player-row-discard-top: $space-5;
 
 .container {
   position: relative;
   width: $layout-player-box-width;
   height: $layout-player-box-height;
   overflow: hidden;
+}
+
+.containerCpu {
+  width: $layout-cpu-player-box-width;
+}
+
+.containerPlayerPortrait {
+  height: 410px;
 }
 
 .actionRow {
@@ -20,7 +28,7 @@ $player-row-discard-top: $space-7;
   right: 0;
   display: flex;
   justify-content: center;
-  gap: $space-4;
+  gap: $space-5;
   z-index: 2;
 }
 
@@ -35,8 +43,22 @@ $player-row-discard-top: $space-7;
 
 .handInner {
   display: flex;
-  width: 100%;   
-  place-content: center;
+  width: 100%;
+  margin: auto;
+}
+
+.cpuHandInner {
+  justify-content: center;
+}
+
+.handGroup {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+}
+
+.cpuHandGroup {
+  justify-content: space-between;
 }
 
 .handTiles {
@@ -55,6 +77,10 @@ $player-row-discard-top: $space-7;
   margin-left: auto;
 }
 
+.cpuPonArea {
+  margin-left: $space-3;
+}
+
 .ponMeld {
   display: flex;
   gap: 1px;
@@ -69,4 +95,9 @@ $player-row-discard-top: $space-7;
   width: $player-row-discard-width;
   height: $player-row-discard-height;
   top: $player-row-discard-top;
+}
+
+.discardAreaPlayer {
+  width: $layout-cpu-player-box-width;
+  left: calc(50% - $layout-cpu-player-box-width / 2);
 }

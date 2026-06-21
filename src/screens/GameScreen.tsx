@@ -9,11 +9,12 @@ import { CenterInfo } from "@/components/CenterInfo";
 import { DanceAvatar } from "@/components/DanceAvatar";
 import { PlayerRow, type ActionLabel } from "@/components/PlayerRow";
 import { resolveBgmPath } from "@/constants/game";
+import { isPortraitGameSize } from "@/constants/layout";
 import { getTileColor } from "@/constants/tiles";
 import styles from "@/screens/GameScreen.module.scss";
-import layoutTokens from "@/styles/layoutTokens.module.scss";
 import { useGameStore } from "@/store";
 import { useGameScreenStore } from "@/storeSelectors";
+import layoutTokens from "@/styles/layoutTokens.module.scss";
 import { useBgm } from "@/utils/audio";
 import { canFormTenpai, canFormWinningHand } from "@/utils/check";
 import {
@@ -32,52 +33,15 @@ function parsePixelValue(value: string): number {
   return Number.parseFloat(value) || 0;
 }
 
-const PLAYER_BOX_WIDTH = parsePixelValue(layoutTokens.playerBoxWidth);
 const PLAYER_BOX_HEIGHT = parsePixelValue(layoutTokens.playerBoxHeight);
-const PLAYER_BOX_ROTATE_OFFSET = (PLAYER_BOX_WIDTH - PLAYER_BOX_HEIGHT) / 2;
-
-const PLAYER_LAYOUTS = [
-  {
-    index: 0,
-    style: {
-      position: "absolute" as const,
-      bottom: 5,
-      left: "50%",
-      transform: "translateX(-50%)",
-    },
-  },
-  {
-    index: 1,
-    style: {
-      position: "absolute" as const,
-      top: `calc(50% - ${PLAYER_BOX_HEIGHT / 2}px)`,
-      left: -PLAYER_BOX_ROTATE_OFFSET + 5,
-      transform: "rotate(90deg)",
-    },
-  },
-  {
-    index: 2,
-    style: {
-      position: "absolute" as const,
-      top: 5,
-      left: "50%",
-      transform: "translateX(-50%) rotate(180deg)",
-    },
-  },
-  {
-    index: 3,
-    style: {
-      position: "absolute" as const,
-      top: `calc(50% - ${PLAYER_BOX_HEIGHT / 2}px)`,
-      right: -PLAYER_BOX_ROTATE_OFFSET + 5,
-      transform: "rotate(270deg)",
-    },
-  },
-];
+const CPU_PLAYER_BOX_WIDTH = parsePixelValue(layoutTokens.cpuPlayerBoxWidth);
+const CPU_PLAYER_BOX_ROTATE_OFFSET =
+  (CPU_PLAYER_BOX_WIDTH - PLAYER_BOX_HEIGHT) / 2;
 
 export function GameScreen() {
   const s = useGameScreenStore();
   const lightweightMode = useGameStore((state) => state.lightweightMode);
+  const gameSize = useGameStore((state) => state.gameSize);
 
   const [focusedTileColor, setFocusedTileColor] = useState<number | null>(null);
   const handleTileFocus = useCallback((tileId: number) => {
@@ -92,6 +56,51 @@ export function GameScreen() {
     [s.normalBgmSetting, s.riichiBgmSetting],
   );
   useBgm(normalBgmPath);
+
+  const playerLayouts = useMemo(() => {
+    const sideOffset = isPortraitGameSize(gameSize)
+      ? -CPU_PLAYER_BOX_ROTATE_OFFSET + 5
+      : CPU_PLAYER_BOX_ROTATE_OFFSET + 5;
+
+    return [
+      {
+        index: 0,
+        style: {
+          position: "absolute" as const,
+          bottom: 5,
+          left: "50%",
+          transform: "translateX(-50%)",
+        },
+      },
+      {
+        index: 1,
+        style: {
+          position: "absolute" as const,
+          top: `calc(50% - ${PLAYER_BOX_HEIGHT / 2}px)`,
+          left: sideOffset,
+          transform: "rotate(90deg)",
+        },
+      },
+      {
+        index: 2,
+        style: {
+          position: "absolute" as const,
+          top: isPortraitGameSize(gameSize) ? 220 : 5,
+          left: "50%",
+          transform: "translateX(-50%) rotate(180deg)",
+        },
+      },
+      {
+        index: 3,
+        style: {
+          position: "absolute" as const,
+          top: `calc(50% - ${PLAYER_BOX_HEIGHT / 2}px)`,
+          right: sideOffset,
+          transform: "rotate(270deg)",
+        },
+      },
+    ];
+  }, [gameSize]);
 
   useEffect(() => {
     startShineSync(lightweightMode);
@@ -396,7 +405,7 @@ export function GameScreen() {
 
   return (
     <div className={styles.wrapper}>
-      {PLAYER_LAYOUTS.map(({ index, style }) => (
+      {playerLayouts.map(({ index, style }) => (
         <div key={index} style={style}>
           <PlayerRow {...playerRowProps(index)} />
         </div>

@@ -1,6 +1,7 @@
 import { Button } from "@/components/Button";
 import styles from "@/components/PlayerRow.module.scss";
 import { TileImage } from "@/components/TileImage";
+import { isPortraitGameSize } from "@/constants/layout";
 import { getTileColor, isDoraLikeTile } from "@/constants/tiles";
 import type { Player } from "@/store";
 import { useGameStore } from "@/store";
@@ -111,6 +112,9 @@ export function PlayerRow({
 }: PlayerRowProps) {
   const YELLOW_GLOW = "0 0 0 2px #ffd700, 0 0 8px 3px rgba(255,215,0,0.35)";
   const tileSize = index === 0 ? "normal" : "small";
+  const isCpuRow = index !== 0;
+  const gameSize = useGameStore((s) => s.gameSize);
+  const isPortrait = isPortraitGameSize(gameSize);
 
   const HIGHLIGHT_SIDE_MAP = ["top", "right", "bottom", "left"] as const;
   const highlightSide = HIGHLIGHT_SIDE_MAP[index];
@@ -121,7 +125,9 @@ export function PlayerRow({
   const isFocusedColor = (id: number) =>
     focusedTileColor != null && getTileColor(id) === focusedTileColor;
   return (
-    <div className={styles.container}>
+    <div
+      className={`${styles.container} ${isCpuRow ? styles.containerCpu : ""} ${!isCpuRow && isPortrait ? styles.containerPlayerPortrait : ""}`}
+    >
       {(player.type === "human" || manualCpu) && (
         <div className={styles.actionRow}>
           {ACTION_BUTTONS.filter((label) =>
@@ -145,69 +151,79 @@ export function PlayerRow({
         </div>
       )}
       <div className={styles.handArea}>
-        <div className={styles.handInner}>
-          <div className={styles.handTiles}>
-            {hand.map((id, handIndex) => (
-              <motion.div
-                key={`${id}-${handIndex}`}
-                whileHover={canDiscard ? { y: -4 } : undefined}
-                transition={{ duration: 0.03 }}
-                onMouseEnter={() => onTileFocus?.(id)}
-                onMouseLeave={onTileBlur}
-              >
-                <TileImage
-                  id={id}
-                  size={tileSize}
-                  faceDown={faceDown}
-                  highlightSide={highlightSide}
-                  onClick={canDiscard ? () => onDiscard(id) : undefined}
-                  shine={!faceDown && isDoraTile(id)}
-                />
-              </motion.div>
-            ))}
-            {isTurn && drawnTile != null && (
-              <div className={styles.drawnTileGap}>
+        <div
+          className={`${styles.handInner} ${isCpuRow ? styles.cpuHandInner : ""}`}
+        >
+          <div
+            className={`${styles.handGroup} ${isCpuRow ? styles.cpuHandGroup : ""}`}
+          >
+            <div className={styles.handTiles}>
+              {hand.map((id, handIndex) => (
                 <motion.div
+                  key={`${id}-${handIndex}`}
                   whileHover={canDiscard ? { y: -4 } : undefined}
                   transition={{ duration: 0.03 }}
-                  onMouseEnter={() => onTileFocus?.(drawnTile)}
+                  onMouseEnter={() => onTileFocus?.(id)}
                   onMouseLeave={onTileBlur}
                 >
                   <TileImage
-                    id={drawnTile}
+                    id={id}
                     size={tileSize}
                     faceDown={faceDown}
                     highlightSide={highlightSide}
-                    onClick={
-                      canDiscard ? () => onDiscard(drawnTile) : undefined
-                    }
-                    shine={!faceDown && isDoraTile(drawnTile)}
+                    onClick={canDiscard ? () => onDiscard(id) : undefined}
+                    shine={!faceDown && isDoraTile(id)}
                   />
                 </motion.div>
+              ))}
+              {isTurn && drawnTile != null && (
+                <div className={styles.drawnTileGap}>
+                  <motion.div
+                    whileHover={canDiscard ? { y: -4 } : undefined}
+                    transition={{ duration: 0.03 }}
+                    onMouseEnter={() => onTileFocus?.(drawnTile)}
+                    onMouseLeave={onTileBlur}
+                  >
+                    <TileImage
+                      id={drawnTile}
+                      size={tileSize}
+                      faceDown={faceDown}
+                      highlightSide={highlightSide}
+                      onClick={
+                        canDiscard ? () => onDiscard(drawnTile) : undefined
+                      }
+                      shine={!faceDown && isDoraTile(drawnTile)}
+                    />
+                  </motion.div>
+                </div>
+              )}
+            </div>
+            {ponMelds.length > 0 && (
+              <div
+                className={`${styles.ponArea} ${isCpuRow ? styles.cpuPonArea : ""}`}
+              >
+                {ponMelds.map((meld, mi) => (
+                  <div key={mi} className={styles.ponMeld}>
+                    {meld.map((id, tileIndex) => (
+                      <TileImage
+                        key={`${mi}-${id}-${tileIndex}`}
+                        id={id}
+                        size={tileSize}
+                        highlightSide={highlightSide}
+                        blueOverlay={isFocusedColor(id)}
+                        shine={isDoraTile(id)}
+                      />
+                    ))}
+                  </div>
+                ))}
               </div>
             )}
           </div>
-          {ponMelds.length > 0 && (
-            <div className={styles.ponArea}>
-              {ponMelds.map((meld, mi) => (
-                <div key={mi} className={styles.ponMeld}>
-                  {meld.map((id, tileIndex) => (
-                    <TileImage
-                      key={`${mi}-${id}-${tileIndex}`}
-                      id={id}
-                      size={tileSize}
-                      highlightSide={highlightSide}
-                      blueOverlay={isFocusedColor(id)}
-                      shine={isDoraTile(id)}
-                    />
-                  ))}
-                </div>
-              ))}
-            </div>
-          )}
         </div>
       </div>
-      <div className={styles.discardArea}>
+      <div
+        className={`${styles.discardArea} ${!isCpuRow ? styles.discardAreaPlayer : ""}`}
+      >
         {playerDiscards.map((id, j) => (
           <TileImage
             key={`${id}-${j}`}

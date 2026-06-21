@@ -1,5 +1,6 @@
 import type { CpuPersonality } from "@/ai/CpuController";
 import styles from "@/components/CenterInfo.module.scss";
+import { isPortraitGameSize } from "@/constants/layout";
 import { PlayerInfo } from "@/components/PlayerInfo";
 import { TileImage } from "@/components/TileImage";
 import {
@@ -8,6 +9,7 @@ import {
   TREND_TILE_START,
 } from "@/constants/tiles";
 import type { Player } from "@/store";
+import { useGameStore } from "@/store";
 
 const WIND_LABELS = ["東", "南"];
 
@@ -54,11 +56,13 @@ export function CenterInfo({
   focusedTileColor,
   cpuPersonalities = [],
 }: CenterInfoProps) {
+  const gameSize = useGameStore((s) => s.gameSize);
+  const isPortrait = isPortraitGameSize(gameSize);
   const getPlayerBubbles = (playerIndex: number) =>
     speechBubbles.filter((b) => b.playerIndex === playerIndex);
   return (
-    <div className={styles.container}>
-      <div className={styles.cpuTop}>
+    <div className={`${styles.container} ${isPortrait ? styles.containerPortrait : ""}`}>
+      <div className={`${styles.cpuTop} ${isPortrait ? styles.cpuTopPortrait : ""}`}>
         <PlayerInfo
           player={players[2]}
           isTurn={turnIndex === 2}
@@ -71,7 +75,7 @@ export function CenterInfo({
           cpuPersonality={cpuPersonalities[2]}
         />
       </div>
-      <div className={styles.cpuLeft}>
+      <div className={`${styles.cpuLeft} ${isPortrait ? styles.cpuLeftPortrait : ""}`}>
         <PlayerInfo
           player={players[1]}
           isTurn={turnIndex === 1}
@@ -85,7 +89,7 @@ export function CenterInfo({
           badgeSide="left"
         />
       </div>
-      <div className={styles.cpuRight}>
+      <div className={`${styles.cpuRight} ${isPortrait ? styles.cpuRightPortrait : ""}`}>
         <PlayerInfo
           player={players[3]}
           isTurn={turnIndex === 3}
@@ -98,7 +102,9 @@ export function CenterInfo({
           cpuPersonality={cpuPersonalities[3]}
         />
       </div>
-      <div className={styles.playerBottom}>
+      <div
+        className={`${styles.playerBottom} ${isPortrait ? styles.playerBottomPortrait : ""}`}
+      >
         <PlayerInfo
           player={players[0]}
           isTurn={turnIndex === 0}
@@ -112,8 +118,8 @@ export function CenterInfo({
         />
       </div>
       <div className={styles.centerBox}>
-        <div className={styles.infoCard}>
-          <div className={styles.infoMain}>
+        <div className={`${styles.infoCard} ${isPortrait ? styles.infoCardPortrait : ""}`}>
+          <div className={`${styles.infoMain} ${isPortrait ? styles.infoMainPortrait : ""}`}>
             <div className={styles.infoText}>
               <span className={styles.roundLabel}>
                 {WIND_LABELS[round]}
