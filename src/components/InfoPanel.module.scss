@@ -22,7 +22,15 @@
 }
 
 .roundLabel {
-  font-size: $font-size-sm;
+  font-size: $font-size-md;
+  font-weight: $font-weight-black;
+  color: $color-text-primary;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.kyokuLabel {
+  font-size: $font-size-md;
   font-weight: $font-weight-black;
   color: $color-text-primary;
   line-height: 1;
@@ -30,23 +38,30 @@
 }
 
 .honbaLabel {
-  font-size: $font-size-xxs;
+  font-size: $font-size-sm;
   font-weight: $font-weight-bold;
   color: $color-text-secondary;
   line-height: 1;
   white-space: nowrap;
 }
 
+.tileSections {
+  display: flex;
+  align-items: flex-start;
+  gap: $space-4;
+  min-width: 0;
+}
+
 .section {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 2px;
+  gap: $space-1;
   min-width: 0;
 }
 
 .label {
-  font-size: $font-size-xxs;
+  font-size: $font-size-sm;
   font-weight: $font-weight-bold;
   color: $color-text-secondary;
   line-height: 1;

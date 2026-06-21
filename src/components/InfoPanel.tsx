@@ -1,6 +1,10 @@
 import styles from "@/components/InfoPanel.module.scss";
 import { TileImage } from "@/components/TileImage";
-import { getTileColor, TREND_COPIES, TREND_TILE_START } from "@/constants/tiles";
+import {
+  getTileColor,
+  TREND_COPIES,
+  TREND_TILE_START,
+} from "@/constants/tiles";
 
 const WIND_LABELS = ["東", "南"];
 
@@ -38,51 +42,51 @@ export function InfoPanel({
   return (
     <div className={styles.container}>
       <div className={styles.roundRow}>
-        <span className={styles.roundLabel}>
-          {WIND_LABELS[round]}
-          {kyoku + 1}局
-        </span>
-        <span className={styles.honbaLabel}>{honba}本場</span>
+        <span className={styles.roundLabel}>{WIND_LABELS[round]}</span>
+        <span className={styles.kyokuLabel}>{kyoku + 1}局</span>
+        {honba > 0 && <span className={styles.honbaLabel}>{honba}本場</span>}
       </div>
-      {(doraTile != null || uradoraTile != null) && (
-        <div className={styles.section}>
-          <span className={styles.label}>ドラ</span>
-          <div className={styles.tileRow}>
-            {doraTile != null && (
-              <TileImage
-                id={doraTile}
-                size="mini"
-                shine
-                blueOverlay={
-                  focusedTileColor != null &&
-                  getTileColor(doraTile) === focusedTileColor
-                }
-              />
-            )}
-            {uradoraTile != null && (
-              <TileImage
-                id={uradoraTile}
-                size="mini"
-                faceDown={!showUradora}
-              />
-            )}
+      <div className={styles.tileSections}>
+        {(doraTile != null || uradoraTile != null) && (
+          <div className={styles.section}>
+            <span className={styles.label}>ドラ</span>
+            <div className={styles.tileRow}>
+              {doraTile != null && (
+                <TileImage
+                  id={doraTile}
+                  size="small"
+                  shine
+                  blueOverlay={
+                    focusedTileColor != null &&
+                    getTileColor(doraTile) === focusedTileColor
+                  }
+                />
+              )}
+              {uradoraTile != null && (
+                <TileImage
+                  id={uradoraTile}
+                  size="small"
+                  faceDown={!showUradora}
+                />
+              )}
+            </div>
           </div>
-        </div>
-      )}
-      {trendTypes.length > 0 && (
-        <div className={styles.section}>
-          <span className={styles.label}>流行</span>
-          <div className={styles.tileRow}>
-            {trendTypes.map((trendType) => (
-              <TileImage
-                key={trendType}
-                id={TREND_TILE_START + trendType * TREND_COPIES}
-                size="mini"
-              />
-            ))}
+        )}
+        {trendTypes.length > 0 && (
+          <div className={styles.section}>
+            <span className={styles.label}>流行</span>
+            <div className={styles.tileRow}>
+              {trendTypes.map((trendType) => (
+                <TileImage
+                  key={trendType}
+                  id={TREND_TILE_START + trendType * TREND_COPIES}
+                  size="small"
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
