@@ -10,7 +10,7 @@ $center-info-border-color: $color-border-subtle;
 $center-info-vertical-player-offset: -75%;
 $center-info-horizontal-player-offset: -34%;
 $center-info-vertical-player-offset-portrait: -40%;
-$center-info-horizontal-player-offset-portrait: -20%;
+$center-info-horizontal-player-offset-portrait: -70%;
 
 .container {
   position: absolute;
@@ -208,10 +208,4 @@ $center-info-horizontal-player-offset-portrait: -20%;
 
 .tileSection + .tileSection {
   padding-top: $space-1;
-}
-
-@media (max-width: 768px) {
-  .container {
-    width: calc($center-info-card-width * 0.92);
-  }
 }
