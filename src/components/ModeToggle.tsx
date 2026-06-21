@@ -10,6 +10,7 @@ interface ModeToggleProps {
   activeIndex: number;
   onChange: (index: number) => void;
   compact?: boolean;
+  variant?: "red" | "blue";
 }
 
 export function ModeToggle({
@@ -17,6 +18,7 @@ export function ModeToggle({
   activeIndex,
   onChange,
   compact = false,
+  variant = "red",
 }: ModeToggleProps) {
   const rowClass = [styles.row, compact ? styles.rowCompact : ""]
     .filter(Boolean)
@@ -28,6 +30,7 @@ export function ModeToggle({
         const active = i === activeIndex;
         const cls = [
           styles.btn,
+          variant === "blue" ? styles.btnBlue : styles.btnRed,
           active ? styles.active : "",
           !active && !item.disabled ? styles.inactive : "",
           item.disabled ? styles.disabled : "",

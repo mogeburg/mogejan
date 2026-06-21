@@ -24,7 +24,7 @@ export function AutoActionToggle() {
           onClick={() => setOpen(!open)}
           type="button"
         >
-          {open ? "▶自動" : "◀自動"}
+          自動操作
         </button>
         <div className={styles.panel}>
           {(["ronTsumo", "riichi", "pon", "cancel"] as const).map((key) => (

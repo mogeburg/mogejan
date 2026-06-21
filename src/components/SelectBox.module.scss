@@ -7,7 +7,7 @@ $select-border-width: 2px;
 $select-focus-ring-size: 3px;
 $select-arrow-right: calc(10px * var(--ui-scale, 1));
 $select-disabled-opacity: 0.4;
-$select-focus-ring: rgba(21, 101, 192, 0.18);
+$select-focus-ring: rgba(229, 57, 53, 0.2);
 
 .row {
   display: flex;
@@ -37,12 +37,12 @@ $select-focus-ring: rgba(21, 101, 192, 0.18);
   transition: border-color 0.15s, box-shadow 0.15s;
 
   &:hover {
-    border-color: $color-accent-secondary;
+    border-color: $color-accent;
   }
 
   &:focus {
     outline: none;
-    border-color: $color-accent-secondary;
+    border-color: $color-accent;
     box-shadow: 0 0 0 $select-focus-ring-size $select-focus-ring;
   }
 

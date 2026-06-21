@@ -10,8 +10,8 @@ $range-thumb-border-width: 2px;
 $range-thumb-hover-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
 $range-fill: linear-gradient(
   90deg,
-  $color-accent-secondary-strong,
-  $color-accent-secondary
+  $color-accent-strong,
+  $color-accent
 );
 
 .row {
@@ -39,7 +39,7 @@ $range-fill: linear-gradient(
 .value {
   font-size: $font-size-md;
   font-weight: $font-weight-bold;
-  color: $color-accent-secondary;
+  color: $color-accent;
   min-width: calc(#{$range-value-min-width} * var(--ui-scale, 1));
   text-align: right;
   flex-shrink: 0;
@@ -83,7 +83,7 @@ $range-fill: linear-gradient(
     height: $range-thumb-size;
     border-radius: 50%;
     background: $color-text-contrast;
-    border: $range-thumb-border-width solid $color-accent-secondary;
+    border: $range-thumb-border-width solid $color-accent;
     box-shadow: $shadow-1;
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;
@@ -94,7 +94,7 @@ $range-fill: linear-gradient(
     height: $range-thumb-size;
     border-radius: 50%;
     background: $color-text-contrast;
-    border: $range-thumb-border-width solid $color-accent-secondary;
+    border: $range-thumb-border-width solid $color-accent;
     box-shadow: $shadow-1;
     cursor: pointer;
     transition: transform 0.1s, box-shadow 0.1s;

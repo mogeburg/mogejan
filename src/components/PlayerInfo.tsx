@@ -17,6 +17,7 @@ interface PlayerInfoProps {
   speechBubbles: { id: number; text: string }[];
   cpuPersonality?: CpuPersonality | null;
   badgeSide?: "left" | "right";
+  badgeLayout?: "side" | "bottom";
 }
 
 export function PlayerInfo({
@@ -30,6 +31,7 @@ export function PlayerInfo({
   speechBubbles,
   cpuPersonality,
   badgeSide = "right",
+  badgeLayout = "side",
 }: PlayerInfoProps) {
   const showCpuPersonalities = useGameStore(
     (s) => s.debugFlags.showCpuPersonalities,
@@ -77,11 +79,23 @@ export function PlayerInfo({
         )}
       </div>
       <div
-        className={`${styles.statusRow} ${badgeSide === "left" ? styles.statusRowLeft : styles.statusRowRight}`}
+        className={`${styles.statusRow} ${
+          badgeLayout === "bottom"
+            ? styles.statusRowBottom
+            : badgeSide === "left"
+              ? styles.statusRowLeft
+              : styles.statusRowRight
+        }`}
       >
         {badgeItems.length > 0 && (
           <div
-            className={badgeSide === "left" ? styles.badgeColumnLeft : styles.badgeColumnRight}
+            className={
+              badgeLayout === "bottom"
+                ? styles.badgeColumnBottom
+                : badgeSide === "left"
+                  ? styles.badgeColumnLeft
+                  : styles.badgeColumnRight
+            }
           >
             {badgeItems.map((badge) => (
               <span key={badge} className={styles.badge}>

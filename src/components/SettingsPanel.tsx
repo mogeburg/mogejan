@@ -63,11 +63,13 @@ function ToggleSetting<T extends string | number | boolean>({
   value,
   options,
   onChange,
+  variant,
 }: {
   label: string;
   value: T;
   options: readonly ToggleOption<T>[];
   onChange: (value: T) => void;
+  variant?: "red" | "blue";
 }) {
   const activeIndex = Math.max(
     0,
@@ -79,6 +81,7 @@ function ToggleSetting<T extends string | number | boolean>({
       <FieldLabel className={styles.settingsSubLabel}>{label}</FieldLabel>
       <ModeToggle
         compact
+        variant={variant}
         items={options.map((option) => ({
           label: option.label,
           disabled: option.disabled,
@@ -208,15 +211,6 @@ export function SettingsPanel() {
             <div className={styles.sectionStack}>
               <div className={styles.settingsSurface}>
                 <ToggleSetting
-                  label="画面モード"
-                  value={screenMode}
-                  options={SCREEN_MODE_OPTIONS}
-                  onChange={(value) => setScreenMode(value as ScreenMode)}
-                />
-              </div>
-
-              <div className={styles.settingsSurface}>
-                <ToggleSetting
                   label="文字サイズ"
                   value={textSize}
                   options={TEXT_SIZE_OPTIONS}
@@ -226,10 +220,21 @@ export function SettingsPanel() {
 
               <div className={styles.settingsSurface}>
                 <ToggleSetting
+                  label="画面モード"
+                  value={screenMode}
+                  options={SCREEN_MODE_OPTIONS}
+                  onChange={(value) => setScreenMode(value as ScreenMode)}
+                  variant="blue"
+                />
+              </div>
+
+              <div className={styles.settingsSurface}>
+                <ToggleSetting
                   label="軽量モード(演出簡略化・BGM遅延読込）"
                   value={lightweightMode}
                   options={LIGHTWEIGHT_MODE_OPTIONS}
                   onChange={(value) => setLightweightMode(value as boolean)}
+                  variant="blue"
                 />
               </div>
             </div>

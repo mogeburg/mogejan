@@ -16,6 +16,8 @@ $toggle-inactive-text-hover: #333;
 $toggle-disabled-bg: rgba(0, 0, 0, 0.16);
 $toggle-disabled-text: rgba(255, 255, 255, 0.72);
 $toggle-track-bg: #e8e8e8;
+$toggle-active-bg-red: $color-accent;
+$toggle-active-bg-blue: $color-accent-secondary;
 
 .row {
   display: flex;
@@ -42,8 +44,15 @@ $toggle-track-bg: #e8e8e8;
   transition: background 0.15s, color 0.15s, box-shadow 0.15s;
 }
 
+.btnRed.active {
+  background: $toggle-active-bg-red;
+}
+
+.btnBlue.active {
+  background: $toggle-active-bg-blue;
+}
+
 .active {
-  background: $color-accent;
   color: $color-text-contrast;
   box-shadow: $toggle-active-shadow;
 }

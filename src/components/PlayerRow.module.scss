@@ -1,6 +1,6 @@
 @use "@/styles/layout" as *;
 
-$player-row-action-bottom: 100px;
+$player-row-action-bottom: $layout-bottom-ui-offset;
 $player-row-drawn-gap: $space-5;
 $player-row-discard-width: 100%;
 $player-row-discard-height: 45%;

@@ -87,6 +87,7 @@ export function CenterInfo({
           speechBubbles={getPlayerBubbles(1)}
           cpuPersonality={cpuPersonalities[1]}
           badgeSide="left"
+          badgeLayout={isPortrait ? "bottom" : "side"}
         />
       </div>
       <div className={`${styles.cpuRight} ${isPortrait ? styles.cpuRightPortrait : ""}`}>
@@ -100,6 +101,7 @@ export function CenterInfo({
           isDoubleReach={doubleReach[3]}
           speechBubbles={getPlayerBubbles(3)}
           cpuPersonality={cpuPersonalities[3]}
+          badgeLayout={isPortrait ? "bottom" : "side"}
         />
       </div>
       <div

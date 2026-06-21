@@ -44,6 +44,7 @@ $layout-game-height: 720px;
 $layout-player-box-width: 700px;
 $layout-cpu-player-box-width: 390px;
 $layout-player-box-height: 200px;
+$layout-bottom-ui-offset: 100px;
 $layout-player-box-rotate-offset: math.div(
   $layout-player-box-width - $layout-player-box-height,
   2

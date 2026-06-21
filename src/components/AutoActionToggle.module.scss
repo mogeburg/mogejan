@@ -18,7 +18,7 @@ $auto-action-panel-slide-width: calc(
 
 .container {
   position: absolute;
-  bottom: 100px;
+  bottom: $layout-bottom-ui-offset;
   right: 0;
   z-index: 50;
 }

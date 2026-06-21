@@ -1,3 +1,5 @@
+@use "@/styles/layout" as *;
+
 .container {
   position: fixed;
   bottom: 0;
@@ -12,4 +14,8 @@
   animation-duration: var(--dance-duration, 0.5s);
   animation-timing-function: step-start;
   animation-iteration-count: infinite;
+}
+
+.containerPortrait {
+  bottom: $layout-bottom-ui-offset;
 }

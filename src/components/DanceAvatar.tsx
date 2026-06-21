@@ -1,4 +1,6 @@
 import styles from "@/components/DanceAvatar.module.scss";
+import { isPortraitGameSize } from "@/constants/layout";
+import { useGameStore } from "@/store";
 import { danceImageUrl } from "@/utils/assets";
 import { AnimatePresence, motion } from "framer-motion";
 import { useMemo } from "react";
@@ -47,6 +49,8 @@ export function DanceAvatar({ character, bpm = 100 }: DanceAvatarProps) {
   const duration = 60 / bpm;
   const profile = DANCE_PROFILES[character];
   const show = profile != null;
+  const gameSize = useGameStore((s) => s.gameSize);
+  const isPortrait = isPortraitGameSize(gameSize);
 
   const keyframeStyle = useMemo(() => {
     if (!profile) return "";
@@ -66,7 +70,7 @@ export function DanceAvatar({ character, bpm = 100 }: DanceAvatarProps) {
         <>
           <style>{keyframeStyle}</style>
           <motion.div
-            className={styles.container}
+            className={`${styles.container} ${isPortrait ? styles.containerPortrait : ""}`}
             style={
               {
                 backgroundImage: `url(${profile.imageUrl})`,

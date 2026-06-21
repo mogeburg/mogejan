@@ -987,11 +987,14 @@ export const useGameStore = create<GameStore>()(
       resetData: () =>
         {
           usePlayStatsStore.getState().resetPlayStats();
-          set({
+          set((state) => ({
             riichiCutinPlayer: null,
             riichiCutinTileId: null,
             ...createDefaultSettingsState(),
-          });
+            screenMode: state.screenMode,
+            gameSize: state.gameSize,
+            lightweightMode: state.lightweightMode,
+          }));
         },
       initGame: (players) =>
         set({
