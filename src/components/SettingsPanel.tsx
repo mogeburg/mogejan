@@ -15,6 +15,7 @@ import {
   TEXT_SIZES,
 } from "@/constants/game";
 import type { ScreenMode } from "@/constants/layout";
+import type { ActionButtonAlign } from "@/store";
 import { useGameStore } from "@/store";
 
 const CPU_STRENGTH_OPTIONS = CPU_STRENGTHS.map((strength) => ({
@@ -51,6 +52,13 @@ const TEXT_SIZE_OPTIONS = TEXT_SIZES.map((size) => ({
   value: size,
   label: TEXT_SIZE_LABELS[size],
 }));
+
+const ACTION_BUTTON_ALIGN_OPTIONS = [
+  { value: "follow", label: "追従" },
+  { value: "left", label: "左" },
+  { value: "center", label: "中央" },
+  { value: "right", label: "右" },
+] as const;
 
 type ToggleOption<T extends string | number | boolean> = {
   value: T;
@@ -131,12 +139,14 @@ export function SettingsPanel() {
   const voiceVolume = useGameStore((s) => s.voiceVolume);
   const screenMode = useGameStore((s) => s.screenMode);
   const lightweightMode = useGameStore((s) => s.lightweightMode);
+  const actionButtonAlign = useGameStore((s) => s.actionButtonAlign);
   const setMasterVolume = useGameStore((s) => s.setMasterVolume);
   const setBgmVolume = useGameStore((s) => s.setBgmVolume);
   const setSeVolume = useGameStore((s) => s.setSeVolume);
   const setVoiceVolume = useGameStore((s) => s.setVoiceVolume);
   const setScreenMode = useGameStore((s) => s.setScreenMode);
   const setLightweightMode = useGameStore((s) => s.setLightweightMode);
+  const setActionButtonAlign = useGameStore((s) => s.setActionButtonAlign);
   const normalBgmSetting = useGameStore((s) => s.normalBgmSetting);
   const setNormalBgmSetting = useGameStore((s) => s.setNormalBgmSetting);
   const riichiBgmSetting = useGameStore((s) => s.riichiBgmSetting);
@@ -215,6 +225,17 @@ export function SettingsPanel() {
                   value={textSize}
                   options={TEXT_SIZE_OPTIONS}
                   onChange={(value) => setTextSize(value as TextSize)}
+                />
+              </div>
+
+              <div className={styles.settingsSurface}>
+                <ToggleSetting
+                  label="操作ボタン"
+                  value={actionButtonAlign}
+                  options={ACTION_BUTTON_ALIGN_OPTIONS}
+                  onChange={(value) =>
+                    setActionButtonAlign(value as ActionButtonAlign)
+                  }
                 />
               </div>
 

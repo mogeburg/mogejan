@@ -24,12 +24,24 @@ $player-row-discard-top: $space-5;
 .actionRow {
   position: absolute;
   bottom: $player-row-action-bottom;
-  left: 0;
+  left: 10%;
   right: 0;
   display: flex;
-  justify-content: center;
+  width: 80%;
   gap: $space-5;
   z-index: 2;
+}
+
+.actionRowLeft {
+  justify-content: flex-start;
+}
+
+.actionRowCenter {
+  justify-content: center;
+}
+
+.actionRowRight {
+  justify-content: flex-end;
 }
 
 .handArea {

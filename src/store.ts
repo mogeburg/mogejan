@@ -54,6 +54,8 @@ export type CutinPreview = {
   animateJitter?: boolean;
 };
 
+export type ActionButtonAlign = "left" | "center" | "right" | "follow";
+
 interface GameStore {
   currentScreen: Screen;
   players: Player[];
@@ -76,6 +78,7 @@ interface GameStore {
   screenMode: ScreenMode;
   gameSize: GameSize;
   lightweightMode: boolean;
+  actionButtonAlign: ActionButtonAlign;
   riichiBgmSetting: BgmKey;
   normalBgmSetting: BgmKey;
   riichiAvatar: "none" | "kanimoge" | "burumoge";
@@ -136,6 +139,7 @@ interface GameStore {
   setScreenMode: (mode: ScreenMode) => void;
   setGameSize: (gameSize: GameSize) => void;
   setLightweightMode: (lightweightMode: boolean) => void;
+  setActionButtonAlign: (align: ActionButtonAlign) => void;
   setRiichiBgmSetting: (setting: BgmKey) => void;
   setNormalBgmSetting: (setting: BgmKey) => void;
   setRiichiAvatar: (avatar: "none" | "kanimoge" | "burumoge") => void;
@@ -586,6 +590,7 @@ function createDefaultSettingsState(): Pick<
   | "screenMode"
   | "gameSize"
   | "lightweightMode"
+  | "actionButtonAlign"
   | "riichiBgmSetting"
   | "normalBgmSetting"
   | "riichiAvatar"
@@ -607,6 +612,7 @@ function createDefaultSettingsState(): Pick<
     screenMode: "auto",
     gameSize: DEFAULT_GAME_SIZE,
     lightweightMode: false,
+    actionButtonAlign: "center",
     riichiBgmSetting: "riichi" as const,
     normalBgmSetting: "game" as const,
     riichiAvatar: "kanimoge" as const,
@@ -638,6 +644,7 @@ export const useGameStore = create<GameStore>()(
       setScreenMode: (screenMode) => set({ screenMode }),
       setGameSize: (gameSize) => set({ gameSize }),
       setLightweightMode: (lightweightMode) => set({ lightweightMode }),
+      setActionButtonAlign: (actionButtonAlign) => set({ actionButtonAlign }),
       setRiichiBgmSetting: (setting) => set({ riichiBgmSetting: setting }),
       setNormalBgmSetting: (setting) => set({ normalBgmSetting: setting }),
       setRiichiAvatar: (avatar) => set({ riichiAvatar: avatar }),
@@ -1059,6 +1066,7 @@ export const useGameStore = create<GameStore>()(
         voiceVolume: state.voiceVolume,
         screenMode: state.screenMode,
         lightweightMode: state.lightweightMode,
+        actionButtonAlign: state.actionButtonAlign,
         riichiBgmSetting: state.riichiBgmSetting,
         normalBgmSetting: state.normalBgmSetting,
         riichiAvatar: state.riichiAvatar,

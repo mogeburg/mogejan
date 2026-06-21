@@ -114,7 +114,16 @@ export function PlayerRow({
   const tileSize = index === 0 ? "normal" : "small";
   const isCpuRow = index !== 0;
   const gameSize = useGameStore((s) => s.gameSize);
+  const actionButtonAlign = useGameStore((s) => s.actionButtonAlign);
   const isPortrait = isPortraitGameSize(gameSize);
+  const resolvedActionButtonAlign =
+    actionButtonAlign === "follow"
+      ? ponMelds.length >= 2
+        ? "left"
+        : ponMelds.length === 1
+          ? "center"
+          : "right"
+      : actionButtonAlign;
 
   const HIGHLIGHT_SIDE_MAP = ["top", "right", "bottom", "left"] as const;
   const highlightSide = HIGHLIGHT_SIDE_MAP[index];
@@ -129,7 +138,15 @@ export function PlayerRow({
       className={`${styles.container} ${isCpuRow ? styles.containerCpu : ""} ${!isCpuRow && isPortrait ? styles.containerPlayerPortrait : ""}`}
     >
       {(player.type === "human" || manualCpu) && (
-        <div className={styles.actionRow}>
+        <div
+          className={`${styles.actionRow} ${
+            resolvedActionButtonAlign === "left"
+              ? styles.actionRowLeft
+              : resolvedActionButtonAlign === "right"
+                ? styles.actionRowRight
+                : styles.actionRowCenter
+          }`}
+        >
           {ACTION_BUTTONS.filter((label) =>
             isActionShow({
               label,
