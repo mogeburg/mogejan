@@ -8,7 +8,8 @@ export const SE_VOLUME = 50;
 export const VOICE_VOLUME = 75;
 
 const hostname = typeof window !== "undefined" ? window.location.hostname : "";
-export const IS_DEBUG = hostname === "localhost";
+export const IS_DEBUG =
+  hostname === "localhost" || hostname.startsWith("192.168.0.");
 
 export const PLAYER_COUNT = 4;
 export const BASIC_TILE_KIND_COUNT = 9;
