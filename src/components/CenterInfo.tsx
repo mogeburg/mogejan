@@ -13,6 +13,9 @@ interface CenterInfoProps {
   ponMelds: number[][][];
   wallLength: number;
   speechBubbles: { id: number; text: string; playerIndex: number }[];
+  specialAbilitiesEnabled: boolean;
+  abilityGauge: number[];
+  abilityReady: boolean[];
   cpuPersonalities?: (CpuPersonality | null)[];
 }
 
@@ -26,10 +29,14 @@ export function CenterInfo({
   ponMelds,
   wallLength,
   speechBubbles,
+  specialAbilitiesEnabled,
+  abilityGauge,
+  abilityReady,
   cpuPersonalities = [],
 }: CenterInfoProps) {
   const getPlayerBubbles = (playerIndex: number) =>
     speechBubbles.filter((b) => b.playerIndex === playerIndex);
+  const wallCountText = String(Math.max(0, wallLength)).padStart(2, "0");
   return (
     <div className={styles.container}>
       <div className={styles.cpuTop}>
@@ -42,6 +49,9 @@ export function CenterInfo({
           isMenzen={riichi[2] && ponMelds[2].length === 0}
           isDoubleReach={doubleReach[2]}
           speechBubbles={getPlayerBubbles(2)}
+          specialAbilitiesEnabled={specialAbilitiesEnabled}
+          abilityGauge={abilityGauge[2]}
+          abilityReady={abilityReady[2]}
           cpuPersonality={cpuPersonalities[2]}
         />
       </div>
@@ -52,9 +62,12 @@ export function CenterInfo({
           isParent={parentIndex === 1}
           isRiichi={riichi[1]}
           isIppatsu={ippatsu[1]}
-          isMenzen={riichi[1]}
+          isMenzen={riichi[1] && ponMelds[1].length === 0}
           isDoubleReach={doubleReach[1]}
           speechBubbles={getPlayerBubbles(1)}
+          specialAbilitiesEnabled={specialAbilitiesEnabled}
+          abilityGauge={abilityGauge[1]}
+          abilityReady={abilityReady[1]}
           cpuPersonality={cpuPersonalities[1]}
           badgeSide="left"
           badgeLayout="side"
@@ -67,9 +80,12 @@ export function CenterInfo({
           isParent={parentIndex === 3}
           isRiichi={riichi[3]}
           isIppatsu={ippatsu[3]}
-          isMenzen={riichi[3]}
+          isMenzen={riichi[3] && ponMelds[3].length === 0}
           isDoubleReach={doubleReach[3]}
           speechBubbles={getPlayerBubbles(3)}
+          specialAbilitiesEnabled={specialAbilitiesEnabled}
+          abilityGauge={abilityGauge[3]}
+          abilityReady={abilityReady[3]}
           cpuPersonality={cpuPersonalities[3]}
           badgeLayout="side"
         />
@@ -81,9 +97,12 @@ export function CenterInfo({
           isParent={parentIndex === 0}
           isRiichi={riichi[0]}
           isIppatsu={ippatsu[0]}
-          isMenzen={riichi[0]}
+          isMenzen={riichi[0] && ponMelds[0].length === 0}
           isDoubleReach={doubleReach[0]}
           speechBubbles={getPlayerBubbles(0)}
+          specialAbilitiesEnabled={specialAbilitiesEnabled}
+          abilityGauge={abilityGauge[0]}
+          abilityReady={abilityReady[0]}
           cpuPersonality={cpuPersonalities[0]}
         />
       </div>
@@ -92,7 +111,7 @@ export function CenterInfo({
           <div className={styles.infoMain}>
             <div className={styles.infoText}>
               <span className={styles.wallLabel}>あと</span>
-              <span className={styles.wallCount}>{wallLength}</span>
+              <span className={styles.wallCount}>{wallCountText}</span>
               <span className={styles.wallUnit}>枚</span>
             </div>
           </div>
