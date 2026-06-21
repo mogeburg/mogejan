@@ -9,6 +9,21 @@ export type VersionHistoryEntry = {
 
 export const VERSION_HISTORY: VersionHistoryEntry[] = [
   {
+    version: `0.03`,
+    summary: "解像度見直し",
+    defaultOpen: true,
+    children: [
+      {
+        version: `${VERSION}`,
+        summary: [
+          "解像度を16:9に変更",
+          "設定に表示設定（画面モード・文字サイズ・軽量モード）を追加",
+          "鯖ちゃんのテーマを追加。他BGMのループ点などを一部修正",
+        ],
+      },
+    ],
+  },
+  {
     version: `0.02`,
     summary: "流行牌・特殊役を追加した",
     defaultOpen: true,
