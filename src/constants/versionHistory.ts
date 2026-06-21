@@ -38,7 +38,7 @@ export const VERSION_HISTORY: VersionHistoryEntry[] = [
         ],
       },
       {
-        version: `${VERSION}`,
+        version: `0.021`,
         summary: [
           "画像・音声のフォールバック対応",
           "雷エフェクトの追加",
