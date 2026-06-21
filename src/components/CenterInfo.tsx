@@ -1,9 +1,7 @@
 import type { CpuPersonality } from "@/ai/CpuController";
 import styles from "@/components/CenterInfo.module.scss";
-import { isPortraitGameSize } from "@/constants/layout";
 import { PlayerInfo } from "@/components/PlayerInfo";
 import type { Player } from "@/store";
-import { useGameStore } from "@/store";
 
 interface CenterInfoProps {
   players: Player[];
@@ -30,13 +28,11 @@ export function CenterInfo({
   speechBubbles,
   cpuPersonalities = [],
 }: CenterInfoProps) {
-  const gameSize = useGameStore((s) => s.gameSize);
-  const isPortrait = isPortraitGameSize(gameSize);
   const getPlayerBubbles = (playerIndex: number) =>
     speechBubbles.filter((b) => b.playerIndex === playerIndex);
   return (
-    <div className={`${styles.container} ${isPortrait ? styles.containerPortrait : ""}`}>
-      <div className={`${styles.cpuTop} ${isPortrait ? styles.cpuTopPortrait : ""}`}>
+    <div className={styles.container}>
+      <div className={styles.cpuTop}>
         <PlayerInfo
           player={players[2]}
           isTurn={turnIndex === 2}
@@ -49,7 +45,7 @@ export function CenterInfo({
           cpuPersonality={cpuPersonalities[2]}
         />
       </div>
-      <div className={`${styles.cpuLeft} ${isPortrait ? styles.cpuLeftPortrait : ""}`}>
+      <div className={styles.cpuLeft}>
         <PlayerInfo
           player={players[1]}
           isTurn={turnIndex === 1}
@@ -61,10 +57,10 @@ export function CenterInfo({
           speechBubbles={getPlayerBubbles(1)}
           cpuPersonality={cpuPersonalities[1]}
           badgeSide="left"
-          badgeLayout={isPortrait ? "bottom" : "side"}
+          badgeLayout="side"
         />
       </div>
-      <div className={`${styles.cpuRight} ${isPortrait ? styles.cpuRightPortrait : ""}`}>
+      <div className={styles.cpuRight}>
         <PlayerInfo
           player={players[3]}
           isTurn={turnIndex === 3}
@@ -75,12 +71,10 @@ export function CenterInfo({
           isDoubleReach={doubleReach[3]}
           speechBubbles={getPlayerBubbles(3)}
           cpuPersonality={cpuPersonalities[3]}
-          badgeLayout={isPortrait ? "bottom" : "side"}
+          badgeLayout="side"
         />
       </div>
-      <div
-        className={`${styles.playerBottom} ${isPortrait ? styles.playerBottomPortrait : ""}`}
-      >
+      <div className={styles.playerBottom}>
         <PlayerInfo
           player={players[0]}
           isTurn={turnIndex === 0}
@@ -94,8 +88,8 @@ export function CenterInfo({
         />
       </div>
       <div className={styles.centerBox}>
-        <div className={`${styles.infoCard} ${isPortrait ? styles.infoCardPortrait : ""}`}>
-          <div className={`${styles.infoMain} ${isPortrait ? styles.infoMainPortrait : ""}`}>
+        <div className={styles.infoCard}>
+          <div className={styles.infoMain}>
             <div className={styles.infoText}>
               <span className={styles.wallLabel}>あと</span>
               <span className={styles.wallCount}>{wallLength}</span>
