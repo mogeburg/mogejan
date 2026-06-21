@@ -1,7 +1,7 @@
 import { MenuSection } from "@/components/MenuSection";
 import styles from "@/components/Panel.module.scss";
-import { VERSION_HISTORY } from "@/constants/versionHistory";
 import type { VersionHistoryEntry } from "@/constants/versionHistory";
+import { VERSION_HISTORY } from "@/constants/versionHistory";
 
 function formatVersionLabel(version: string) {
   return version.startsWith("v") ? version : `v${version}`;
@@ -23,7 +23,10 @@ function renderVersionSummary(summary?: string | string[]) {
   return <span className={styles.versionHistoryText}>{summary}</span>;
 }
 
-function renderVersionHistoryEntry(entry: VersionHistoryEntry) {
+function renderVersionHistoryEntry(
+  entry: VersionHistoryEntry,
+  isOpen?: boolean,
+) {
   const label = (
     <span className={styles.versionHistoryLabel}>
       {formatVersionLabel(entry.version)}
@@ -33,7 +36,7 @@ function renderVersionHistoryEntry(entry: VersionHistoryEntry) {
   if (entry.children?.length) {
     return (
       <li key={entry.version}>
-        <details className={styles.versionHistoryFold} open={entry.defaultOpen}>
+        <details className={styles.versionHistoryFold} open={isOpen}>
           <summary className={styles.versionHistorySummary}>{label}</summary>
           <ul className={styles.versionHistoryList}>
             {entry.children.map((child) => renderVersionHistoryEntry(child))}
@@ -57,7 +60,9 @@ export function OtherPanel() {
       <div className={styles.sectionStack}>
         <MenuSection title="バージョン履歴">
           <ul className={styles.versionHistoryTree}>
-            {VERSION_HISTORY.map((entry) => renderVersionHistoryEntry(entry))}
+            {VERSION_HISTORY.map((entry, i) =>
+              renderVersionHistoryEntry(entry, i === 0),
+            )}
           </ul>
         </MenuSection>
 

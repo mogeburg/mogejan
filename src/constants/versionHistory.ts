@@ -4,14 +4,12 @@ export type VersionHistoryEntry = {
   version: string;
   summary?: string | string[];
   children?: VersionHistoryEntry[];
-  defaultOpen?: boolean;
 };
 
 export const VERSION_HISTORY: VersionHistoryEntry[] = [
   {
     version: `0.03`,
     summary: "解像度見直し",
-    defaultOpen: true,
     children: [
       {
         version: `${VERSION}`,
@@ -26,7 +24,6 @@ export const VERSION_HISTORY: VersionHistoryEntry[] = [
   {
     version: `0.02`,
     summary: "流行牌・特殊役を追加した",
-    defaultOpen: true,
     children: [
       {
         version: "0.02",
