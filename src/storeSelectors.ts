@@ -44,6 +44,7 @@ export function useGameScreenStore() {
       abilityCutinActive: state.abilityCutinActive,
       aimogeDangerColors: state.aimogeDangerColors,
       pikasanBonusPending: state.pikasanBonusPending,
+      miimogeActive: state.miimogeActive,
       normalBgmSetting: state.normalBgmSetting,
       riichiBgmSetting: state.riichiBgmSetting,
       speechBubbles: state.speechBubbles,

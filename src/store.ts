@@ -35,7 +35,7 @@ import {
   findWaiterId,
   getEligiblePonPlayerIndexes,
 } from "@/utils/check";
-import { triggerAimogeOnTurn } from "@/utils/gameplay";
+import { getProjectedTotalYaku, triggerAimogeOnTurn } from "@/utils/gameplay";
 import { usePlayStatsStore } from "@/utils/playStats";
 import { createStorageKey } from "@/utils/storage";
 import {
@@ -51,6 +51,7 @@ import { persist } from "zustand/middleware";
 export type Screen =
   | "loading"
   | "title"
+  | "testConfig"
   | "scoreDisplay"
   | "scoreConfirm"
   | "game"
@@ -162,6 +163,7 @@ interface GameStore {
   aimogeDangerColors: number[][];
   pikasanBonusPending: boolean[];
   siranGuardActive: boolean[];
+  miimogeActive: boolean;
   cpuPersonalities: (CpuPersonality | null)[];
   setSpeed: (speed: number) => void;
   setTextSize: (textSize: TextSize) => void;
@@ -244,6 +246,7 @@ interface GameStore {
   resetData: () => void;
   initGame: (players: Player[]) => void;
   startDebugMidgame: (players?: Player[]) => void;
+  startTestGame: (config: import("./types/testConfig").TestConfig) => void;
 }
 
 function getRonEligiblePlayers(
@@ -256,9 +259,27 @@ function getRonEligiblePlayers(
     if (i === exceptPlayer) continue;
     if (!state.riichi[i] && state.discards[i].length > 0) continue;
     const allTiles = [...state.hands[i], tileId, ...state.ponMelds[i].flat()];
-    if (canFormWinningHand(allTiles)) {
-      result.push(i);
+    if (!canFormWinningHand(allTiles)) continue;
+    if (
+      state.miimogeActive &&
+      state.abilityAssignments[i]?.abilityId !== "miimoge"
+    ) {
+      const totalYaku = getProjectedTotalYaku({
+        riichi: state.riichi[i],
+        doubleReach: state.doubleReach[i],
+        ippatsu: false,
+        isRon: true,
+        hasPonMelds: state.ponMelds[i].length > 0,
+        doraTile: state.doraTile,
+        uradoraTile: null,
+        allTiles,
+        winnerDiscardsEmpty: state.discards[i].length === 0,
+        playerName: state.players[i].name,
+        trendTypes: state.trendTypes,
+      });
+      if (totalYaku < 5) continue;
     }
+    result.push(i);
   }
   return result;
 }
@@ -283,8 +304,8 @@ const initialMeldRows = () => emptyPlayerRows<number[][]>(() => []);
 const initialScoreDeltas = () => emptyPlayerRows(() => 0);
 const initialAbilityAssignments = (players: Player[] = defaultPlayers) =>
   players.map((player) => createDefaultAbilityAssignment(player.charId));
-const initialAbilityGauge = () => emptyPlayerRows(() => 100); // TODO: 0
-const initialAbilityReady = () => emptyPlayerRows(() => true); // TODO: false
+const initialAbilityGauge = () => emptyPlayerRows(() => 0);
+const initialAbilityReady = () => emptyPlayerRows(() => false);
 const initialAbilityChargeLocked = () => emptyPlayerRows(() => false);
 const initialAbilityFlags = () => emptyPlayerRows(() => false);
 
@@ -717,6 +738,7 @@ function createRoundState() {
     aimogeDangerColors: initialAbilityFlags().map(() => [] as number[]),
     pikasanBonusPending: initialAbilityFlags(),
     siranGuardActive: initialAbilityFlags(),
+    miimogeActive: false,
   };
 }
 
@@ -1011,6 +1033,18 @@ export const useGameStore = create<GameStore>()(
           abilityReady: state.abilityReady,
           abilityChargeLocked: initialAbilityChargeLocked(),
         }));
+        const stateAfterDeal = useGameStore.getState();
+        const miimogePlayer = stateAfterDeal.abilityAssignments.findIndex(
+          (a) => a?.abilityId === "miimoge",
+        );
+        if (
+          miimogePlayer >= 0 &&
+          stateAfterDeal.abilityGauge[miimogePlayer] >= ABILITY_MAX_GAUGE &&
+          stateAfterDeal.abilityReady[miimogePlayer]
+        ) {
+          stateAfterDeal.activateAbility(miimogePlayer, "miimoge");
+          set({ miimogeActive: true });
+        }
       },
       draw: () =>
         set((state) => {
@@ -1309,6 +1343,64 @@ export const useGameStore = create<GameStore>()(
             p.type === "cpu" ? generateRandomPersonality() : null,
           ),
         }),
+      startTestGame: (config) => {
+        set((_state) => {
+          const players = config.players.map((p) => {
+            const c = PLAYER_CONFIGS.find((pc) => pc.charId === p.charId);
+            return {
+              name: c?.name ?? p.charId,
+              score: INITIAL_SCORE,
+              type: p.type as "human" | "cpu",
+              imageUrl: c?.imageUrl ?? "",
+              colorHex: c?.colorHex ?? "#888",
+              charId: p.charId,
+            };
+          });
+          const abilityAssignments = players.map(
+            (p) => createDefaultAbilityAssignment(p.charId),
+          );
+          const abilityGauge = config.players.map((p) =>
+            Math.min(ABILITY_MAX_GAUGE, Math.max(0, p.abilityGauge)),
+          );
+          const abilityReady = abilityGauge.map((g) => g >= ABILITY_MAX_GAUGE);
+          const cpuPersonalities = players.map((p) =>
+            p.type === "cpu" ? generateRandomPersonality() : null,
+          );
+          const allHandTiles = config.hands.reduce((a, h) => a + h.length, 0);
+          const fullWallLength = allHandTiles + config.wall.length;
+          const [top, ...rest] = config.wall;
+          return {
+            ...createRoundState(),
+            currentScreen: "game",
+            players,
+            abilityAssignments,
+            abilityGauge,
+            abilityReady,
+            parentIndex: 0,
+            hands: config.hands.map((h) => [...h]),
+            wall: rest,
+            currentDealWallLength: fullWallLength,
+            drawnTile: top ?? null,
+            turnIndex: 0,
+            doraTile: config.doraTile ?? null,
+            uradoraTile: config.uradoraTile ?? null,
+            trendTypes: config.trendTypes,
+            cpuPersonalities,
+          };
+        });
+        const stateAfter = useGameStore.getState();
+        const miimogePlayer = stateAfter.abilityAssignments.findIndex(
+          (a) => a?.abilityId === "miimoge",
+        );
+        if (
+          miimogePlayer >= 0 &&
+          stateAfter.abilityGauge[miimogePlayer] >= ABILITY_MAX_GAUGE &&
+          stateAfter.abilityReady[miimogePlayer]
+        ) {
+          stateAfter.activateAbility(miimogePlayer, "miimoge");
+          set({ miimogeActive: true });
+        }
+      },
       startDebugMidgame: (players) =>
         set((state) => {
           const nextPlayers = players ?? state.players;

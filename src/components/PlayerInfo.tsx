@@ -21,6 +21,7 @@ interface PlayerInfoProps {
   abilityReady: boolean;
   abilityActivated: boolean;
   abilityLabel: string | null;
+  restrictionBadge: string | null;
   cpuPersonality?: CpuPersonality | null;
   badgeSide?: "left" | "right";
   badgeLayout?: "side" | "bottom";
@@ -40,6 +41,7 @@ export function PlayerInfo({
   abilityReady,
   abilityActivated,
   abilityLabel,
+  restrictionBadge,
   cpuPersonality,
   badgeSide = "right",
   badgeLayout = "side",
@@ -58,6 +60,7 @@ export function PlayerInfo({
     isDoubleReach ? "Wリーチ" : isRiichi ? "リーチ" : null,
     isIppatsu ? "イッパツ" : null,
     abilityActivated && abilityLabel ? abilityLabel : null,
+    restrictionBadge,
   ].filter((badge): badge is string => badge != null);
   const gaugePercent = Math.max(
     0,

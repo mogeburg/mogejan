@@ -20,6 +20,8 @@ import { useBgm } from "@/utils/audio";
 import { canFormTenpai, canFormWinningHand } from "@/utils/check";
 import {
   autoDiscardAfterRiichiDraw,
+  canDeclareRiichi,
+  canTsumoWithMiimoge,
   executePonCall,
   executeRiichiAction,
   executeRonWin,
@@ -145,27 +147,74 @@ export function GameScreen() {
   );
 
   const canTsumo = useMemo(
-    () =>
-      s.drawnTile != null &&
-      (s.showAllTiles || s.riichi[s.turnIndex] || currentDiscardCount === 0) &&
-      canFormWinningHand(allTiles),
+    () => {
+      if (s.drawnTile == null) return false;
+      if (!canFormWinningHand(allTiles)) return false;
+      if (s.riichi[s.turnIndex]) {
+        const result = canTsumoWithMiimoge(
+          s.turnIndex,
+          allTiles,
+          s.ponMelds[s.turnIndex].length > 0,
+          s.doraTile,
+          s.trendTypes,
+          currentDiscardCount === 0,
+          s.players[s.turnIndex].name,
+          s.miimogeActive,
+          s.abilityAssignments.map((a) => a.abilityId),
+        );
+        console.log("[canTsumo] riichi=true, discards=" + currentDiscardCount + ", allTiles=" + JSON.stringify(allTiles) + ", result=" + result);
+        return result;
+      }
+      if (currentDiscardCount === 0) {
+        const result = canTsumoWithMiimoge(
+          s.turnIndex,
+          allTiles,
+          s.ponMelds[s.turnIndex].length > 0,
+          s.doraTile,
+          s.trendTypes,
+          true,
+          s.players[s.turnIndex].name,
+          false,
+          s.abilityAssignments.map((a) => a.abilityId),
+        );
+        console.log("[canTsumo] tenchijin check, allTiles=" + JSON.stringify(allTiles) + ", result=" + result);
+        return result;
+      }
+      console.log("[canTsumo] riichi=" + s.riichi[s.turnIndex] + ", discards=" + currentDiscardCount + " → false");
+      return false;
+    },
     [
       s.drawnTile,
       s.riichi,
       s.turnIndex,
       allTiles,
-      s.showAllTiles,
       currentDiscardCount,
+      s.miimogeActive,
+      s.abilityAssignments,
+      s.doraTile,
+      s.trendTypes,
+      s.players,
+      s.ponMelds,
     ],
   );
-  const canRiichi = useMemo(
-    () => !s.riichi[s.turnIndex] && !canTsumo && canFormTenpai(allTiles),
-    [s.riichi, s.turnIndex, canTsumo, allTiles],
-  );
+  const canRiichi = useMemo(() => {
+    if (s.riichi[s.turnIndex] || canTsumo || !canFormTenpai(allTiles)) return false;
+    if (
+      s.miimogeActive &&
+      s.abilityAssignments[s.turnIndex]?.abilityId !== "miimoge"
+    ) {
+      return canDeclareRiichi(s.turnIndex, undefined, 5);
+    }
+    return true;
+  }, [s.riichi, s.turnIndex, canTsumo, allTiles, s.miimogeActive, s.abilityAssignments]);
 
   const handleAction = useCallback(
     (label: ActionLabel, playerIndex: number) => {
-      if (label === "ツモ") executeTsumoWin(playerIndex);
+      if (label === "ツモ") {
+        const state = useGameStore.getState();
+        console.log("[handleAction] ツモ clicked, playerIndex=" + playerIndex + ", turnIndex=" + state.turnIndex + ", riichi=" + state.riichi[playerIndex] + ", discards=" + (state.discards[playerIndex]?.length ?? 0) + ", drawnTile=" + state.drawnTile);
+        executeTsumoWin(playerIndex);
+      }
       else if (label === "リーチ") executeRiichiAction(s.turnIndex);
       else if (label === "ロン") executeRonWin(playerIndex);
       else if (label === "ポン") executePonCall(playerIndex);
@@ -219,20 +268,31 @@ export function GameScreen() {
       return;
     }
 
-    if (
-      state.drawnTile != null &&
-      (state.riichi[state.turnIndex] ||
-        state.discards[state.turnIndex]?.length === 0) &&
-      canFormWinningHand([
-        ...getTilesWithDrawnTile(
-          state.hands[state.turnIndex] ?? [],
-          state.drawnTile,
-        ),
-        ...state.ponMelds[state.turnIndex].flat(),
-      ])
-    ) {
-      executeTsumoWin(state.turnIndex);
-      return;
+    if (state.drawnTile != null) {
+      const handWithDraw = getTilesWithDrawnTile(
+        state.hands[state.turnIndex] ?? [],
+        state.drawnTile,
+      );
+      const allTiles = [...handWithDraw, ...state.ponMelds[state.turnIndex].flat()];
+      if (
+        (state.riichi[state.turnIndex] ||
+          state.discards[state.turnIndex]?.length === 0) &&
+        canFormWinningHand(allTiles) &&
+        canTsumoWithMiimoge(
+          state.turnIndex,
+          allTiles,
+          state.ponMelds[state.turnIndex].length > 0,
+          state.doraTile,
+          state.trendTypes,
+          (state.discards[state.turnIndex]?.length ?? 0) === 0,
+          state.players[state.turnIndex].name,
+          state.miimogeActive,
+          state.abilityAssignments.map((a) => a.abilityId),
+        )
+      ) {
+        executeTsumoWin(state.turnIndex);
+        return;
+      }
     }
 
     const timer = setTimeout(() => {
@@ -405,6 +465,7 @@ export function GameScreen() {
     if (s.turnIndex !== 0 || !canTsumo) return;
     if (s.winner != null || s.ryuukyoku) return;
 
+    console.log("[auto-tsumo] triggering executeTsumoWin(0), canTsumo=" + canTsumo + ", turnIndex=" + s.turnIndex + ", drawnTile=" + s.drawnTile + ", discards=" + (s.discards[0]?.length ?? 0));
     executeTsumoWin(0);
   }, [s.turnIndex, canTsumo, s.winner, s.ryuukyoku, s.autoActions]);
 
@@ -481,6 +542,7 @@ export function GameScreen() {
         abilityReady={s.abilityReady}
         abilityChargeLocked={s.abilityChargeLocked}
         abilityIds={s.abilityAssignments.map((a) => a.abilityId)}
+        miimogeActive={s.miimogeActive}
         cpuPersonalities={s.cpuPersonalities}
       />
       <AutoActionToggle />

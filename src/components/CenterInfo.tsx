@@ -25,6 +25,7 @@ interface CenterInfoProps {
   abilityReady: boolean[];
   abilityChargeLocked: boolean[];
   abilityIds: (AbilityId | null)[];
+  miimogeActive: boolean;
   cpuPersonalities?: (CpuPersonality | null)[];
 }
 
@@ -43,6 +44,7 @@ export function CenterInfo({
   abilityReady,
   abilityChargeLocked,
   abilityIds,
+  miimogeActive,
   cpuPersonalities = [],
 }: CenterInfoProps) {
   const getPlayerBubbles = (playerIndex: number) =>
@@ -56,6 +58,8 @@ export function CenterInfo({
       abilityLabel: abilityChargeLocked[i] && id != null
         ? (ABILITY_BADGE_LABELS[id] ?? null)
         : null,
+      restrictionBadge:
+        miimogeActive && id !== "miimoge" ? "5役制限" : null,
     };
   };
 
@@ -76,6 +80,7 @@ export function CenterInfo({
           abilityReady={abilityReady[2]}
           abilityActivated={ability(2).abilityActivated}
           abilityLabel={ability(2).abilityLabel}
+          restrictionBadge={ability(2).restrictionBadge}
           cpuPersonality={cpuPersonalities[2]}
         />
       </div>
@@ -94,6 +99,7 @@ export function CenterInfo({
           abilityReady={abilityReady[1]}
           abilityActivated={ability(1).abilityActivated}
           abilityLabel={ability(1).abilityLabel}
+          restrictionBadge={ability(1).restrictionBadge}
           cpuPersonality={cpuPersonalities[1]}
           badgeSide="left"
           badgeLayout="side"
@@ -114,6 +120,7 @@ export function CenterInfo({
           abilityReady={abilityReady[3]}
           abilityActivated={ability(3).abilityActivated}
           abilityLabel={ability(3).abilityLabel}
+          restrictionBadge={ability(3).restrictionBadge}
           cpuPersonality={cpuPersonalities[3]}
           badgeLayout="side"
         />
@@ -133,6 +140,7 @@ export function CenterInfo({
           abilityReady={abilityReady[0]}
           abilityActivated={ability(0).abilityActivated}
           abilityLabel={ability(0).abilityLabel}
+          restrictionBadge={ability(0).restrictionBadge}
           cpuPersonality={cpuPersonalities[0]}
         />
       </div>

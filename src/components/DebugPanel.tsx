@@ -33,6 +33,7 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
   const showCutinTest = useGameStore((s) => s.showCutin);
   const showDebugCutin = useGameStore((s) => s.showDebugCutin);
   const startDebugMidgame = useGameStore((s) => s.startDebugMidgame);
+  const goTo = useGameStore((s) => s.goTo);
   const [lightningSourcePlayer, setLightningSourcePlayer] = useState(0);
   const [lightningTargetPlayer, setLightningTargetPlayer] = useState(1);
 
@@ -104,6 +105,15 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
                 color="secondary"
                 onClick={() => {
                   startDebugMidgame(players);
+                  onClose?.();
+                }}
+              />
+              <Button
+                label="テスト設定画面"
+                size="normal"
+                color="secondary"
+                onClick={() => {
+                  goTo("testConfig");
                   onClose?.();
                 }}
               />

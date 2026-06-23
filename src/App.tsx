@@ -17,6 +17,7 @@ import { LoadingScreen } from "@/screens/LoadingScreen";
 import { ScoreConfirmScreen } from "@/screens/ScoreConfirmScreen";
 import { ScoreDisplayScreen } from "@/screens/ScoreDisplayScreen";
 import { TitleScreen } from "@/screens/TitleScreen";
+import { TestConfigScreen } from "@/screens/TestConfigScreen";
 import { YakuResultScreen } from "@/screens/YakuResultScreen";
 import { getGameSizeForScreenMode } from "@/constants/layout";
 import { useGameStore, type Screen } from "@/store";
@@ -26,6 +27,7 @@ import { useEffect, useState, type ReactNode } from "react";
 const screens: Record<Screen, ReactNode> = {
   loading: <LoadingScreen />,
   title: <TitleScreen />,
+  testConfig: <TestConfigScreen />,
   scoreDisplay: <ScoreDisplayScreen />,
   scoreConfirm: <ScoreConfirmScreen />,
   game: <GameScreen />,

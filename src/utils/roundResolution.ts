@@ -19,6 +19,7 @@ function clearRoundAbilityEffects() {
     aimogeDangerColors: resetFlags.map(() => [] as number[]),
     pikasanBonusPending: [...resetFlags],
     siranGuardActive: [...resetFlags],
+    miimogeActive: false,
   });
 }
 

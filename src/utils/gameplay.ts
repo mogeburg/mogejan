@@ -78,6 +78,51 @@ export function getAimogeDangerColors(playerIndex: number): Set<number> {
   return new Set(state.aimogeDangerColors[playerIndex]);
 }
 
+export function canTsumoWithMiimoge(
+  playerIndex: number,
+  allTiles: number[],
+  hasPonMelds: boolean,
+  doraTile: number | null,
+  trendTypes: number[],
+  winnerDiscardsEmpty: boolean,
+  playerName: string,
+  miimogeActive: boolean,
+  abilityIds: (AbilityId | null)[],
+  minYaku = 5,
+): boolean {
+  if (!miimogeActive || abilityIds[playerIndex] === "miimoge") {
+    return winnerDiscardsEmpty ? getProjectedTotalYaku({
+      riichi: false,
+      doubleReach: false,
+      ippatsu: false,
+      isRon: false,
+      hasPonMelds,
+      doraTile,
+      uradoraTile: null,
+      allTiles,
+      winnerDiscardsEmpty,
+      playerName,
+      trendTypes,
+    }) >= 13 : true;
+  }
+
+  const totalYaku = getProjectedTotalYaku({
+    riichi: false,
+    doubleReach: false,
+    ippatsu: false,
+    isRon: false,
+    hasPonMelds,
+    doraTile,
+    uradoraTile: null,
+    allTiles,
+    winnerDiscardsEmpty,
+    playerName,
+    trendTypes,
+  });
+
+  return totalYaku >= minYaku;
+}
+
 export function getCutinRarity(totalYaku: number) {
   return totalYaku >= 13 ? "epic" : totalYaku >= 6 ? "rare" : "normal";
 }
@@ -306,6 +351,14 @@ export function executeRiichiAction(playerIndex: number): boolean {
   ];
   const waiter = findWaiterId(handTiles);
   if (waiter == null) return false;
+  if (
+    state.miimogeActive &&
+    state.abilityAssignments[playerIndex]?.abilityId !== "miimoge"
+  ) {
+    if (!canDeclareRiichi(playerIndex, waiter, 5)) {
+      return false;
+    }
+  }
   if (!isHumanPlayer) {
     const minTotalYaku = getCpuProfile(state.cpuStrength).minRiichiYaku;
     if (!canDeclareRiichi(playerIndex, waiter, minTotalYaku)) {
