@@ -6,6 +6,22 @@ import {
 } from "@/utils/winResult";
 import { usePlayStatsStore } from "@/utils/playStats";
 
+function clearRoundAbilityEffects() {
+  const state = useGameStore.getState();
+  const resetFlags = state.players.map(() => false);
+  useGameStore.setState({
+    abilityChargeLocked: [...resetFlags],
+    abilityCutinActive: false,
+    abilityCutinPlayer: null,
+    abilityCutinText: "",
+    abilityCutinQueue: [],
+    pendingRiichiCutin: null,
+    aimogeDangerColors: resetFlags.map(() => [] as number[]),
+    pikasanBonusPending: [...resetFlags],
+    siranGuardActive: [...resetFlags],
+  });
+}
+
 export interface RoundResolutionSnapshot {
   players: Player[];
   parentIndex: number;
@@ -23,6 +39,8 @@ export interface RoundResolutionSnapshot {
   trendTypes: number[];
   hands: number[][];
   ponMelds: number[][][];
+  pikasanBonusPending: boolean[];
+  siranGuardActive: boolean[];
 }
 
 export function buildWinContext(
@@ -43,6 +61,8 @@ export function buildWinContext(
     trendTypes: snapshot.trendTypes,
     hands: snapshot.hands,
     ponMelds: snapshot.ponMelds,
+    pikasanBonusPending: snapshot.pikasanBonusPending,
+    siranGuardActive: snapshot.siranGuardActive,
   };
 }
 
@@ -57,6 +77,7 @@ export function getPendingScoreDeltas(
     parentIndex: snapshot.parentIndex,
     isRon: snapshot.isRon,
     ronTarget: snapshot.ronTarget,
+    siranGuardActive: snapshot.siranGuardActive,
   });
 }
 
@@ -65,6 +86,7 @@ export function confirmCurrentRound() {
 
   if (state.ryuukyoku) {
     usePlayStatsStore.getState().recordRyuukyoku();
+    clearRoundAbilityEffects();
     state.moveParent();
     useGameStore.setState({ ryuukyoku: false });
     state.goTo(useGameStore.getState().gameOver ? "gameResult" : "scoreDisplay");
@@ -90,6 +112,8 @@ export function confirmCurrentRound() {
     trendTypes: state.trendTypes,
     hands: state.hands,
     ponMelds: state.ponMelds,
+    pikasanBonusPending: state.pikasanBonusPending,
+    siranGuardActive: state.siranGuardActive,
   };
 
   const yaku = evaluateWinner(buildWinContext(snapshot));
@@ -97,6 +121,19 @@ export function confirmCurrentRound() {
   const totalYaku = yaku.reduce((sum, entry) => sum + entry.yaku, 0);
   const totalScore = Math.max(0, deltas.reduce((sum, delta) => sum + Math.max(0, delta), 0));
   const tsumoCount = state.currentDealWallLength - state.wall.length;
+
+  if (state.winner != null) {
+    const winnerGain = Math.max(0, deltas[state.winner] ?? 0);
+    if (winnerGain > 0) {
+      state.chargeAbility(state.winner, state.isRon ? "ron" : "tsumo", winnerGain);
+    }
+  }
+
+  deltas.forEach((delta, index) => {
+    if (delta < 0) {
+      state.chargeAbility(index, "damaged", Math.abs(delta));
+    }
+  });
 
   usePlayStatsStore.getState().recordWin({
     isRon: state.isRon,
@@ -112,6 +149,7 @@ export function confirmCurrentRound() {
   });
 
   useGameStore.setState({ scoreDeltas: deltas });
+  clearRoundAbilityEffects();
 
   const anyLoser = useGameStore.getState().players.some((player) => player.score <= 0);
   if (anyLoser) {

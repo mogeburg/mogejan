@@ -1,7 +1,14 @@
 import type { CpuPersonality } from "@/ai/CpuController";
+import type { AbilityId } from "@/constants/abilities";
 import styles from "@/components/CenterInfo.module.scss";
 import { PlayerInfo } from "@/components/PlayerInfo";
 import type { Player } from "@/store";
+
+const ABILITY_BADGE_LABELS: Partial<Record<AbilityId, string>> = {
+  aimoge: "監視中",
+  pikasan: "そうだね",
+  siran: "知らん",
+};
 
 interface CenterInfoProps {
   players: Player[];
@@ -16,6 +23,8 @@ interface CenterInfoProps {
   specialAbilitiesEnabled: boolean;
   abilityGauge: number[];
   abilityReady: boolean[];
+  abilityChargeLocked: boolean[];
+  abilityIds: (AbilityId | null)[];
   cpuPersonalities?: (CpuPersonality | null)[];
 }
 
@@ -32,11 +41,24 @@ export function CenterInfo({
   specialAbilitiesEnabled,
   abilityGauge,
   abilityReady,
+  abilityChargeLocked,
+  abilityIds,
   cpuPersonalities = [],
 }: CenterInfoProps) {
   const getPlayerBubbles = (playerIndex: number) =>
     speechBubbles.filter((b) => b.playerIndex === playerIndex);
   const wallCountText = String(Math.max(0, wallLength)).padStart(2, "0");
+
+  const ability = (i: number) => {
+    const id = abilityIds[i];
+    return {
+      abilityActivated: abilityChargeLocked[i] && id != null,
+      abilityLabel: abilityChargeLocked[i] && id != null
+        ? (ABILITY_BADGE_LABELS[id] ?? null)
+        : null,
+    };
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.cpuTop}>
@@ -52,6 +74,8 @@ export function CenterInfo({
           specialAbilitiesEnabled={specialAbilitiesEnabled}
           abilityGauge={abilityGauge[2]}
           abilityReady={abilityReady[2]}
+          abilityActivated={ability(2).abilityActivated}
+          abilityLabel={ability(2).abilityLabel}
           cpuPersonality={cpuPersonalities[2]}
         />
       </div>
@@ -68,6 +92,8 @@ export function CenterInfo({
           specialAbilitiesEnabled={specialAbilitiesEnabled}
           abilityGauge={abilityGauge[1]}
           abilityReady={abilityReady[1]}
+          abilityActivated={ability(1).abilityActivated}
+          abilityLabel={ability(1).abilityLabel}
           cpuPersonality={cpuPersonalities[1]}
           badgeSide="left"
           badgeLayout="side"
@@ -86,6 +112,8 @@ export function CenterInfo({
           specialAbilitiesEnabled={specialAbilitiesEnabled}
           abilityGauge={abilityGauge[3]}
           abilityReady={abilityReady[3]}
+          abilityActivated={ability(3).abilityActivated}
+          abilityLabel={ability(3).abilityLabel}
           cpuPersonality={cpuPersonalities[3]}
           badgeLayout="side"
         />
@@ -103,6 +131,8 @@ export function CenterInfo({
           specialAbilitiesEnabled={specialAbilitiesEnabled}
           abilityGauge={abilityGauge[0]}
           abilityReady={abilityReady[0]}
+          abilityActivated={ability(0).abilityActivated}
+          abilityLabel={ability(0).abilityLabel}
           cpuPersonality={cpuPersonalities[0]}
         />
       </div>

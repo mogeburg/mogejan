@@ -7,11 +7,14 @@ import { getImageUrl, TileData } from "@/constants/tiles";
 import styles from "@/screens/TitleScreen.module.scss";
 import { useGameStore } from "@/store";
 import { useTitleScreenStore } from "@/storeSelectors";
-import { playSe, useBgm } from "@/utils/audio";
 import { seAudioUrl } from "@/utils/assets";
-import { useRef, useState, useCallback, type MouseEvent } from "react";
+import { playSe, useBgm } from "@/utils/audio";
+import { useCallback, useRef, useState, type MouseEvent } from "react";
 
 const CHARACTER_TILE_IDS = TileData.map((_, i) => i * 9 + 1);
+
+const SPECIAL_INDEX = 1;
+const STORY_INDEX = 2;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];
@@ -23,31 +26,37 @@ function shuffle<T>(arr: T[]): T[] {
 }
 
 export function TitleScreen() {
-  const [modeIndex, setModeIndex] = useState(0);
   const [showDance, setShowDance] = useState(false);
   const [danceUnlocked, setDanceUnlocked] = useState(false);
   const {
     riichiBgmSetting,
     riichiAvatar,
+    titleModeIndex,
+    setTitleModeIndex,
+    specialAbilitiesEnabled,
+    setSpecialAbilitiesEnabled,
     simulationMode,
     setSimulationMode,
   } = useTitleScreenStore();
 
   const danceClicks = useRef(0);
 
-  const handleTitleClick = useCallback((event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-    if (danceUnlocked) {
-      setShowDance((prev) => !prev);
-      return;
-    }
-    danceClicks.current++;
-    if (danceClicks.current >= 3) {
-      danceClicks.current = 0;
-      setDanceUnlocked(true);
-      setShowDance(true);
-    }
-  }, [danceUnlocked]);
+  const handleTitleClick = useCallback(
+    (event: MouseEvent<HTMLElement>) => {
+      event.stopPropagation();
+      if (danceUnlocked) {
+        setShowDance((prev) => !prev);
+        return;
+      }
+      danceClicks.current++;
+      if (danceClicks.current >= 3) {
+        danceClicks.current = 0;
+        setDanceUnlocked(true);
+        setShowDance(true);
+      }
+    },
+    [danceUnlocked],
+  );
 
   const bgm =
     showDance && riichiBgmSetting !== "none"
@@ -58,7 +67,11 @@ export function TitleScreen() {
   useBgm(bgm);
 
   function handleSelect(index: number) {
+    const enableSpecialAbilities = titleModeIndex === SPECIAL_INDEX;
     if (simulationMode) setSimulationMode(false);
+    if (specialAbilitiesEnabled !== enableSpecialAbilities) {
+      setSpecialAbilitiesEnabled(enableSpecialAbilities);
+    }
     playSe(seAudioUrl("start.opus"));
     const chosen = TileData[index];
     const others = TileData.filter((_, i) => i !== index);
@@ -88,10 +101,9 @@ export function TitleScreen() {
   return (
     <>
       <ModalCard className={styles.modalCard}>
-        <p
-          className={styles.version}
-        >
-          ver {VERSION}{simulationMode ? " 🎲" : ""}
+        <p className={styles.version}>
+          ver {VERSION}
+          {simulationMode ? " 🎲" : ""}
         </p>
         <h1
           className={danceUnlocked ? styles.titleRed : styles.title}
@@ -102,25 +114,28 @@ export function TitleScreen() {
         </h1>
         <div className={styles.charGrid}>
           {CHARACTER_TILE_IDS.map((id, i) => {
-            const isStoryMode = modeIndex === 1;
-            const isFirst = i === 0;
-            const faceDown = isStoryMode && !isFirst;
-
+            const isStoryMode = titleModeIndex === STORY_INDEX;
             return (
               <div
                 key={id}
-                onClick={faceDown ? undefined : () => handleSelect(i)}
-                className={faceDown ? styles.charItemFaceDown : styles.charItem}
+                onClick={isStoryMode ? undefined : () => handleSelect(i)}
+                className={
+                  isStoryMode ? styles.charItemFaceDown : styles.charItem
+                }
               >
-                <TileImage id={id} size="normal" faceDown={faceDown} />
+                <TileImage id={id} size="normal" faceDown={isStoryMode} />
               </div>
             );
           })}
         </div>
         <ModeToggle
-          items={[{ label: "東南戦" }, { label: "ストーリー", disabled: true }]}
-          activeIndex={modeIndex}
-          onChange={setModeIndex}
+          items={[
+            { label: "東南戦" },
+            { label: "超東南戦" },
+            { label: "ストーリー", disabled: true },
+          ]}
+          activeIndex={titleModeIndex}
+          onChange={setTitleModeIndex}
         />
       </ModalCard>
       <DanceAvatar character={showDance ? riichiAvatar : "none"} />

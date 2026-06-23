@@ -1,6 +1,7 @@
 @use "@/styles/layout" as *;
 
 $tile-blue-overlay-bg: rgba(0, 80, 255, 0.25);
+$tile-danger-overlay-bg: rgba(220, 38, 38, 0.26);
 $tile-shine-opacity: 0.8;
 $tile-shine-gradient: linear-gradient(
   115deg,
@@ -32,6 +33,35 @@ $tile-shine-gradient: linear-gradient(
   background: $tile-blue-overlay-bg;
   pointer-events: none;
   z-index: 1;
+}
+
+.dangerOverlay {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: $tile-danger-overlay-bg;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dangerMark {
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ff3b30;
+  font-size: 1.2em;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-shadow:
+    0 0 4px rgba(255, 59, 48, 0.95),
+    0 0 12px rgba(255, 59, 48, 0.75),
+    0 0 20px rgba(255, 59, 48, 0.55);
+  filter: blur(0.3px);
+  pointer-events: none;
+  z-index: 2;
 }
 
 .shineElement {

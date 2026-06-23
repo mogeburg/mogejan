@@ -1,4 +1,5 @@
 import type { CpuPersonality } from "@/ai/CpuController";
+import { ABILITY_MAX_GAUGE } from "@/constants/abilities";
 import { AvatarIcon } from "@/components/AvatarIcon";
 import styles from "@/components/PlayerInfo.module.scss";
 import { SpeechBubble } from "@/components/SpeechBubble";
@@ -15,6 +16,11 @@ interface PlayerInfoProps {
   isMenzen: boolean;
   isDoubleReach: boolean;
   speechBubbles: { id: number; text: string }[];
+  specialAbilitiesEnabled: boolean;
+  abilityGauge: number;
+  abilityReady: boolean;
+  abilityActivated: boolean;
+  abilityLabel: string | null;
   cpuPersonality?: CpuPersonality | null;
   badgeSide?: "left" | "right";
   badgeLayout?: "side" | "bottom";
@@ -29,6 +35,11 @@ export function PlayerInfo({
   isMenzen,
   isDoubleReach,
   speechBubbles,
+  specialAbilitiesEnabled,
+  abilityGauge,
+  abilityReady,
+  abilityActivated,
+  abilityLabel,
   cpuPersonality,
   badgeSide = "right",
   badgeLayout = "side",
@@ -46,7 +57,12 @@ export function PlayerInfo({
     isMenzen ? "メンゼン" : null,
     isDoubleReach ? "Wリーチ" : isRiichi ? "リーチ" : null,
     isIppatsu ? "イッパツ" : null,
+    abilityActivated && abilityLabel ? abilityLabel : null,
   ].filter((badge): badge is string => badge != null);
+  const gaugePercent = Math.max(
+    0,
+    Math.min(100, (abilityGauge / ABILITY_MAX_GAUGE) * 100),
+  );
 
   return (
     <div
@@ -61,6 +77,10 @@ export function PlayerInfo({
             crown={isParent}
             crownSize={24}
             crownOffset={6}
+            showProgress={specialAbilitiesEnabled}
+            progress={gaugePercent}
+            progressReady={abilityReady}
+            progressActivated={abilityActivated}
           />
           <div className={styles.bubbleStack}>
             <AnimatePresence>

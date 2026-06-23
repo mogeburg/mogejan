@@ -18,6 +18,8 @@ export interface WinEvaluationContext {
   trendTypes: number[];
   hands: number[][];
   ponMelds: number[][][];
+  pikasanBonusPending: boolean[];
+  siranGuardActive: boolean[];
 }
 
 export function buildWinnerTiles(context: WinEvaluationContext): number[] {
@@ -64,6 +66,10 @@ export function evaluateWinner(context: WinEvaluationContext): YakuResult[] {
   });
 
   const special = evaluateSpecialYaku(allTiles);
+
+  if (context.pikasanBonusPending[context.winner]) {
+    special.push({ name: "そうだね", yaku: 3 });
+  }
 
   return [...base, ...special];
 }

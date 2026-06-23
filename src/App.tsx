@@ -5,6 +5,7 @@ import { DebugPanel } from "@/components/DebugPanel";
 import { HistoryPanel } from "@/components/HistoryPanel";
 import { OtherPanel } from "@/components/OtherPanel";
 import { OverlayMenu } from "@/components/OverlayMenu";
+import { AbilityCutin } from "@/components/AbilityCutin";
 import { RiichiCutin } from "@/components/RiichiCutin";
 import { RulesPanel } from "@/components/RulesPanel";
 import { SettingsPanel } from "@/components/SettingsPanel";
@@ -88,6 +89,7 @@ export default function App() {
         }}
       >
         {screens[currentScreen]}
+        <AbilityCutin />
         <RiichiCutin />
         <CutIn />
         {menuOpen && (

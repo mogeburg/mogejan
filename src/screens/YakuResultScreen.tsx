@@ -29,6 +29,7 @@ export function YakuResultScreen() {
     trendTypes,
     hands,
     ponMelds,
+    pikasanBonusPending,
     goTo,
     addYakuCounts,
     simulationMode,
@@ -51,6 +52,8 @@ export function YakuResultScreen() {
     trendTypes,
     hands,
     ponMelds,
+    pikasanBonusPending,
+    siranGuardActive: [false, false, false, false],
   };
 
   const allTiles = buildWinnerTiles(winContext);

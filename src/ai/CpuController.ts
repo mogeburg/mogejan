@@ -274,6 +274,7 @@ export function chooseSafeDiscard(
 ): number | null {
   const playerIndex = useGameStore.getState().turnIndex;
   const { remainingByColor, safeColors } = getVisibleColorState(playerIndex);
+  const dangerColors = getAimogePreciseDanger();
   const counts = countAllTileColors(tilePool);
 
   let best = -Infinity;
@@ -282,8 +283,12 @@ export function chooseSafeDiscard(
     const color = getTileColor(id);
     const remaining = remainingByColor[color] ?? 0;
     const isSafe = safeColors.has(color);
+    const isDanger = dangerColors.has(color);
     const score =
-      remaining + (isSafe ? 100 : 0) + (counts[color] >= 2 ? 10 : 0);
+      remaining +
+      (isSafe ? 100 : 0) +
+      (isDanger ? -10000 : 0) +
+      (counts[color] >= 2 ? 10 : 0);
     if (score > best) {
       best = score;
       candidates = [id];
@@ -534,7 +539,17 @@ function evaluateTile(tileId: number, ctx: EvalContext): number {
   return Math.round(offScore * ctx.attackMul - defScore);
 }
 
+function getAimogePreciseDanger(): Set<number> {
+  const state = useGameStore.getState();
+  if (!state.specialAbilitiesEnabled) return new Set<number>();
+  const colors = state.aimogeDangerColors[state.turnIndex];
+  return colors != null && colors.length > 0 ? new Set(colors) : new Set<number>();
+}
+
 function getDangerColors(): Set<number> {
+  const precise = getAimogePreciseDanger();
+  if (precise.size > 0) return precise;
+
   const state = useGameStore.getState();
   const colors = new Set<number>();
   for (let i = 0; i < state.riichi.length; i++) {
@@ -606,9 +621,11 @@ function chooseByScore(
   ctx: EvalContext,
 ): number | null {
   if (discardableTiles.length === 0) return null;
+  const aimogeDanger = getAimogePreciseDanger();
   const scored = discardableTiles.map((id) => ({
     id,
-    score: evaluateTile(id, ctx) - evaluateDiscardFuturePotential(id, ctx),
+    score: evaluateTile(id, ctx) - evaluateDiscardFuturePotential(id, ctx)
+      + (aimogeDanger.has(getTileColor(id)) ? 10000 : 0),
   }));
   const minScore = Math.min(...scored.map((s) => s.score));
   const candidates = scored

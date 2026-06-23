@@ -72,6 +72,14 @@ $auto-action-panel-slide-width: calc(
   transform: translateX(0);
 }
 
+.closed {
+  pointer-events: none;
+}
+
+.closed .toggle {
+  pointer-events: auto;
+}
+
 .closed .wrapper {
   transform: translateX($auto-action-panel-slide-width);
 }

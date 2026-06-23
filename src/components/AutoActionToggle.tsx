@@ -4,7 +4,7 @@ import { useGameStore } from "@/store";
 const LABELS: Record<string, string> = {
   pon: "ポン",
   riichi: "リーチ",
-  ronTsumo: "アガリ",
+  ronTsumo: "ロン・ツモ",
   cancel: "キャンセル",
 };
 

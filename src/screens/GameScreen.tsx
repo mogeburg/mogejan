@@ -24,6 +24,7 @@ import {
   executeRiichiAction,
   executeRonWin,
   executeTsumoWin,
+  getAimogeDangerColors,
   shouldAutoDiscardRiichiHand,
 } from "@/utils/gameplay";
 import { startShineSync, stopShineSync } from "@/utils/shineSync";
@@ -135,6 +136,13 @@ export function GameScreen() {
   );
 
   const currentDiscardCount = s.discards[s.turnIndex]?.length ?? 0;
+  const dangerTileColorsByPlayer = useMemo(
+    () =>
+      Array.from({ length: 4 }, (_, playerIndex) =>
+        Array.from(getAimogeDangerColors(playerIndex)),
+      ),
+    [s.aimogeDangerColors],
+  );
 
   const canTsumo = useMemo(
     () =>
@@ -161,7 +169,12 @@ export function GameScreen() {
       else if (label === "リーチ") executeRiichiAction(s.turnIndex);
       else if (label === "ロン") executeRonWin(playerIndex);
       else if (label === "ポン") executePonCall(playerIndex);
-      else if (label === "キャンセル") s.cancelPon();
+      else if (label === "キャンセル") {
+        const state = useGameStore.getState();
+        if (state.pendingRon) state.cancelRon();
+        else if (state.pendingPon) state.cancelPon();
+        else if (state.riichi[0] && state.drawnTile != null) state.discard(state.drawnTile);
+      }
     },
     [s.cancelPon, s.turnIndex],
   );
@@ -174,6 +187,7 @@ export function GameScreen() {
     const state = useGameStore.getState();
     if (state.pendingPon != null || state.pendingRon != null) return;
     if (state.winner != null || state.ryuukyoku) return;
+    if (state.abilityCutinActive) return;
 
     const player = state.players[state.turnIndex];
     const delay = getCpuDelay(state.speed);
@@ -225,6 +239,7 @@ export function GameScreen() {
       const latest = useGameStore.getState();
       if (latest.pendingPon != null || latest.pendingRon != null) return;
       if (latest.winner != null || latest.ryuukyoku) return;
+      if (latest.abilityCutinActive) return;
       if (!latest.hands[latest.turnIndex]) return;
 
       if (s.alwaysTsumogiri && latest.drawnTile != null) {
@@ -266,10 +281,25 @@ export function GameScreen() {
     s.showAllTiles,
     s.alwaysTsumogiri,
     s.manualCpu,
+    s.abilityCutinActive,
   ]);
+
+  // Deferred riichi execution: declareRiichi + discard at riichi cutin timing
+  useEffect(() => {
+    if (s.riichiCutinPlayer == null) return;
+    if (s.riichi[s.riichiCutinPlayer]) return;
+
+    const state = useGameStore.getState();
+    const waiter = state.riichiCutinTileId;
+    if (waiter == null) return;
+
+    state.declareRiichi(s.riichiCutinPlayer);
+    state.discard(waiter, true);
+  }, [s.riichiCutinPlayer, s.riichi]);
 
   useEffect(() => {
     if (s.manualCpu) return;
+    if (s.abilityCutinActive) return;
     if (s.pendingPon == null && s.pendingRon == null) return;
 
     const autoActions = useGameStore.getState().autoActions;
@@ -325,6 +355,13 @@ export function GameScreen() {
         (i) => s.players[i].type === "human",
       );
 
+      if (humanEligible.length > 0 && autoActions.cancel) {
+        const latest = useGameStore.getState();
+        if (latest.pendingRon == null) return;
+        latest.cancelRon();
+        return;
+      }
+
       if (humanEligible.length > 0 && autoActions.ronTsumo) {
         const latest = useGameStore.getState();
         if (latest.pendingRon == null) return;
@@ -351,6 +388,7 @@ export function GameScreen() {
     s.players,
     s.manualCpu,
     s.autoActions,
+    s.abilityCutinActive,
   ]);
 
   useEffect(() => {
@@ -363,6 +401,7 @@ export function GameScreen() {
 
   useEffect(() => {
     if (!useGameStore.getState().autoActions.ronTsumo) return;
+    if (useGameStore.getState().autoActions.cancel) return;
     if (s.turnIndex !== 0 || !canTsumo) return;
     if (s.winner != null || s.ryuukyoku) return;
 
@@ -394,6 +433,7 @@ export function GameScreen() {
     onAction: handleAction,
     doraTile: s.doraTile,
     focusedTileColor,
+    dangerTileColors: dangerTileColorsByPlayer[i],
     onTileFocus: handleTileFocus,
     onTileBlur: handleTileBlur,
   });
@@ -401,6 +441,7 @@ export function GameScreen() {
   const showDance =
     s.riichiAvatar !== "none" &&
     s.riichi[0] &&
+    !s.abilityCutinActive &&
     s.winner == null &&
     !s.ryuukyoku;
 
@@ -415,6 +456,7 @@ export function GameScreen() {
         round={s.round}
         kyoku={s.kyoku}
         honba={s.honba}
+        specialAbilitiesEnabled={s.specialAbilitiesEnabled}
         doraTile={s.doraTile}
         uradoraTile={s.uradoraTile}
         trendTypes={s.trendTypes}
@@ -434,6 +476,11 @@ export function GameScreen() {
         ponMelds={s.ponMelds}
         wallLength={s.wall.length}
         speechBubbles={s.speechBubbles}
+        specialAbilitiesEnabled={s.specialAbilitiesEnabled}
+        abilityGauge={s.abilityGauge}
+        abilityReady={s.abilityReady}
+        abilityChargeLocked={s.abilityChargeLocked}
+        abilityIds={s.abilityAssignments.map((a) => a.abilityId)}
         cpuPersonalities={s.cpuPersonalities}
       />
       <AutoActionToggle />

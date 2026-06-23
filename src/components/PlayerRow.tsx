@@ -50,6 +50,7 @@ interface PlayerRowProps {
   onAction: (label: ActionLabel, playerIndex: number) => void;
   doraTile: number | null;
   focusedTileColor?: number | null;
+  dangerTileColors?: number[];
   onTileFocus?: (tileId: number) => void;
   onTileBlur?: () => void;
 }
@@ -70,7 +71,8 @@ function isActionShow({
   canTsumo: boolean;
 }) {
   if (label === "ロン") return canRon;
-  if (label === "キャンセル" || label === "ポン") return canPon;
+  if (label === "キャンセル") return canPon || canRon || canTsumo;
+  if (label === "ポン") return canPon;
   if (!isTurn) return false;
   if (label === "リーチ") return canRiichi;
   if (label === "ツモ") return canTsumo;
@@ -80,7 +82,8 @@ function isActionShow({
 function isActionDisabled(label: ActionLabel) {
   const aa = useGameStore.getState().autoActions;
   if (label === "ツモ" || label === "ロン") return aa.ronTsumo;
-  if (label === "ポン" || label === "キャンセル") return aa.pon || aa.cancel;
+  if (label === "ポン") return aa.pon;
+  if (label === "キャンセル") return aa.cancel;
   if (label === "リーチ") return aa.riichi;
   return false;
 }
@@ -107,6 +110,7 @@ export function PlayerRow({
   onAction,
   doraTile,
   focusedTileColor,
+  dangerTileColors = [],
   onTileFocus,
   onTileBlur,
 }: PlayerRowProps) {
@@ -133,6 +137,7 @@ export function PlayerRow({
     doraTile != null && isDoraLikeTile(id, doraTile);
   const isFocusedColor = (id: number) =>
     focusedTileColor != null && getTileColor(id) === focusedTileColor;
+  const isDangerTile = (id: number) => dangerTileColors.includes(getTileColor(id));
   return (
     <div
       className={`${styles.container} ${isCpuRow ? styles.containerCpu : ""} ${!isCpuRow && isPortrait ? styles.containerPlayerPortrait : ""}`}
@@ -190,6 +195,7 @@ export function PlayerRow({
                     highlightSide={highlightSide}
                     onClick={canDiscard ? () => onDiscard(id) : undefined}
                     shine={!faceDown && isDoraTile(id)}
+                    dangerOverlay={!faceDown && isDangerTile(id)}
                   />
                 </motion.div>
               ))}
@@ -210,6 +216,7 @@ export function PlayerRow({
                         canDiscard ? () => onDiscard(drawnTile) : undefined
                       }
                       shine={!faceDown && isDoraTile(drawnTile)}
+                      dangerOverlay={!faceDown && isDangerTile(drawnTile)}
                     />
                   </motion.div>
                 </div>

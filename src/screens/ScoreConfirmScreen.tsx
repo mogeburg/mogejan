@@ -13,6 +13,7 @@ export function ScoreConfirmScreen() {
   const speed = useGameStore((s) => s.speed);
   const {
     players,
+    specialAbilitiesEnabled,
     parentIndex,
     round,
     kyoku,
@@ -28,6 +29,8 @@ export function ScoreConfirmScreen() {
     trendTypes,
     hands,
     ponMelds,
+    pikasanBonusPending,
+    siranGuardActive,
     simulationMode,
     isRon,
     ronTarget,
@@ -51,6 +54,8 @@ export function ScoreConfirmScreen() {
     trendTypes,
     hands,
     ponMelds,
+    pikasanBonusPending,
+    siranGuardActive,
   };
 
   const pendingDeltas = useMemo(
@@ -79,6 +84,7 @@ export function ScoreConfirmScreen() {
       round={round}
       kyoku={kyoku}
       honba={honba}
+      specialAbilitiesEnabled={specialAbilitiesEnabled}
       scoreDeltas={pendingDeltas}
       onConfirm={handleConfirm}
       buttonLabel={willAnyLose || (isFinalRound && parentMoves) ? "結果確認へ" : undefined}

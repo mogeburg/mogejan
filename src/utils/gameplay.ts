@@ -1,13 +1,82 @@
 import { resolveBgmPath } from "@/constants/game";
-import { getBasicTileId, getTrendTileId } from "@/constants/tiles";
+import type { AbilityId } from "@/constants/abilities";
+import {
+  getBasicTileId,
+  getTileColor,
+  getTrendTileId,
+} from "@/constants/tiles";
 import { useGameStore } from "@/store";
 import { voiceAudioUrl } from "@/utils/assets";
 import { getCurrentBgmSrc, playBgm, playVoice } from "@/utils/audio";
-import { canFormWinningHand, findWaiterId } from "@/utils/check";
+import { canFormWinningHand, findAllWaitingColors, findWaiterId } from "@/utils/check";
 import { evaluateSpecialYaku } from "@/utils/evaluateSpecialYaku";
 import type { YakuResult } from "@/utils/evaluateYaku";
 import { evaluateYaku } from "@/utils/evaluateYaku";
 import { getCpuProfile } from "@/ai/CpuController";
+
+function canActivateAbility(playerIndex: number, abilityId: AbilityId) {
+  const state = useGameStore.getState();
+  return (
+    state.specialAbilitiesEnabled &&
+    state.abilityAssignments[playerIndex]?.abilityId === abilityId &&
+    state.abilityReady[playerIndex] &&
+    !state.abilityChargeLocked[playerIndex]
+  );
+}
+
+function getRiichiWaitingColors(excludePlayer: number): Set<number> {
+  const state = useGameStore.getState();
+  const colors = new Set<number>();
+  for (let oppIdx = 0; oppIdx < state.players.length; oppIdx++) {
+    if (!state.riichi[oppIdx] || oppIdx === excludePlayer) continue;
+    const waiting = findAllWaitingColors(
+      state.hands[oppIdx],
+      state.ponMelds[oppIdx],
+      state.trendTypes,
+    );
+    for (const color of waiting) colors.add(color);
+  }
+  return colors;
+}
+
+function tryActivateAimoge(playerIndex: number): boolean {
+  const state = useGameStore.getState();
+  if (state.riichi[playerIndex]) return false;
+  if (!canActivateAbility(playerIndex, "aimoge")) return false;
+
+  const waitingColors = getRiichiWaitingColors(playerIndex);
+  if (waitingColors.size === 0) return false;
+
+  const playerTiles = [
+    ...state.hands[playerIndex],
+    ...(state.drawnTile != null ? [state.drawnTile] : []),
+  ];
+  const hasDanger = playerTiles.some((tileId) =>
+    waitingColors.has(getTileColor(tileId)),
+  );
+  if (!hasDanger) return false;
+
+  state.activateAbility(playerIndex, "aimoge");
+  state.setAimogeDangerColors(playerIndex, [...waitingColors]);
+  return true;
+}
+
+export function triggerAimogeOnTurn(playerIndex: number) {
+  tryActivateAimoge(playerIndex);
+}
+
+function triggerPikasanOnRiichi(playerIndex: number) {
+  const state = useGameStore.getState();
+  if (!canActivateAbility(playerIndex, "pikasan")) return;
+  state.activateAbility(playerIndex, "pikasan");
+  state.setPikasanBonusPending(playerIndex, true);
+}
+
+export function getAimogeDangerColors(playerIndex: number): Set<number> {
+  const state = useGameStore.getState();
+  if (!state.specialAbilitiesEnabled) return new Set<number>();
+  return new Set(state.aimogeDangerColors[playerIndex]);
+}
 
 export function getCutinRarity(totalYaku: number) {
   return totalYaku >= 13 ? "epic" : totalYaku >= 6 ? "rare" : "normal";
@@ -153,19 +222,6 @@ export function evaluateWin(
     ...drawnTiles,
     ...state.ponMelds[playerIndex].flat(),
   ];
-  const totalYaku = getProjectedTotalYaku({
-    riichi: state.riichi[playerIndex],
-    doubleReach: state.doubleReach[playerIndex],
-    ippatsu: state.ippatsu[playerIndex],
-    isRon: options?.isRon ?? false,
-    hasPonMelds: state.ponMelds[playerIndex].length > 0,
-    doraTile: state.doraTile,
-    uradoraTile: state.uradoraTile,
-    allTiles,
-    winnerDiscardsEmpty: state.discards[playerIndex].length === 0,
-    playerName: state.players[playerIndex].name,
-    trendTypes: state.trendTypes,
-  });
   const results = evaluateYaku({
     riichi: state.riichi[playerIndex],
     doubleReach: state.doubleReach[playerIndex],
@@ -180,8 +236,14 @@ export function evaluateWin(
     trendTypes: state.trendTypes,
   }).concat(evaluateSpecialYaku(allTiles));
 
+  if (state.pikasanBonusPending[playerIndex]) {
+    results.push({ name: "そうだね", yaku: 3 });
+  }
+
+  const adjustedTotalYaku = results.reduce((sum, result) => sum + result.yaku, 0);
+
   return {
-    totalYaku,
+    totalYaku: adjustedTotalYaku,
     results,
   };
 }
@@ -230,6 +292,7 @@ export function executePonCall(playerIndex: number) {
   const state = useGameStore.getState();
   playVoice(voiceAudioUrl("pon.opus"));
   state.executePon(playerIndex);
+  triggerAimogeOnTurn(playerIndex);
   state.showSpeechBubble("ポン", playerIndex);
 }
 
@@ -249,8 +312,10 @@ export function executeRiichiAction(playerIndex: number): boolean {
       return false;
     }
   }
-
-  playVoice(voiceAudioUrl("riichi.opus"));
+  triggerPikasanOnRiichi(playerIndex);
+  if (!isHumanPlayer) {
+    playVoice(voiceAudioUrl("riichi.opus"));
+  }
   if (
     isHumanPlayer &&
     state.riichiBgmSetting !== "none" &&
@@ -265,13 +330,17 @@ export function executeRiichiAction(playerIndex: number): boolean {
       ),
     );
   }
-
-  state.showSpeechBubble("リーチ", playerIndex);
   if (isHumanPlayer) {
-    state.setRiichiCutin(playerIndex, waiter);
+    if (useGameStore.getState().abilityCutinActive) {
+      useGameStore.getState().setPendingRiichiCutin(playerIndex, waiter);
+    } else {
+      state.setRiichiCutin(playerIndex, waiter);
+    }
+  } else {
+    playVoice(voiceAudioUrl("riichi.opus"));
+    state.declareRiichi(playerIndex);
+    state.discard(waiter, true);
   }
-  state.declareRiichi(playerIndex);
-  state.discard(waiter, true);
   return true;
 }
 

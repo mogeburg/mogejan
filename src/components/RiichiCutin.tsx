@@ -1,12 +1,20 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import styles from "@/components/RiichiCutin.module.scss";
 import { useGameStore } from "@/store";
-import { tileImageUrl as getTileImageUrl } from "@/utils/assets";
+import { voiceAudioUrl, tileImageUrl as getTileImageUrl } from "@/utils/assets";
+import { playVoice } from "@/utils/audio";
 
 export function RiichiCutin() {
   const riichiCutinPlayer = useGameStore((s) => s.riichiCutinPlayer);
+  const riichiCutinText = useGameStore((s) => s.riichiCutinText);
   const setRiichiCutin = useGameStore((s) => s.setRiichiCutin);
   const players = useGameStore((s) => s.players);
+
+  useEffect(() => {
+    if (riichiCutinPlayer == null) return;
+    playVoice(voiceAudioUrl("riichi.opus"));
+  }, [riichiCutinPlayer]);
 
   if (riichiCutinPlayer == null) return null;
 
@@ -36,7 +44,7 @@ export function RiichiCutin() {
           }}
         >
           <img src={imageUrl} alt="" className={styles.tileImage} />
-          <span className={styles.text}>リーチ</span>
+          <span className={styles.text}>{riichiCutinText}</span>
         </motion.div>
       </motion.div>
     </div>

@@ -3,7 +3,7 @@ import {
   READY_HAND_TILE_COUNT,
   TILE_KIND_COUNT,
 } from "@/constants/game";
-import { isSameColorLikeTile } from "@/constants/tiles";
+import { getBasicTileId, getTrendTileId, isSameColorLikeTile } from "@/constants/tiles";
 import { countAllTileColors, countTileColors } from "@/utils/tiles";
 
 function analyzeHand(tiles: number[]): {
@@ -94,5 +94,33 @@ export function getEligiblePonPlayerIndexes({
     ).length;
     if (count >= 2) result.push(i);
   }
+  return result;
+}
+
+export function findAllWaitingColors(
+  handTiles: number[],
+  openMelds: number[][],
+  trendTypes: number[],
+): number[] {
+  const meldTiles = openMelds.flat();
+  const result: number[] = [];
+
+  for (let c = 0; c < 9; c++) {
+    const testTileId = getBasicTileId(c);
+    const allTiles = [...handTiles, testTileId, ...meldTiles];
+    if (canFormWinningHand(allTiles)) {
+      result.push(c);
+    }
+  }
+
+  for (const tt of trendTypes) {
+    const color = 9 + tt;
+    const testTileId = getTrendTileId(tt);
+    const allTiles = [...handTiles, testTileId, ...meldTiles];
+    if (canFormWinningHand(allTiles)) {
+      result.push(color);
+    }
+  }
+
   return result;
 }

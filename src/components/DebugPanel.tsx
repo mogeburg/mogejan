@@ -138,6 +138,33 @@ export function DebugPanel({ onClose }: { onClose?: () => void }) {
           </div>
 
           <div className={styles.settingsSurface}>
+            <FieldLabel className={styles.settingsSubLabel}>能力カットインテスト</FieldLabel>
+            <div className={styles.settingsActions}>
+              <Button
+                label="あいもげ"
+                size="normal"
+                onClick={() => {
+                  const s = useGameStore.getState();
+                  s.setSpecialAbilitiesEnabled(true);
+                  s.activateAbility(0, "aimoge");
+                  onClose?.();
+                }}
+              />
+              <Button
+                label="ピカさん->あいもげ"
+                size="normal"
+                onClick={() => {
+                  const s = useGameStore.getState();
+                  s.setSpecialAbilitiesEnabled(true);
+                  s.activateAbility(0, "pikasan");
+                  s.activateAbility(1, "aimoge");
+                  onClose?.();
+                }}
+              />
+            </div>
+          </div>
+
+          <div className={styles.settingsSurface}>
             <FieldLabel className={styles.settingsSubLabel}>雷テスト</FieldLabel>
             <div className={styles.settingsInlineRow}>
               <SelectBox

@@ -18,6 +18,7 @@ export function TileImage({
   glow,
   shine,
   blueOverlay,
+  dangerOverlay,
 }: {
   id: number;
   size: TileSize;
@@ -29,6 +30,7 @@ export function TileImage({
   glow?: string;
   shine?: boolean;
   blueOverlay?: boolean;
+  dangerOverlay?: boolean;
 }) {
   const lightweightMode = useGameStore((s) => s.lightweightMode);
   const isDoraHighlight = Boolean(shine);
@@ -88,6 +90,12 @@ export function TileImage({
     >
       {shine && !lightweightMode && <div className={styles.shineElement} />}
       {blueOverlay && <div className={styles.blueOverlay} />}
+      {dangerOverlay && (
+        <>
+          <div className={styles.dangerOverlay} />
+          <div className={styles.dangerMark}>危</div>
+        </>
+      )}
     </div>
   );
 }

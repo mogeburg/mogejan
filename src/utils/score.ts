@@ -42,6 +42,7 @@ interface CalcParams {
   parentIndex: number;
   isRon: boolean;
   ronTarget: number | null;
+  siranGuardActive?: boolean[];
 }
 
 export function calcScoreDeltas({
@@ -52,6 +53,7 @@ export function calcScoreDeltas({
   parentIndex,
   isRon,
   ronTarget,
+  siranGuardActive,
 }: CalcParams): number[] {
   if (ryuukyoku || winner == null) return Array(PLAYER_COUNT).fill(0);
 
@@ -62,20 +64,37 @@ export function calcScoreDeltas({
     const score =
       winner === parentIndex ? Math.floor(totalScore * 1.5) : totalScore;
     const deltas = Array(PLAYER_COUNT).fill(0);
-    deltas[winner] = score;
-    deltas[ronTarget] = -score;
+    if (siranGuardActive?.[ronTarget]) {
+      deltas[winner] = 0;
+      deltas[ronTarget] = 0;
+    } else {
+      deltas[winner] = score;
+      deltas[ronTarget] = -score;
+    }
     return deltas;
   }
 
   if (winner === parentIndex) {
     const multiplied = Math.floor(totalScore * 1.5);
     const perPlayer = Math.floor(multiplied / 3);
-    return players.map((_, i) => (i === winner ? perPlayer * 3 : -perPlayer));
+    const activeShares = players.reduce((sum, _, i) =>
+      i === winner ? sum : sum + (siranGuardActive?.[i] ? 0 : 1), 0);
+    return players.map((_, i) => {
+      if (i === winner) return perPlayer * activeShares;
+      if (siranGuardActive?.[i]) return 0;
+      return -perPlayer;
+    });
   }
 
   const perPlayer = Math.floor(totalScore / 3);
+  const activeShares = players.reduce((sum, _, i) => {
+    if (i === winner) return sum;
+    if (siranGuardActive?.[i]) return sum;
+    return sum + (i === parentIndex ? 2 : 1);
+  }, 0);
   return players.map((_, i) => {
-    if (i === winner) return perPlayer * 4;
+    if (i === winner) return perPlayer * activeShares;
+    if (siranGuardActive?.[i]) return 0;
     if (i === parentIndex) return -(perPlayer * 2);
     return -perPlayer;
   });

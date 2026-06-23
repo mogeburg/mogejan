@@ -1,0 +1,41 @@
+.container {
+  position: absolute;
+  inset: 0;
+  z-index: 105;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.imageArea {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: flex-end;
+}
+
+.image {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  height: 100%;
+  object-fit: contain;
+  object-position: bottom right;
+  z-index: 1;
+}
+
+.text {
+  position: absolute;
+  left: 5%;
+  top: 35%;
+  z-index: 2;
+  font-size: 3em;
+  font-weight: 900;
+  color: #fff;
+  text-shadow:
+    0 0 12px rgba(0, 0, 0, 0.95),
+    0 0 24px rgba(0, 0, 0, 0.8),
+    4px 4px 0 rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  letter-spacing: 6px;
+}

@@ -5,13 +5,13 @@ import {
   TREND_COPIES,
   TREND_TILE_START,
 } from "@/constants/tiles";
-
-const WIND_LABELS = ["東", "南"];
+import { formatRoundLabel } from "@/utils/roundLabel";
 
 interface InfoPanelProps {
   round: number;
   kyoku: number;
   honba: number;
+  specialAbilitiesEnabled: boolean;
   doraTile: number | null;
   uradoraTile: number | null;
   trendTypes: number[];
@@ -26,6 +26,7 @@ export function InfoPanel({
   round,
   kyoku,
   honba,
+  specialAbilitiesEnabled,
   doraTile,
   uradoraTile,
   trendTypes,
@@ -42,8 +43,9 @@ export function InfoPanel({
   return (
     <div className={styles.container}>
       <div className={styles.roundRow}>
-        <span className={styles.roundLabel}>{WIND_LABELS[round]}</span>
-        <span className={styles.kyokuLabel}>{kyoku + 1}局</span>
+        <span className={styles.roundLabel}>
+          {formatRoundLabel(round, kyoku, specialAbilitiesEnabled)}
+        </span>
         {honba > 0 && <span className={styles.honbaLabel}>{honba}本場</span>}
       </div>
       <div className={styles.tileSections}>

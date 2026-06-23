@@ -1,8 +1,15 @@
 import type { CpuPersonality } from "@/ai/CpuController";
 import { generateRandomPersonality } from "@/ai/CpuController";
+import {
+  ABILITY_LABELS,
+  ABILITY_MAX_GAUGE,
+  createDefaultAbilityAssignment,
+  getAbilityChargeAmount,
+  type AbilityAssignment,
+  type AbilityChargeEvent,
+  type AbilityId,
+} from "@/constants/abilities";
 import type { BgmKey } from "@/constants/game";
-import type { GameSize, ScreenMode } from "@/constants/layout";
-import { DEFAULT_GAME_SIZE } from "@/constants/layout";
 import {
   BGM_VOLUME,
   DEFAULT_CPU_STRENGTH,
@@ -17,15 +24,27 @@ import {
   type CpuStrength,
   type TextSize,
 } from "@/constants/game";
+import type { GameSize, ScreenMode } from "@/constants/layout";
+import { DEFAULT_GAME_SIZE } from "@/constants/layout";
 import { SPECIAL_YAKU } from "@/constants/specialYaku";
 import { isSameColorLikeTile } from "@/constants/tiles";
 import { YAKU } from "@/constants/yaku";
-import { canFormWinningHand, findWaiterId, getEligiblePonPlayerIndexes } from "@/utils/check";
+import type { CutinImageVariant } from "@/utils/assets";
+import {
+  canFormWinningHand,
+  findWaiterId,
+  getEligiblePonPlayerIndexes,
+} from "@/utils/check";
+import { triggerAimogeOnTurn } from "@/utils/gameplay";
 import { usePlayStatsStore } from "@/utils/playStats";
 import { createStorageKey } from "@/utils/storage";
-import { createHands, pickTrendTypes, shuffleArray, sortTiles } from "@/utils/tiles";
+import {
+  createHands,
+  pickTrendTypes,
+  shuffleArray,
+  sortTiles,
+} from "@/utils/tiles";
 import { scheduleNextDraw } from "@/utils/turnScheduler";
-import type { CutinImageVariant } from "@/utils/assets";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
@@ -58,6 +77,8 @@ export type ActionButtonAlign = "left" | "center" | "right" | "follow";
 
 interface GameStore {
   currentScreen: Screen;
+  specialAbilitiesEnabled: boolean;
+  titleModeIndex: number;
   players: Player[];
   hands: number[][];
   wall: number[];
@@ -106,6 +127,12 @@ interface GameStore {
   cutinPreview: CutinPreview | null;
   riichiCutinPlayer: number | null;
   riichiCutinTileId: number | null;
+  riichiCutinText: string;
+  abilityCutinActive: boolean;
+  abilityCutinPlayer: number | null;
+  abilityCutinText: string;
+  abilityCutinQueue: { playerIndex: number; text: string }[];
+  pendingRiichiCutin: { playerIndex: number; waiter: number } | null;
   speechBubbles: { id: number; text: string; playerIndex: number }[];
   winner: number | null;
   ryuukyoku: boolean;
@@ -128,6 +155,13 @@ interface GameStore {
   doraTile: number | null;
   uradoraTile: number | null;
   trendTypes: number[];
+  abilityAssignments: AbilityAssignment[];
+  abilityGauge: number[];
+  abilityReady: boolean[];
+  abilityChargeLocked: boolean[];
+  aimogeDangerColors: number[][];
+  pikasanBonusPending: boolean[];
+  siranGuardActive: boolean[];
   cpuPersonalities: (CpuPersonality | null)[];
   setSpeed: (speed: number) => void;
   setTextSize: (textSize: TextSize) => void;
@@ -143,8 +177,14 @@ interface GameStore {
   setRiichiBgmSetting: (setting: BgmKey) => void;
   setNormalBgmSetting: (setting: BgmKey) => void;
   setRiichiAvatar: (avatar: "none" | "kanimoge" | "burumoge") => void;
+  setSpecialAbilitiesEnabled: (enabled: boolean) => void;
+  setTitleModeIndex: (index: number) => void;
   toggleDebugFlag: (
-    key: "showAllTiles" | "manualCpu" | "alwaysTsumogiri" | "showCpuPersonalities",
+    key:
+      | "showAllTiles"
+      | "manualCpu"
+      | "alwaysTsumogiri"
+      | "showCpuPersonalities",
   ) => void;
   toggleAutoAction: (key: "ronTsumo" | "pon" | "riichi" | "cancel") => void;
   setAutoActionTrayOpen: (open: boolean) => void;
@@ -168,8 +208,14 @@ interface GameStore {
     imageVariant?: CutinImageVariant,
   ) => void;
   hideCutin: () => void;
-  setRiichiCutin: (playerIndex: number | null, tileId?: number | null) => void;
+  setRiichiCutin: (
+    playerIndex: number | null,
+    tileId?: number | null,
+    text?: string,
+  ) => void;
+  setPendingRiichiCutin: (playerIndex: number, waiter: number) => void;
   showSpeechBubble: (text: string, playerIndex: number) => void;
+  clearAbilityCutin: () => void;
   hideSpeechBubble: (id: number) => void;
   declareWin: (playerIndex: number) => void;
   declareRiichi: (playerIndex: number) => void;
@@ -182,6 +228,19 @@ interface GameStore {
   setSimulationMode: (active: boolean) => void;
   executeRon: (playerIndex: number) => void;
   cancelRon: () => void;
+  chargeAbility: (
+    playerIndex: number,
+    event: AbilityChargeEvent,
+    scoreAmount?: number,
+  ) => void;
+  setAimogeDangerColors: (playerIndex: number, colors: number[]) => void;
+  setPikasanBonusPending: (playerIndex: number, pending: boolean) => void;
+  setSiranGuardActive: (playerIndex: number, active: boolean) => void;
+  activateAbility: (
+    playerIndex: number,
+    abilityId?: AbilityId | null,
+    text?: string,
+  ) => void;
   resetData: () => void;
   initGame: (players: Player[]) => void;
   startDebugMidgame: (players?: Player[]) => void;
@@ -222,6 +281,12 @@ const initialNumberRows = () => emptyPlayerRows<number[]>(() => []);
 const initialBooleanRows = () => emptyPlayerRows<boolean[]>(() => []);
 const initialMeldRows = () => emptyPlayerRows<number[][]>(() => []);
 const initialScoreDeltas = () => emptyPlayerRows(() => 0);
+const initialAbilityAssignments = (players: Player[] = defaultPlayers) =>
+  players.map((player) => createDefaultAbilityAssignment(player.charId));
+const initialAbilityGauge = () => emptyPlayerRows(() => 100); // TODO: 0
+const initialAbilityReady = () => emptyPlayerRows(() => true); // TODO: false
+const initialAbilityChargeLocked = () => emptyPlayerRows(() => false);
+const initialAbilityFlags = () => emptyPlayerRows(() => false);
 
 function createDefaultDebugFlags() {
   return {
@@ -252,6 +317,39 @@ function initialYakuCounts(): Record<string, number> {
   return counts;
 }
 
+function getChargedAbilityState(
+  state: Pick<
+    GameStore,
+    | "specialAbilitiesEnabled"
+    | "abilityAssignments"
+    | "abilityGauge"
+    | "abilityReady"
+    | "abilityChargeLocked"
+  >,
+  playerIndex: number,
+  event: AbilityChargeEvent,
+  scoreAmount = 0,
+) {
+  if (!state.specialAbilitiesEnabled) return null;
+  const assignment = state.abilityAssignments[playerIndex];
+  if (assignment?.abilityId == null) return null;
+  if (state.abilityChargeLocked[playerIndex]) return null;
+
+  const nextGauge = [...state.abilityGauge];
+  const nextReady = [...state.abilityReady];
+  nextGauge[playerIndex] = Math.min(
+    ABILITY_MAX_GAUGE,
+    nextGauge[playerIndex] +
+      getAbilityChargeAmount(event, assignment.factor, scoreAmount),
+  );
+  nextReady[playerIndex] = nextGauge[playerIndex] >= ABILITY_MAX_GAUGE;
+
+  return {
+    abilityGauge: nextGauge,
+    abilityReady: nextReady,
+  };
+}
+
 let nextBubbleId = 0;
 
 function canDrawForTurn(nextTurn: number) {
@@ -270,7 +368,15 @@ function scheduleDrawForTurn(nextTurn: number, speed: number) {
     nextTurn,
     speed,
     canDraw: () => canDrawForTurn(nextTurn),
-    draw: () => useGameStore.getState().draw(),
+    draw: () => {
+      const state = useGameStore.getState();
+      if (state.abilityCutinActive) {
+        setTimeout(() => scheduleDrawForTurn(nextTurn, speed), 100);
+        return;
+      }
+      state.draw();
+      triggerAimogeOnTurn(state.turnIndex);
+    },
   });
 }
 
@@ -314,13 +420,17 @@ function applyDebugDiscard(
 
   state.hands[playerIndex] = hand;
   state.discards[playerIndex] = [...state.discards[playerIndex], tileId];
-  state.takenDiscards[playerIndex] = [...state.takenDiscards[playerIndex], false];
+  state.takenDiscards[playerIndex] = [
+    ...state.takenDiscards[playerIndex],
+    false,
+  ];
   state.lastDiscard = { tileId, fromPlayer: playerIndex };
   if (isRiichi) {
     state.riichi[playerIndex] = true;
     state.ippatsu[playerIndex] = true;
     state.doubleReach[playerIndex] = state.discards[playerIndex].length === 1;
-    state.riichiDiscardPositions[playerIndex] = state.discards[playerIndex].length - 1;
+    state.riichiDiscardPositions[playerIndex] =
+      state.discards[playerIndex].length - 1;
   }
   state.drawnTile = null;
 }
@@ -347,8 +457,12 @@ function applyDebugPon(
 
   remaining.sort(sortTiles);
   state.hands[callerIndex] = remaining;
-  state.takenDiscards[fromPlayer][state.takenDiscards[fromPlayer].length - 1] = true;
-  state.ponMelds[callerIndex] = [...state.ponMelds[callerIndex], [...matchingTiles, tileId]];
+  state.takenDiscards[fromPlayer][state.takenDiscards[fromPlayer].length - 1] =
+    true;
+  state.ponMelds[callerIndex] = [
+    ...state.ponMelds[callerIndex],
+    [...matchingTiles, tileId],
+  ];
   state.turnIndex = callerIndex;
   state.drawnTile = null;
   state.ippatsu = [false, false, false, false];
@@ -362,7 +476,9 @@ function findPonOpportunity(
 ) {
   const discardOptions = shuffleArray(getDiscardOptions(state, playerIndex));
   const candidates = shuffleArray(
-    Array.from({ length: PLAYER_COUNT }, (_, i) => i).filter((i) => i !== playerIndex),
+    Array.from({ length: PLAYER_COUNT }, (_, i) => i).filter(
+      (i) => i !== playerIndex,
+    ),
   );
 
   for (const tileId of discardOptions) {
@@ -388,7 +504,9 @@ function enforceCpuRiichiMarkers(state: ReturnType<typeof createRoundState>) {
 
   const doubleRiichiPlayer = cpuCandidates[0]?.playerIndex ?? 1;
   const riichiPlayer =
-    cpuCandidates.find((candidate) => candidate.playerIndex !== doubleRiichiPlayer)?.playerIndex ?? 2;
+    cpuCandidates.find(
+      (candidate) => candidate.playerIndex !== doubleRiichiPlayer,
+    )?.playerIndex ?? 2;
 
   state.riichi = [false, false, false, false];
   state.doubleReach = [false, false, false, false];
@@ -453,7 +571,10 @@ function buildDebugMidgameState(base: {
     }
 
     const activePlayer = state.turnIndex;
-    const waiterId = findWaiterId([...state.hands[activePlayer], state.drawnTile]);
+    const waiterId = findWaiterId([
+      ...state.hands[activePlayer],
+      state.drawnTile,
+    ]);
     const shouldDoubleRiichi =
       activePlayer === doubleRiichiTarget &&
       !doubleRiichiDone &&
@@ -466,7 +587,9 @@ function buildDebugMidgameState(base: {
       totalDiscards >= 4 &&
       waiterId != null;
     const riichiTile = shouldDoubleRiichi || shouldRiichi ? waiterId : null;
-    const ponOpportunity = !ponDone ? findPonOpportunity(state, activePlayer) : null;
+    const ponOpportunity = !ponDone
+      ? findPonOpportunity(state, activePlayer)
+      : null;
     const discardOptions = getDiscardOptions(state, activePlayer);
     const discardTile =
       riichiTile ??
@@ -484,14 +607,21 @@ function buildDebugMidgameState(base: {
 
     if (
       ponOpportunity != null &&
-      applyDebugPon(state, ponOpportunity.callerIndex, activePlayer, discardTile)
+      applyDebugPon(
+        state,
+        ponOpportunity.callerIndex,
+        activePlayer,
+        discardTile,
+      )
     ) {
       ponDone = true;
 
       if (state.hands[ponOpportunity.callerIndex].length > 0) {
         const ponDiscardOptions = [...state.hands[ponOpportunity.callerIndex]];
         const ponDiscardTile =
-          ponDiscardOptions[Math.floor(Math.random() * ponDiscardOptions.length)];
+          ponDiscardOptions[
+            Math.floor(Math.random() * ponDiscardOptions.length)
+          ];
         applyDebugDiscard(state, ponOpportunity.callerIndex, ponDiscardTile);
         totalDiscards++;
       }
@@ -553,6 +683,12 @@ function createRoundState() {
     cutinPreview: null as CutinPreview | null,
     riichiCutinPlayer: null as number | null,
     riichiCutinTileId: null as number | null,
+    riichiCutinText: "リーチ",
+    abilityCutinActive: false,
+    abilityCutinPlayer: null as number | null,
+    abilityCutinText: "",
+    abilityCutinQueue: [] as { playerIndex: number; text: string }[],
+    pendingRiichiCutin: null as { playerIndex: number; waiter: number } | null,
     speechBubbles: [] as { id: number; text: string; playerIndex: number }[],
     winner: null as number | null,
     ryuukyoku: false,
@@ -575,6 +711,12 @@ function createRoundState() {
     doraTile: null as number | null,
     uradoraTile: null as number | null,
     trendTypes: [] as number[],
+    abilityGauge: initialAbilityGauge(),
+    abilityReady: initialAbilityReady(),
+    abilityChargeLocked: initialAbilityChargeLocked(),
+    aimogeDangerColors: initialAbilityFlags().map(() => [] as number[]),
+    pikasanBonusPending: initialAbilityFlags(),
+    siranGuardActive: initialAbilityFlags(),
   };
 }
 
@@ -629,7 +771,10 @@ export const useGameStore = create<GameStore>()(
   persist(
     (set) => ({
       currentScreen: "loading",
+      specialAbilitiesEnabled: false,
+      titleModeIndex: 0,
       players: defaultPlayers,
+      abilityAssignments: initialAbilityAssignments(),
       ...createRoundState(),
       parentIndex: 0,
       ...createDefaultSettingsState(),
@@ -648,6 +793,9 @@ export const useGameStore = create<GameStore>()(
       setRiichiBgmSetting: (setting) => set({ riichiBgmSetting: setting }),
       setNormalBgmSetting: (setting) => set({ normalBgmSetting: setting }),
       setRiichiAvatar: (avatar) => set({ riichiAvatar: avatar }),
+      setSpecialAbilitiesEnabled: (specialAbilitiesEnabled) =>
+        set({ specialAbilitiesEnabled }),
+      setTitleModeIndex: (titleModeIndex) => set({ titleModeIndex }),
       toggleDebugFlag: (key) =>
         set((state) => ({
           debugFlags: { ...state.debugFlags, [key]: !state.debugFlags[key] },
@@ -662,12 +810,24 @@ export const useGameStore = create<GameStore>()(
           }
           if (key === "cancel" && newVal) {
             return {
-              autoActions: { ...state.autoActions, cancel: true, pon: false },
+              autoActions: {
+                ...state.autoActions,
+                cancel: true,
+                pon: false,
+                ronTsumo: false,
+                riichi: false,
+              },
+            };
+          }
+          if ((key === "ronTsumo" || key === "riichi") && newVal) {
+            return {
+              autoActions: { ...state.autoActions, [key]: true, cancel: false },
             };
           }
           return { autoActions: { ...state.autoActions, [key]: newVal } };
         }),
-      setAutoActionTrayOpen: (autoActionTrayOpen) => set({ autoActionTrayOpen }),
+      setAutoActionTrayOpen: (autoActionTrayOpen) =>
+        set({ autoActionTrayOpen }),
       setSimulationMode: (active) => set({ simulationMode: active }),
       addYakuCounts: (yakus) =>
         set((state) => {
@@ -694,50 +854,75 @@ export const useGameStore = create<GameStore>()(
           cutinImageVariant: imageVariant ?? "normal",
           cutinPreview: preview,
         }),
-      setRiichiCutin: (playerIndex, tileId) =>
+      setRiichiCutin: (playerIndex, tileId, text) =>
         set({
           riichiCutinPlayer: playerIndex,
           riichiCutinTileId: tileId ?? null,
+          riichiCutinText: text ?? "リーチ",
         }),
-      hideCutin: () =>
-        set((state) => {
-          if (state.cutinPreview != null) {
-            return {
-              cutin: null,
-              cutinPlayer: null,
-              cutinType: "normal",
-              cutinImageVariant: "normal",
-              cutinPreview: null,
-            };
-          }
-          if (state.winner != null) {
-            return {
-              cutin: null,
-              cutinPlayer: null,
-              cutinType: "normal",
-              cutinImageVariant: "normal",
-              cutinPreview: null,
-              currentScreen: "result",
-            };
-          }
-          if (state.ryuukyoku) {
-            return {
-              cutin: null,
-              cutinPlayer: null,
-              cutinType: "normal",
-              cutinImageVariant: "normal",
-              cutinPreview: null,
-              currentScreen: "scoreConfirm",
-            };
-          }
-          return {
-            cutin: null,
-            cutinPlayer: null,
-            cutinType: "normal",
-            cutinImageVariant: "normal",
-            cutinPreview: null,
+      setPendingRiichiCutin: (playerIndex, waiter) =>
+        set({ pendingRiichiCutin: { playerIndex, waiter } }),
+      hideCutin: () => {
+        const s = useGameStore.getState();
+        if (s.cutinPreview != null) {
+          return set({
+            cutin: null as string | null,
+            cutinPlayer: null as number | null,
+            cutinType: "normal" as const,
+            cutinImageVariant: "normal" as const,
+            cutinPreview: null as CutinPreview | null,
+          });
+        }
+        if (s.winner != null) {
+          const base = {
+            cutin: null as string | null,
+            cutinPlayer: null as number | null,
+            cutinType: "normal" as const,
+            cutinImageVariant: "normal" as const,
+            cutinPreview: null as CutinPreview | null,
           };
-        }),
+
+          const damagedPlayers =
+            s.ronTarget != null
+              ? [s.ronTarget]
+              : s.players.map((_, i) => i).filter((i) => i !== s.winner);
+
+          const siranPlayers = damagedPlayers.filter(
+            (i) =>
+              s.specialAbilitiesEnabled &&
+              s.abilityAssignments[i]?.abilityId === "siran" &&
+              s.abilityReady[i] &&
+              !s.abilityChargeLocked[i],
+          );
+
+          if (siranPlayers.length > 0) {
+            for (const pi of siranPlayers) {
+              s.setSiranGuardActive(pi, true);
+              s.activateAbility(pi, "siran");
+            }
+            return set(base);
+          }
+
+          return set({ ...base, currentScreen: "result" as const });
+        }
+        if (s.ryuukyoku) {
+          return set({
+            cutin: null as string | null,
+            cutinPlayer: null as number | null,
+            cutinType: "normal" as const,
+            cutinImageVariant: "normal" as const,
+            cutinPreview: null as CutinPreview | null,
+            currentScreen: "scoreConfirm" as const,
+          });
+        }
+        return set({
+          cutin: null as string | null,
+          cutinPlayer: null as number | null,
+          cutinType: "normal" as const,
+          cutinImageVariant: "normal" as const,
+          cutinPreview: null as CutinPreview | null,
+        });
+      },
       showSpeechBubble: (text, playerIndex) => {
         const id = nextBubbleId++;
         set((state) => ({
@@ -763,7 +948,12 @@ export const useGameStore = create<GameStore>()(
           ippatsu[playerIndex] = true;
           const doubleReach = [...state.doubleReach];
           doubleReach[playerIndex] = state.discards[playerIndex].length === 0;
-          return { riichi, ippatsu, doubleReach };
+          return {
+            riichi,
+            ippatsu,
+            doubleReach,
+            ...(getChargedAbilityState(state, playerIndex, "riichi") ?? {}),
+          };
         }),
       clearWinner: () => set({ winner: null }),
       setRyuukyoku: () => set({ ryuukyoku: true }),
@@ -817,6 +1007,9 @@ export const useGameStore = create<GameStore>()(
           doraTile,
           uradoraTile,
           trendTypes,
+          abilityGauge: state.abilityGauge,
+          abilityReady: state.abilityReady,
+          abilityChargeLocked: initialAbilityChargeLocked(),
         }));
       },
       draw: () =>
@@ -937,6 +1130,7 @@ export const useGameStore = create<GameStore>()(
             turnIndex: playerIndex,
             drawnTile: null,
             ippatsu: [false, false, false, false],
+            ...(getChargedAbilityState(state, playerIndex, "pon") ?? {}),
           };
         }),
       cancelPon: () =>
@@ -961,6 +1155,108 @@ export const useGameStore = create<GameStore>()(
             ronTarget: state.pendingRon.fromPlayer,
             pendingRon: null,
             pendingPon: null,
+          };
+        }),
+      chargeAbility: (playerIndex, event, scoreAmount) =>
+        set(
+          (state) =>
+            getChargedAbilityState(state, playerIndex, event, scoreAmount) ??
+            state,
+        ),
+      setAimogeDangerColors: (playerIndex, colors) =>
+        set((state) => {
+          const aimogeDangerColors = [...state.aimogeDangerColors];
+          aimogeDangerColors[playerIndex] = colors;
+          return { aimogeDangerColors };
+        }),
+      setPikasanBonusPending: (playerIndex, pending) =>
+        set((state) => {
+          const pikasanBonusPending = [...state.pikasanBonusPending];
+          pikasanBonusPending[playerIndex] = pending;
+          return { pikasanBonusPending };
+        }),
+      setSiranGuardActive: (playerIndex, active) =>
+        set((state) => {
+          const siranGuardActive = [...state.siranGuardActive];
+          siranGuardActive[playerIndex] = active;
+          return { siranGuardActive };
+        }),
+      activateAbility: (playerIndex, abilityId, text) =>
+        set((state) => {
+          if (!state.specialAbilitiesEnabled) return state;
+          const resolvedAbilityId =
+            abilityId ??
+            state.abilityAssignments[playerIndex]?.abilityId ??
+            null;
+          if (resolvedAbilityId == null) return state;
+
+          const nextGauge = [...state.abilityGauge];
+          const nextReady = [...state.abilityReady];
+          const nextLocked = [...state.abilityChargeLocked];
+          nextGauge[playerIndex] = 0;
+          nextReady[playerIndex] = false;
+          nextLocked[playerIndex] = true;
+
+          const cutinText = text ?? ABILITY_LABELS[resolvedAbilityId];
+
+          if (state.abilityCutinActive) {
+            return {
+              abilityGauge: nextGauge,
+              abilityReady: nextReady,
+              abilityChargeLocked: nextLocked,
+              abilityCutinQueue: [
+                ...state.abilityCutinQueue,
+                { playerIndex, text: cutinText },
+              ],
+            };
+          }
+
+          return {
+            abilityGauge: nextGauge,
+            abilityReady: nextReady,
+            abilityChargeLocked: nextLocked,
+            abilityCutinActive: true,
+            abilityCutinPlayer: playerIndex,
+            abilityCutinText: cutinText,
+          };
+        }),
+      clearAbilityCutin: () =>
+        set((state) => {
+          if (state.abilityCutinQueue.length > 0) {
+            const [next, ...rest] = state.abilityCutinQueue;
+            return {
+              abilityCutinPlayer: next.playerIndex,
+              abilityCutinText: next.text,
+              abilityCutinQueue: rest,
+            };
+          }
+          if (state.pendingRiichiCutin != null) {
+            const { playerIndex, waiter } = state.pendingRiichiCutin;
+            return {
+              abilityCutinActive: false,
+              abilityCutinPlayer: null,
+              abilityCutinText: "",
+              abilityCutinQueue: [],
+              pendingRiichiCutin: null,
+              riichiCutinPlayer: playerIndex,
+              riichiCutinTileId: waiter,
+              riichiCutinText: "リーチ",
+            };
+          }
+          if (state.winner != null) {
+            return {
+              abilityCutinActive: false,
+              abilityCutinPlayer: null,
+              abilityCutinText: "",
+              abilityCutinQueue: [],
+              currentScreen: "result",
+            };
+          }
+          return {
+            abilityCutinActive: false,
+            abilityCutinPlayer: null,
+            abilityCutinText: "",
+            abilityCutinQueue: [],
           };
         }),
       cancelRon: () =>
@@ -991,23 +1287,23 @@ export const useGameStore = create<GameStore>()(
             drawnTile: null,
           };
         }),
-      resetData: () =>
-        {
-          usePlayStatsStore.getState().resetPlayStats();
-          set((state) => ({
-            riichiCutinPlayer: null,
-            riichiCutinTileId: null,
-            ...createDefaultSettingsState(),
-            screenMode: state.screenMode,
-            gameSize: state.gameSize,
-            lightweightMode: state.lightweightMode,
-          }));
-        },
+      resetData: () => {
+        usePlayStatsStore.getState().resetPlayStats();
+        set((state) => ({
+          riichiCutinPlayer: null,
+          riichiCutinTileId: null,
+          ...createDefaultSettingsState(),
+          screenMode: state.screenMode,
+          gameSize: state.gameSize,
+          lightweightMode: state.lightweightMode,
+        }));
+      },
       initGame: (players) =>
         set({
           ...createRoundState(),
           currentScreen: "scoreDisplay",
           players,
+          abilityAssignments: initialAbilityAssignments(players),
           parentIndex: 0,
           cpuPersonalities: players.map((p) =>
             p.type === "cpu" ? generateRandomPersonality() : null,
@@ -1047,6 +1343,7 @@ export const useGameStore = create<GameStore>()(
             ...debugState.snapshot,
             currentScreen: "game",
             players: nextPlayers,
+            abilityAssignments: initialAbilityAssignments(nextPlayers),
             parentIndex: 0,
             round: 0,
             kyoku: 0,
@@ -1066,6 +1363,7 @@ export const useGameStore = create<GameStore>()(
         voiceVolume: state.voiceVolume,
         screenMode: state.screenMode,
         lightweightMode: state.lightweightMode,
+        titleModeIndex: state.titleModeIndex,
         actionButtonAlign: state.actionButtonAlign,
         riichiBgmSetting: state.riichiBgmSetting,
         normalBgmSetting: state.normalBgmSetting,

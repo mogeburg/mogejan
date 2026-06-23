@@ -3,8 +3,7 @@ import { Button } from "@/components/Button";
 import { ModalCard } from "@/components/ModalCard";
 import styles from "@/components/ScoreBoard.module.scss";
 import type { Player } from "@/store";
-
-const WIND_LABELS = ["東", "南"];
+import { formatRoundLabel } from "@/utils/roundLabel";
 
 export function ScoreBoard({
   players,
@@ -12,6 +11,7 @@ export function ScoreBoard({
   round,
   kyoku,
   honba,
+  specialAbilitiesEnabled,
   scoreDeltas,
   onConfirm,
   buttonLabel = "次へ",
@@ -21,6 +21,7 @@ export function ScoreBoard({
   round: number;
   kyoku: number;
   honba: number;
+  specialAbilitiesEnabled: boolean;
   scoreDeltas: number[];
   onConfirm: () => void;
   buttonLabel?: string;
@@ -28,8 +29,8 @@ export function ScoreBoard({
   return (
     <ModalCard style={{ minWidth: 400 }}>
       <div className={styles.roundTitle}>
-        {WIND_LABELS[round]}
-        {kyoku + 1}局{honba > 0 ? ` ${honba}本場` : ""}
+        {formatRoundLabel(round, kyoku, specialAbilitiesEnabled)}
+        {honba > 0 ? ` ${honba}本場` : ""}
       </div>
       <div className={styles.playerList}>
         {players.map((p, i) => (
