@@ -15,6 +15,7 @@ import { preloadAudioFiles } from "@/utils/audio";
 import styles from "@/screens/LoadingScreen.module.scss";
 
 const BASE_AUDIO_FILES = [
+  seAudioUrl("ability.opus"),
   seAudioUrl("atari.opus"),
   seAudioUrl("drop.opus"),
   seAudioUrl("end.opus"),

@@ -15,12 +15,11 @@ export function AbilityCutin() {
   const abilityCutinQueue = useGameStore((s) => s.abilityCutinQueue);
   const clearAbilityCutin = useGameStore((s) => s.clearAbilityCutin);
   const players = useGameStore((s) => s.players);
-
   const hasNext = abilityCutinQueue.length > 0;
 
   useEffect(() => {
     if (!abilityCutinActive) return;
-    playSe(seAudioUrl("atari.opus"));
+    playSe(seAudioUrl("ability.opus"));
     const timer = setTimeout(clearAbilityCutin, ABILITY_CUTIN_DISPLAY_MS);
     return () => clearTimeout(timer);
   }, [abilityCutinActive, abilityCutinPlayer, clearAbilityCutin]);
@@ -52,7 +51,7 @@ export function AbilityCutin() {
             }}
           >
             <img
-              src={cutinImageUrl(players[abilityCutinPlayer].charId)}
+              src={cutinImageUrl(players[abilityCutinPlayer].charId, "ability")}
               alt=""
               className={styles.image}
             />

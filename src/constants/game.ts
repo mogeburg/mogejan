@@ -1,7 +1,7 @@
 import { getImageUrl, TileData } from "@/constants/tiles";
 import { bgmAudioUrl } from "@/utils/assets";
 
-export const VERSION = "0.03";
+export const VERSION = "0.031";
 export const MASTER_VOLUME = 80;
 export const BGM_VOLUME = 75;
 export const SE_VOLUME = 50;
@@ -156,11 +156,9 @@ export function getPreloadBgmPaths(
   return [...files];
 }
 
-export const PLAYER_CONFIGS = TileData.map(
-  ({ id, colorHex, name }) => ({
-    imageUrl: getImageUrl(id),
-    colorHex,
-    name,
-    charId: id,
-  }),
-);
+export const PLAYER_CONFIGS = TileData.map(({ id, colorHex, name }) => ({
+  imageUrl: getImageUrl(id),
+  colorHex,
+  name,
+  charId: id,
+}));

@@ -64,13 +64,14 @@ export function tileImageUrl(id: string): string {
   return imageAssetUrl(`tiles/${id}.${preferredImageExtension()}`);
 }
 
-export type CutinImageVariant = "normal" | "baiman";
+export type CutinImageVariant = "normal" | "baiman" | "ability";
 
 export function cutinImageUrl(
   id: string,
   variant: CutinImageVariant = "normal",
 ): string {
-  const suffix = variant === "baiman" ? "002" : "001";
+  const suffix =
+    variant === "baiman" ? "002" : variant === "ability" ? "003" : "001";
   return imageAssetUrl(
     `cutin/${id}${suffix}.${preferredImageExtension()}`,
   );
