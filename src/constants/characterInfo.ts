@@ -19,6 +19,7 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityName: ABILITY_LABELS.aimoge,
     timing: "自ターン開始時",
     conditions: [
+      "じゃん技ゲージが溜まっている",
       "自分がリーチしていない",
       "リーチしている相手の待ち色を手牌に持っている",
     ],
@@ -30,6 +31,7 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "miimoge",
     abilityName: ABILITY_LABELS.miimoge,
     timing: "局開始時に自動発動",
+    conditions: ["じゃん技ゲージが溜まっている"],
     effect: "他プレイヤーはリーチ宣言時に5役以上が必要になる",
   },
   pikasan: {
@@ -38,6 +40,7 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "pikasan",
     abilityName: ABILITY_LABELS.pikasan,
     timing: "リーチ時",
+    conditions: ["じゃん技ゲージが溜まっている"],
     effect: "能力発動局に自分がアガった場合、役「そうだね（3役）」が追加される",
   },
   siran: {
@@ -46,6 +49,7 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "siran",
     abilityName: ABILITY_LABELS.siran,
     timing: "他プレイヤーからツモ・ロンされた時",
+    conditions: ["じゃん技ゲージが溜まっている"],
     effect: "自分が支払う点数を0にする",
   },
   imouto: {
@@ -54,7 +58,7 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "imouto",
     abilityName: ABILITY_LABELS.imouto,
     timing: "他プレイヤーがリーチした時",
-    conditions: ["自分がリーチしていない"],
+    conditions: ["じゃん技ゲージが溜まっている", "自分がリーチしていない"],
     effect:
       "他プレイヤーのリーチ時に自分の手牌と入れ替え、リーチ可能ならリーチ状態になる",
   },
@@ -64,7 +68,10 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "burumoge",
     abilityName: ABILITY_LABELS.burumoge,
     timing: "リーチ時に自動発動",
-    conditions: ["自分、または他プレイヤーの捨牌に待ち牌がある"],
+    conditions: [
+      "じゃん技ゲージが溜まっている",
+      "自分、または他プレイヤーの捨牌に待ち牌がある",
+    ],
     effect: "リーチ後、最初のツモ時に当たり牌の捨て牌とツモを入れ替えて引く",
   },
   anoko: {
@@ -73,7 +80,10 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "anoko",
     abilityName: ABILITY_LABELS.anoko,
     timing: "ツモ・ロン時に自動発動",
-    conditions: ["知らん女、またはあの娘を含む手牌"],
+    conditions: [
+      "じゃん技ゲージが溜まっている",
+      "知らん女、またはあの娘を含む手牌",
+    ],
     effect:
       "あの娘を知らん女、知らん女をあの娘として役計算を行い、重複しない役をすべて付与する",
   },
@@ -83,6 +93,7 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "anemoge",
     abilityName: ABILITY_LABELS.anemoge,
     timing: "局開始時に自動発動",
+    conditions: ["じゃん技ゲージが溜まっている"],
     effect: "dice1d8=の出た目だけ手牌があねもげに入れ替わる",
   },
   otyanti: {
@@ -91,6 +102,7 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "otyanti",
     abilityName: ABILITY_LABELS.otyanti,
     timing: "局開始時に自動発動",
+    conditions: ["じゃん技ゲージが溜まっている"],
     effect:
       "ぶるもげ、みいもげ、知らん女、あの娘、妹、おちゃんちをツモしやすくなる",
   },

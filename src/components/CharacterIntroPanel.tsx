@@ -37,7 +37,10 @@ export function CharacterIntroPanel() {
                         <span className={styles.detailLabel}>条件</span>
                         <span>
                           {info.conditions.map((condition, i) => (
-                            <div key={i}>{condition}</div>
+                            <div key={i}>
+                              {i !== 0 && "かつ "}
+                              {condition}
+                            </div>
                           ))}
                         </span>
                       </div>

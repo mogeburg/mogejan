@@ -85,6 +85,25 @@ export function RulesPanel() {
             ))}
           </div>
         </MenuSection>
+
+        <MenuSection title="超東南戦について">
+          <p className={styles.compactNote}>
+            鍛えられたもげじゃらーのみが遊べる超東南戦では、各キャラクターが特殊な能力である
+            <b>じゃん技</b>を使えるようになります。
+            <br />
+            ポン・リーチ・ロン・ツモや他プレイヤーにアガられて点数を支払う度に、画面中央のキャラクターアイコン周りのじゃん技ゲージが溜まります。
+            <br />
+            ゲージが溜まり切った後に発動条件を満たすと自動的に能力が発動します。
+            <br />
+            各キャラクターの発動条件や能力の詳細はキャラクタータブを参照してください。
+            <br />
+            <img
+              src={"images/etc/gauge.png"}
+              alt=""
+              style={{ width: "100%", maxWidth: "500px" }}
+            />
+          </p>
+        </MenuSection>
       </div>
     </div>
   );
