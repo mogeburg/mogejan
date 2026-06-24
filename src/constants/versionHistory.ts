@@ -12,13 +12,21 @@ export const VERSION_HISTORY: VersionHistoryEntry[] = [
     summary: "解像度見直し",
     children: [
       {
-        version: `${VERSION}`,
+        version: `0.03`,
         summary: [
           "解像度を16:9に変更",
           "設定に表示設定（画面モード・文字サイズ・軽量モード）を追加",
           "鯖ちゃんのテーマを追加。他BGMのループ点などを一部修正",
           "クレジットに前バージョンへのリンクを追加",
           "その他、細かいUX改善・バグを修正",
+        ],
+      },
+      {
+        version: `${VERSION}`,
+        summary: [
+          "超東南戦を追加",
+          "メニューにキャラクタータブを追加、全体的に整理",
+          "その他、なんか開発周りで色々やった",
         ],
       },
     ],
