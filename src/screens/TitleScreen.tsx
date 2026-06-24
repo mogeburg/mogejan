@@ -159,7 +159,7 @@ export function TitleScreen() {
           onClose={() => setHowToPlayOpen(false)}
           tabs={[
             { label: "ルール", content: <RulesPanel /> },
-            { label: "キャラクター紹介", content: <CharacterIntroPanel /> },
+            { label: "キャラクター", content: <CharacterIntroPanel /> },
             { label: "役一覧", content: <YakuListPanel /> },
             { label: "その他", content: <OtherPanel /> },
           ]}

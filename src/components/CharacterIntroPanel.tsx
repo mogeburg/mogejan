@@ -24,14 +24,12 @@ export function CharacterIntroPanel() {
                 />
                 <div className={styles.nameBox}>
                   <h2 className={styles.name}>{tile.name}</h2>
+                  <h3 className={styles.abilityName}>{info.abilityName}</h3>
                 </div>
                 {info && (
                   <div className={styles.abilityBox}>
-                    <div className={styles.abilityLabel}>
-                      {info.abilityName}
-                    </div>
                     <div className={styles.abilityDetail}>
-                      <span className={styles.detailLabel}>発動</span>
+                      <span className={styles.detailLabel}>発動タイミング</span>
                       <span>{info.timing}</span>
                     </div>
                     {info.conditions && info.conditions.length > 0 && (
