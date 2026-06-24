@@ -1,7 +1,13 @@
+import { Button } from "@/components/Button";
+import { CharacterIntroPanel } from "@/components/CharacterIntroPanel";
 import { DanceAvatar } from "@/components/DanceAvatar";
 import { ModalCard } from "@/components/ModalCard";
 import { ModeToggle } from "@/components/ModeToggle";
+import { OtherPanel } from "@/components/OtherPanel";
+import { OverlayMenu } from "@/components/OverlayMenu";
+import { RulesPanel } from "@/components/RulesPanel";
 import { TileImage } from "@/components/TileImage";
+import { YakuListPanel } from "@/components/YakuListPanel";
 import { BGM, INITIAL_SCORE, PLAYER_COUNT, VERSION } from "@/constants/game";
 import { getImageUrl, TileData } from "@/constants/tiles";
 import styles from "@/screens/TitleScreen.module.scss";
@@ -28,6 +34,7 @@ function shuffle<T>(arr: T[]): T[] {
 export function TitleScreen() {
   const [showDance, setShowDance] = useState(false);
   const [danceUnlocked, setDanceUnlocked] = useState(false);
+  const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const {
     riichiBgmSetting,
     riichiAvatar,
@@ -99,46 +106,66 @@ export function TitleScreen() {
   }
 
   return (
-    <>
-      <ModalCard className={styles.modalCard}>
-        <p className={styles.version}>
-          ver {VERSION}
-          {simulationMode ? " 🎲" : ""}
-        </p>
-        <h1
-          className={danceUnlocked ? styles.titleRed : styles.title}
-          onClick={handleTitleClick}
-          style={{ cursor: "pointer" }}
-        >
-          もげじゃん
-        </h1>
-        <div className={styles.charGrid}>
-          {CHARACTER_TILE_IDS.map((id, i) => {
-            const isStoryMode = titleModeIndex === STORY_INDEX;
-            return (
-              <div
-                key={id}
-                onClick={isStoryMode ? undefined : () => handleSelect(i)}
-                className={
-                  isStoryMode ? styles.charItemFaceDown : styles.charItem
-                }
-              >
-                <TileImage id={id} size="normal" faceDown={isStoryMode} />
-              </div>
-            );
-          })}
-        </div>
-        <ModeToggle
-          items={[
-            { label: "東南戦" },
-            { label: "超東南戦" },
-            { label: "ストーリー", disabled: true },
+    <div className={styles.titleLayout}>
+      <div className={styles.titleMain}>
+        <ModalCard className={styles.modalCard}>
+          <p className={styles.version}>
+            ver {VERSION}
+            {simulationMode ? " 🎲" : ""}
+          </p>
+          <h1
+            className={danceUnlocked ? styles.titleRed : styles.title}
+            onClick={handleTitleClick}
+            style={{ cursor: "pointer" }}
+          >
+            もげじゃん
+          </h1>
+          <div className={styles.charGrid}>
+            {CHARACTER_TILE_IDS.map((id, i) => {
+              const isStoryMode = titleModeIndex === STORY_INDEX;
+              return (
+                <div
+                  key={id}
+                  onClick={isStoryMode ? undefined : () => handleSelect(i)}
+                  className={
+                    isStoryMode ? styles.charItemFaceDown : styles.charItem
+                  }
+                >
+                  <TileImage id={id} size="normal" faceDown={isStoryMode} />
+                </div>
+              );
+            })}
+          </div>
+          <ModeToggle
+            items={[
+              { label: "東南戦" },
+              { label: "超東南戦" },
+              { label: "ストーリー", disabled: true },
+            ]}
+            activeIndex={titleModeIndex}
+            onChange={setTitleModeIndex}
+          />
+        </ModalCard>
+      </div>
+      <Button
+        label="遊び方"
+        color="normal"
+        size="normal"
+        onClick={() => setHowToPlayOpen(true)}
+        style={{ marginBottom: 32 }}
+      />
+      {howToPlayOpen && (
+        <OverlayMenu
+          onClose={() => setHowToPlayOpen(false)}
+          tabs={[
+            { label: "ルール", content: <RulesPanel /> },
+            { label: "キャラクター紹介", content: <CharacterIntroPanel /> },
+            { label: "役一覧", content: <YakuListPanel /> },
+            { label: "その他", content: <OtherPanel /> },
           ]}
-          activeIndex={titleModeIndex}
-          onChange={setTitleModeIndex}
         />
-      </ModalCard>
+      )}
       <DanceAvatar character={showDance ? riichiAvatar : "none"} />
-    </>
+    </div>
   );
 }

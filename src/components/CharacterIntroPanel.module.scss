@@ -1,0 +1,95 @@
+@use "@/styles/semantic" as *;
+@use "@/styles/layout" as *;
+
+$card-radius: 12px;
+$card-margin: 0 0 16px 0;
+$image-min-height: 340px;
+$box-bg: rgba(0, 0, 0, 0.55);
+$box-radius: 8px;
+$nav-bar-height: 48px;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.cardsContainer {
+  flex: 1;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+}
+
+.card {
+  overflow: hidden;
+  margin: $card-margin;
+  box-shadow: $shadow-2;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  min-height: $image-min-height;
+  overflow: hidden;
+}
+
+.cutinImage {
+  display: block;
+  height: $image-min-height;
+  object-fit: contain;
+  object-position: center bottom;
+  position: absolute;
+  left: 0;
+}
+
+.nameBox {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 10px 14px;
+  background: $box-bg;
+  border-radius: $box-radius;
+  color: #fff;
+}
+
+.name {
+  margin: 0 0 4px 0;
+  font-size: calc(60px * var(--text-scale, 1));
+  font-weight: $font-weight-black;
+  line-height: 1.2;
+}
+
+.abilityBox {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  max-width: 65%;
+  padding: 10px 14px;
+  background: $box-bg;
+  border-radius: $box-radius;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.abilityLabel {
+  font-weight: $font-weight-bold;
+  font-size: $font-size-body;
+  color: #ffcd7a;
+  margin-bottom: 2px;
+}
+
+.abilityDetail {
+  font-size: $font-size-sm;
+  line-height: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.detailLabel {
+  font-weight: $font-weight-bold;
+  color: #ffcd7a;
+  margin-right: 4px;
+}
