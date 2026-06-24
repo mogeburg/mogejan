@@ -20,7 +20,7 @@ interface PlayerInfoProps {
   abilityGauge: number;
   abilityReady: boolean;
   abilityActivated: boolean;
-  abilityLabel: string | null;
+  abilityLabel: string | number | null;
   restrictionBadge: string | null;
   cpuPersonality?: CpuPersonality | null;
   badgeSide?: "left" | "right";

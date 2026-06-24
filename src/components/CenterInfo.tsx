@@ -8,6 +8,10 @@ const ABILITY_BADGE_LABELS: Partial<Record<AbilityId, string>> = {
   aimoge: "監視中",
   pikasan: "そうだね",
   siran: "知らん",
+  burumoge: "奉仕中",
+  anoko: "嫉妬",
+  imouto: "わるいこ",
+  otyanti: "生成中",
 };
 
 interface CenterInfoProps {
@@ -26,6 +30,8 @@ interface CenterInfoProps {
   abilityChargeLocked: boolean[];
   abilityIds: (AbilityId | null)[];
   miimogeActive: boolean;
+  anemogeSwapResult: (number | null)[];
+  imoutoVictimIndex: number | null;
   cpuPersonalities?: (CpuPersonality | null)[];
 }
 
@@ -45,6 +51,8 @@ export function CenterInfo({
   abilityChargeLocked,
   abilityIds,
   miimogeActive,
+  anemogeSwapResult,
+  imoutoVictimIndex,
   cpuPersonalities = [],
 }: CenterInfoProps) {
   const getPlayerBubbles = (playerIndex: number) =>
@@ -53,11 +61,22 @@ export function CenterInfo({
 
   const ability = (i: number) => {
     const id = abilityIds[i];
+    const isImoutoVictim = imoutoVictimIndex === i;
+    const anemogeResult = anemogeSwapResult[i];
+    let abilityLabel: string | number | null = null;
+    if (abilityChargeLocked[i] && id != null) {
+      if (id === "anemoge" && anemogeResult != null) {
+        abilityLabel = `(${anemogeResult})`;
+      } else {
+        abilityLabel = ABILITY_BADGE_LABELS[id] ?? null;
+      }
+    } else if (isImoutoVictim) {
+      abilityLabel = "悪戯済";
+    }
     return {
-      abilityActivated: abilityChargeLocked[i] && id != null,
-      abilityLabel: abilityChargeLocked[i] && id != null
-        ? (ABILITY_BADGE_LABELS[id] ?? null)
-        : null,
+      abilityActivated:
+        (abilityChargeLocked[i] && id != null) || isImoutoVictim,
+      abilityLabel,
       restrictionBadge:
         miimogeActive && id !== "miimoge" ? "5役制限" : null,
     };

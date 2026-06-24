@@ -24,6 +24,8 @@ function clearRoundAbilityEffects() {
     burumogePending: [...resetFlags],
     miimogeActive: false,
     otyantiActive: false,
+    anemogeSwapResult: resetFlags.map(() => null),
+    imoutoVictimIndex: null,
   });
 }
 

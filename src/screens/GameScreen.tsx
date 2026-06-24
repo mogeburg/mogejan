@@ -546,9 +546,11 @@ export function GameScreen() {
         abilityGauge={s.abilityGauge}
         abilityReady={s.abilityReady}
         abilityChargeLocked={s.abilityChargeLocked}
-        abilityIds={s.abilityAssignments.map((a) => a.abilityId)}
-        miimogeActive={s.miimogeActive}
-        cpuPersonalities={s.cpuPersonalities}
+         abilityIds={s.abilityAssignments.map((a) => a.abilityId)}
+         miimogeActive={s.miimogeActive}
+         anemogeSwapResult={s.anemogeSwapResult}
+         imoutoVictimIndex={s.imoutoVictimIndex}
+         cpuPersonalities={s.cpuPersonalities}
       />
       <AutoActionToggle />
       <DanceAvatar character={showDance ? s.riichiAvatar : "none"} />

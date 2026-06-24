@@ -303,6 +303,7 @@ function tryActivateImouto(riichiPlayerIndex: number, waiter: number): boolean {
 
   state.mergeDrawnIntoHand(riichiPlayerIndex);
   state.swapHandsAndMelds(imoutoIndex, riichiPlayerIndex);
+  state.setImoutoVictimIndex(riichiPlayerIndex);
   state.activateAbility(imoutoIndex, "imouto");
 
   const imoutoCanRiichi = canDeclareRiichi(imoutoIndex);

@@ -175,6 +175,8 @@ interface GameStore {
   burumogePending: boolean[];
   miimogeActive: boolean;
   otyantiActive: boolean;
+  anemogeSwapResult: (number | null)[];
+  imoutoVictimIndex: number | null;
   cpuPersonalities: (CpuPersonality | null)[];
   setSpeed: (speed: number) => void;
   setTextSize: (textSize: TextSize) => void;
@@ -266,6 +268,8 @@ interface GameStore {
   setSiranGuardActive: (playerIndex: number, active: boolean) => void;
   setAnokoSubstitutionPending: (playerIndex: number, pending: boolean) => void;
   setBurumogePending: (playerIndex: number, pending: boolean) => void;
+  setAnemogeSwapResult: (playerIndex: number, result: number | null) => void;
+  setImoutoVictimIndex: (playerIndex: number | null) => void;
   activateAbility: (
     playerIndex: number,
     abilityId?: AbilityId | null,
@@ -776,6 +780,8 @@ function createRoundState() {
     burumogePending: initialAbilityFlags(),
     miimogeActive: false,
     otyantiActive: false,
+    anemogeSwapResult: initialAbilityFlags().map(() => null),
+    imoutoVictimIndex: null,
   };
 }
 
@@ -1431,6 +1437,14 @@ export const useGameStore = create<GameStore>()(
           burumogePending[playerIndex] = pending;
           return { burumogePending };
         }),
+      setAnemogeSwapResult: (playerIndex, result) =>
+        set((state) => {
+          const anemogeSwapResult = [...state.anemogeSwapResult];
+          anemogeSwapResult[playerIndex] = result;
+          return { anemogeSwapResult };
+        }),
+      setImoutoVictimIndex: (playerIndex) =>
+        set({ imoutoVictimIndex: playerIndex }),
       swapHandsAndMelds: (playerA, playerB) =>
         set((state) => {
           const newHands = [...state.hands];
@@ -1469,11 +1483,18 @@ export const useGameStore = create<GameStore>()(
 
           const cutinText = text ?? ABILITY_LABELS[resolvedAbilityId];
 
+          const nextAnemogeResult = [...state.anemogeSwapResult];
+          if (resolvedAbilityId === "anemoge") {
+            const match = text?.match(/\((\d+)\)$/);
+            nextAnemogeResult[playerIndex] = match ? Number(match[1]) : null;
+          }
+
           if (state.abilityCutinActive) {
             return {
               abilityGauge: nextGauge,
               abilityReady: nextReady,
               abilityChargeLocked: nextLocked,
+              anemogeSwapResult: nextAnemogeResult,
               abilityCutinQueue: [
                 ...state.abilityCutinQueue,
                 { playerIndex, text: cutinText },
@@ -1485,6 +1506,7 @@ export const useGameStore = create<GameStore>()(
             abilityGauge: nextGauge,
             abilityReady: nextReady,
             abilityChargeLocked: nextLocked,
+            anemogeSwapResult: nextAnemogeResult,
             abilityCutinActive: true,
             abilityCutinPlayer: playerIndex,
             abilityCutinText: cutinText,
