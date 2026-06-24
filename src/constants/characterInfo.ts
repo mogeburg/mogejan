@@ -75,7 +75,7 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     timing: "ツモ・ロン時に自動発動",
     conditions: ["知らん女、またはあの娘を含む手牌"],
     effect:
-      "あの娘を知らん、知らん女をあの娘として役計算を行い、重複しない役をすべて付与する",
+      "あの娘を知らん女、知らん女をあの娘として役計算を行い、重複しない役をすべて付与する",
   },
   anemoge: {
     charId: "anemoge",
