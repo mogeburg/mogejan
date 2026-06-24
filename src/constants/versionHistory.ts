@@ -22,11 +22,18 @@ export const VERSION_HISTORY: VersionHistoryEntry[] = [
         ],
       },
       {
-        version: `${VERSION}`,
+        version: `0.031`,
         summary: [
           "超東南戦を追加",
           "メニューにキャラクタータブを追加、全体的に整理",
           "その他、なんか開発周りで色々やった",
+        ],
+      },
+      {
+        version: `${VERSION}`,
+        summary: [
+          "取り急ぎルールに超東南戦についてを記載",
+          "みいもげ能力発動時のツモ判定を修正",
         ],
       },
     ],
