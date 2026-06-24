@@ -36,8 +36,8 @@ export function CharacterIntroPanel() {
                       <div className={styles.abilityDetail}>
                         <span className={styles.detailLabel}>条件</span>
                         <span>
-                          {info.conditions.map((condition) => (
-                            <div>{condition}</div>
+                          {info.conditions.map((condition, i) => (
+                            <div key={i}>{condition}</div>
                           ))}
                         </span>
                       </div>

@@ -27,11 +27,12 @@ import {
 import type { GameSize, ScreenMode } from "@/constants/layout";
 import { DEFAULT_GAME_SIZE } from "@/constants/layout";
 import { SPECIAL_YAKU } from "@/constants/specialYaku";
-import { getTileCharacterId, isSameColorLikeTile } from "@/constants/tiles";
+import { getTileCharacterId, getTileColor, isSameColorLikeTile } from "@/constants/tiles";
 import { YAKU } from "@/constants/yaku";
 import type { CutinImageVariant } from "@/utils/assets";
 import {
   canFormWinningHand,
+  findAllWaitingColors,
   findWaiterId,
   getEligiblePonPlayerIndexes,
 } from "@/utils/check";
@@ -171,6 +172,7 @@ interface GameStore {
   pikasanBonusPending: boolean[];
   siranGuardActive: boolean[];
   anokoSubstitutionPending: boolean[];
+  burumogePending: boolean[];
   miimogeActive: boolean;
   otyantiActive: boolean;
   cpuPersonalities: (CpuPersonality | null)[];
@@ -263,6 +265,7 @@ interface GameStore {
   setPikasanBonusPending: (playerIndex: number, pending: boolean) => void;
   setSiranGuardActive: (playerIndex: number, active: boolean) => void;
   setAnokoSubstitutionPending: (playerIndex: number, pending: boolean) => void;
+  setBurumogePending: (playerIndex: number, pending: boolean) => void;
   activateAbility: (
     playerIndex: number,
     abilityId?: AbilityId | null,
@@ -770,6 +773,7 @@ function createRoundState() {
     pikasanBonusPending: initialAbilityFlags(),
     siranGuardActive: initialAbilityFlags(),
     anokoSubstitutionPending: initialAbilityFlags(),
+    burumogePending: initialAbilityFlags(),
     miimogeActive: false,
     otyantiActive: false,
   };
@@ -1169,7 +1173,59 @@ export const useGameStore = create<GameStore>()(
           }
 
           const [top, ...rest] = state.wall;
-          return { drawnTile: top, wall: rest };
+          let drawnTile = top;
+          const update: Partial<GameStore> = {};
+
+          if (state.burumogePending[state.turnIndex]) {
+            const waitingColors = findAllWaitingColors(
+              state.hands[state.turnIndex],
+              state.ponMelds[state.turnIndex],
+              state.trendTypes,
+            );
+            const waitingColorSet = new Set(waitingColors);
+            const turnIndex = state.turnIndex;
+            const searchOrder = [
+              turnIndex,
+              (turnIndex + 1) % 4,
+              (turnIndex + 2) % 4,
+              (turnIndex + 3) % 4,
+            ];
+
+            for (const pi of searchOrder) {
+              const discards = state.discards[pi];
+              const taken = state.takenDiscards[pi] ?? [];
+              let found = false;
+              for (let i = discards.length - 1; i >= 0; i--) {
+                if (taken[i]) continue;
+                if (waitingColorSet.has(getTileColor(discards[i]))) {
+                  const matchTile = discards[i];
+                  if (pi === turnIndex) {
+                    const newDiscards = state.discards.map((d) => [...d]);
+                    newDiscards[pi][i] = drawnTile;
+                    update.discards = newDiscards;
+                  } else {
+                    const newDiscards = state.discards.map((d) => [...d]);
+                    newDiscards[turnIndex].push(drawnTile);
+                    const newTakenDiscards = state.takenDiscards.map((td) => [...td]);
+                    newTakenDiscards[pi][i] = true;
+                    newTakenDiscards[turnIndex].push(false);
+                    update.discards = newDiscards;
+                    update.takenDiscards = newTakenDiscards;
+                  }
+                  drawnTile = matchTile;
+                  found = true;
+                  break;
+                }
+              }
+              if (found) break;
+            }
+
+            const newBurumogePending = [...state.burumogePending];
+            newBurumogePending[turnIndex] = false;
+            update.burumogePending = newBurumogePending;
+          }
+
+          return { drawnTile, wall: rest, ...update };
         }),
       discard: (tileId, isRiichi) =>
         set((state) => {
@@ -1369,6 +1425,12 @@ export const useGameStore = create<GameStore>()(
           anokoSubstitutionPending[playerIndex] = pending;
           return { anokoSubstitutionPending };
         }),
+      setBurumogePending: (playerIndex, pending) =>
+        set((state) => {
+          const burumogePending = [...state.burumogePending];
+          burumogePending[playerIndex] = pending;
+          return { burumogePending };
+        }),
       swapHandsAndMelds: (playerA, playerB) =>
         set((state) => {
           const newHands = [...state.hands];
@@ -1561,6 +1623,7 @@ export const useGameStore = create<GameStore>()(
           return {
             ...createRoundState(),
             currentScreen: "game",
+            specialAbilitiesEnabled: true,
             players,
             abilityAssignments,
             abilityGauge,

@@ -63,9 +63,9 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     name: "ぶるもげ",
     abilityId: "burumoge",
     abilityName: ABILITY_LABELS.burumoge,
-    timing: "?",
-    conditions: ["?未実装?"],
-    effect: "?未実装?",
+    timing: "リーチ時に自動発動",
+    conditions: ["自分、または他プレイヤーの捨牌に待ち牌がある"],
+    effect: "リーチ後、最初のツモ時に当たり牌の捨て牌とツモを入れ替えて引く",
   },
   anoko: {
     charId: "anoko",

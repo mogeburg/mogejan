@@ -244,6 +244,52 @@ function triggerPikasanOnRiichi(playerIndex: number) {
   state.setPikasanBonusPending(playerIndex, true);
 }
 
+function triggerBurumogeOnRiichi(playerIndex: number, waiter: number) {
+  const state = useGameStore.getState();
+  if (!canActivateAbility(playerIndex, "burumoge")) {
+    return;
+  }
+
+  const allTiles = [
+    ...state.hands[playerIndex],
+    ...(state.drawnTile != null ? [state.drawnTile] : []),
+  ];
+  const tenpaiHand = [...allTiles];
+  const waiterIdx = tenpaiHand.indexOf(waiter);
+  if (waiterIdx === -1) {
+    return;
+  }
+  tenpaiHand.splice(waiterIdx, 1);
+  const waitingColors = findAllWaitingColors(
+    tenpaiHand,
+    state.ponMelds[playerIndex],
+    state.trendTypes,
+  );
+  if (waitingColors.length === 0) return;
+  const waitingColorSet = new Set(waitingColors);
+
+  const searchOrder = [
+    playerIndex,
+    (playerIndex + 1) % 4,
+    (playerIndex + 2) % 4,
+    (playerIndex + 3) % 4,
+  ];
+
+  for (const pi of searchOrder) {
+    const discards = state.discards[pi];
+    const taken = state.takenDiscards[pi] ?? [];
+    for (let i = discards.length - 1; i >= 0; i--) {
+      if (taken[i]) continue;
+      const tileColor = getTileColor(discards[i]);
+      if (waitingColorSet.has(tileColor)) {
+        state.activateAbility(playerIndex, "burumoge");
+        state.setBurumogePending(playerIndex, true);
+        return;
+      }
+    }
+  }
+}
+
 function tryActivateImouto(riichiPlayerIndex: number, waiter: number): boolean {
   const state = useGameStore.getState();
   if (state.abilityAssignments[riichiPlayerIndex]?.abilityId === "imouto") return false;
@@ -547,6 +593,7 @@ export function executeRiichiAction(playerIndex: number): boolean {
     return true;
   }
 
+  triggerBurumogeOnRiichi(playerIndex, waiter);
   triggerPikasanOnRiichi(playerIndex);
   if (!isHumanPlayer) {
     playVoice(voiceAudioUrl("riichi.opus"));

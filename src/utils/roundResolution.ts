@@ -21,6 +21,7 @@ function clearRoundAbilityEffects() {
     pikasanBonusPending: [...resetFlags],
     siranGuardActive: [...resetFlags],
     anokoSubstitutionPending: [...resetFlags],
+    burumogePending: [...resetFlags],
     miimogeActive: false,
     otyantiActive: false,
   });
