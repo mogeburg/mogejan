@@ -85,6 +85,7 @@ function tryActivateImouto(riichiPlayerIndex: number): boolean {
     (a) => a.abilityId === "imouto",
   );
   if (imoutoIndex === -1) return false;
+  if (state.riichi[imoutoIndex]) return false;
   if (!canActivateAbility(imoutoIndex, "imouto")) return false;
 
   state.swapHandsAndMelds(imoutoIndex, riichiPlayerIndex);
