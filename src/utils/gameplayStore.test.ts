@@ -215,6 +215,16 @@ describe("canTsumoWithMiimoge（みいもげ有効時のツモ条件）", () => 
     const result = canTsumoWithMiimoge(
       0, [c(0)], false, null, [], true, "P0",
       true, ["miimoge" as any, null, null, null],
+      false,
+    );
+    expect(result).toBe(true);
+  });
+
+  it("みいもげActiveかつ他プレイヤーは最低5翻必要（ニコデスマン+ツモ+リーチ=5翻でちょうど）", () => {
+    const result = canTsumoWithMiimoge(
+      1, [c(0), c(1)], false, null, [], false, "P0",
+      true, [null, null, null, null],
+      true,
     );
     expect(result).toBe(true);
   });
@@ -223,6 +233,8 @@ describe("canTsumoWithMiimoge（みいもげ有効時のツモ条件）", () => 
     const result = canTsumoWithMiimoge(
       1, [c(0), c(1)], false, null, [], false, "P0",
       true, [null, null, null, null],
+      false,
+      false,
       5,
     );
     expect(result).toBe(false);
@@ -232,6 +244,7 @@ describe("canTsumoWithMiimoge（みいもげ有効時のツモ条件）", () => 
     const result = canTsumoWithMiimoge(
       0, [c(0)], false, null, [], false, "P0",
       false, [null, null, null, null],
+      false,
     );
     expect(result).toBe(true);
   });

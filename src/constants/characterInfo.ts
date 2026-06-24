@@ -32,7 +32,7 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityName: ABILITY_LABELS.miimoge,
     timing: "局開始時に自動発動",
     conditions: ["じゃん技ゲージが溜まっている"],
-    effect: "他プレイヤーはリーチ宣言時に5役以上が必要になる",
+    effect: "他プレイヤーはリーチ・ツモ・ロン時に5役以上が必要になる",
   },
   pikasan: {
     charId: "pikasan",

@@ -161,6 +161,8 @@ export function GameScreen() {
           s.players[s.turnIndex].name,
           s.miimogeActive,
           s.abilityAssignments.map((a) => a.abilityId),
+          s.riichi[s.turnIndex],
+          s.doubleReach[s.turnIndex],
         );
         console.log("[canTsumo] riichi=true, discards=" + currentDiscardCount + ", allTiles=" + JSON.stringify(allTiles) + ", result=" + result);
         return result;
@@ -176,6 +178,7 @@ export function GameScreen() {
           s.players[s.turnIndex].name,
           false,
           s.abilityAssignments.map((a) => a.abilityId),
+          false,
         );
         console.log("[canTsumo] tenchijin check, allTiles=" + JSON.stringify(allTiles) + ", result=" + result);
         return result;
@@ -288,6 +291,8 @@ export function GameScreen() {
           state.players[state.turnIndex].name,
           state.miimogeActive,
           state.abilityAssignments.map((a) => a.abilityId),
+          state.riichi[state.turnIndex],
+          state.doubleReach[state.turnIndex],
         )
       ) {
         executeTsumoWin(state.turnIndex);

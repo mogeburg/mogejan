@@ -335,12 +335,14 @@ export function canTsumoWithMiimoge(
   playerName: string,
   miimogeActive: boolean,
   abilityIds: (AbilityId | null)[],
+  riichi: boolean,
+  doubleReach: boolean = false,
   minYaku = 5,
 ): boolean {
   if (!miimogeActive || abilityIds[playerIndex] === "miimoge") {
     return winnerDiscardsEmpty ? getProjectedTotalYaku({
-      riichi: false,
-      doubleReach: false,
+      riichi,
+      doubleReach,
       ippatsu: false,
       isRon: false,
       hasPonMelds,
@@ -354,8 +356,8 @@ export function canTsumoWithMiimoge(
   }
 
   const totalYaku = getProjectedTotalYaku({
-    riichi: false,
-    doubleReach: false,
+    riichi,
+    doubleReach,
     ippatsu: false,
     isRon: false,
     hasPonMelds,
