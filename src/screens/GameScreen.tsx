@@ -164,8 +164,7 @@ export function GameScreen() {
           s.riichi[s.turnIndex],
           s.doubleReach[s.turnIndex],
         );
-        console.log("[canTsumo] riichi=true, discards=" + currentDiscardCount + ", allTiles=" + JSON.stringify(allTiles) + ", result=" + result);
-        return result;
+         return result;
       }
       if (currentDiscardCount === 0) {
         const result = canTsumoWithMiimoge(

@@ -205,8 +205,7 @@ describe("あの娘 ニコデスマン検証", () => {
     });
     const { results } = evaluateWin(0);
     const names = results.map(r => r.name);
-    console.log("results:", names);
-    expect(names).toContain("ニコデスマン");
+     expect(names).toContain("ニコデスマン");
   });
 });
 
