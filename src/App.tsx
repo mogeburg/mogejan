@@ -68,9 +68,8 @@ export default function App() {
   }, [screenMode]);
 
   useEffect(() => {
-    if (!lightweightMode) return;
     const bgmFiles = getPreloadBgmPaths(
-      true,
+      lightweightMode,
       normalBgmSetting,
       riichiBgmSetting,
     );

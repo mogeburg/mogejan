@@ -146,11 +146,11 @@ export function getPreloadBgmPaths(
   };
 
   if (normalBgmSetting !== "random") {
-    addIfPresent(resolveBgmPath(normalBgmSetting, "riichi"));
+    addIfPresent(resolveBgmPath(normalBgmSetting, riichiBgmSetting));
   }
 
   if (riichiBgmSetting !== "random") {
-    addIfPresent(resolveBgmPath(riichiBgmSetting, "game"));
+    addIfPresent(resolveBgmPath(riichiBgmSetting, normalBgmSetting));
   }
 
   return [...files];

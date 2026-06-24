@@ -68,12 +68,33 @@ function ensureAudioStoreSubscription() {
 export function playBgm(src: string, loop = true) {
   ensureAudioStoreSubscription();
   stopBgm();
-  currentBgm = getOrCreateHowl(src, loop);
   currentBgmSrc = src;
-  currentBgm.stop();
-  currentBgm.loop(loop);
-  currentBgm.volume(calcVolume("bgm"));
-  currentBgm.play();
+
+  const howl = getOrCreateHowl(src, loop);
+
+  const startPlayback = () => {
+    if (currentBgmSrc !== src) return;
+    currentBgm = howl;
+    howl.stop();
+    howl.loop(loop);
+    howl.volume(calcVolume("bgm"));
+    howl.play();
+  };
+
+  if (howl.state() === "loaded") {
+    startPlayback();
+  } else {
+    howl.once("load", startPlayback);
+    howl.once("loaderror", () => {
+      if (currentBgmSrc === src) {
+        currentBgm = null;
+        currentBgmSrc = "";
+      }
+    });
+    if (howl.state() !== "loading") {
+      howl.load();
+    }
+  }
 }
 
 export function stopBgm() {
