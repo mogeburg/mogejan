@@ -72,6 +72,51 @@ export function triggerAimogeOnTurn(playerIndex: number) {
   tryActivateAimoge(playerIndex);
 }
 
+export function executeOtyantiSwap(
+  playerIndex: number,
+  hands: number[][],
+  wall: number[],
+): {
+  hands: number[][];
+  wall: number[];
+  swapCount: number;
+} {
+  const TARGET_CHARACTERS = [
+    "burumoge", "miimoge", "siran", "anoko", "imouto", "otyanti",
+  ];
+
+  const hand = [...hands[playerIndex]];
+  const newWall = [...wall];
+  let swapCount = 0;
+
+  const isTarget = (tileId: number) =>
+    TARGET_CHARACTERS.includes(getTileCharacterId(tileId));
+
+  for (let pos = 0; pos < hand.length; pos++) {
+    if (isTarget(hand[pos])) continue;
+
+    let found = false;
+    for (let j = 0; j < newWall.length; j++) {
+      if (isTarget(newWall[j])) {
+        [hand[pos], newWall[j]] = [newWall[j], hand[pos]];
+        swapCount++;
+        found = true;
+        break;
+      }
+    }
+    if (!found) break;
+  }
+
+  if (swapCount > 0) {
+    hand.sort(sortTiles);
+  }
+
+  const newHands = hands.map((h) => [...h]);
+  newHands[playerIndex] = hand;
+
+  return { hands: newHands, wall: newWall, swapCount };
+}
+
 export function executeAnemogeSwap(
   playerIndex: number,
   hands: number[][],

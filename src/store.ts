@@ -35,7 +35,7 @@ import {
   findWaiterId,
   getEligiblePonPlayerIndexes,
 } from "@/utils/check";
-import { executeAnemogeSwap, triggerAimogeOnTurn } from "@/utils/gameplay";
+import { executeAnemogeSwap, executeOtyantiSwap, triggerAimogeOnTurn } from "@/utils/gameplay";
 import { getProjectedTotalYaku } from "@/utils/gameplayLogic";
 import { usePlayStatsStore } from "@/utils/playStats";
 import { createStorageKey } from "@/utils/storage";
@@ -1130,8 +1130,17 @@ export const useGameStore = create<GameStore>()(
           stateAfterDeal.abilityGauge[otyantiPlayer] >= ABILITY_MAX_GAUGE &&
           stateAfterDeal.abilityReady[otyantiPlayer]
         ) {
+          const { hands: swappedHands, wall: swappedWall } = executeOtyantiSwap(
+            otyantiPlayer,
+            stateAfterDeal.hands,
+            stateAfterDeal.wall,
+          );
           stateAfterDeal.activateAbility(otyantiPlayer, "otyanti");
-          set({ otyantiActive: true });
+          set({
+            hands: swappedHands,
+            wall: swappedWall,
+            otyantiActive: true,
+          });
         }
       },
       draw: () =>
@@ -1612,8 +1621,17 @@ export const useGameStore = create<GameStore>()(
           stateAfter.abilityGauge[otyantiPlayer] >= ABILITY_MAX_GAUGE &&
           stateAfter.abilityReady[otyantiPlayer]
         ) {
+          const { hands: swappedHands, wall: swappedWall } = executeOtyantiSwap(
+            otyantiPlayer,
+            stateAfter.hands,
+            stateAfter.wall,
+          );
           stateAfter.activateAbility(otyantiPlayer, "otyanti");
-          set({ otyantiActive: true });
+          set({
+            hands: swappedHands,
+            wall: swappedWall,
+            otyantiActive: true,
+          });
         }
       },
       startDebugMidgame: (players) =>
