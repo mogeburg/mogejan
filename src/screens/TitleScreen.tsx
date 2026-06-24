@@ -1,13 +1,7 @@
-import { Button } from "@/components/Button";
-import { CharacterIntroPanel } from "@/components/CharacterIntroPanel";
 import { DanceAvatar } from "@/components/DanceAvatar";
 import { ModalCard } from "@/components/ModalCard";
 import { ModeToggle } from "@/components/ModeToggle";
-import { OtherPanel } from "@/components/OtherPanel";
-import { OverlayMenu } from "@/components/OverlayMenu";
-import { RulesPanel } from "@/components/RulesPanel";
 import { TileImage } from "@/components/TileImage";
-import { YakuListPanel } from "@/components/YakuListPanel";
 import { BGM, INITIAL_SCORE, PLAYER_COUNT, VERSION } from "@/constants/game";
 import { getImageUrl, TileData } from "@/constants/tiles";
 import styles from "@/screens/TitleScreen.module.scss";
@@ -34,7 +28,6 @@ function shuffle<T>(arr: T[]): T[] {
 export function TitleScreen() {
   const [showDance, setShowDance] = useState(false);
   const [danceUnlocked, setDanceUnlocked] = useState(false);
-  const [howToPlayOpen, setHowToPlayOpen] = useState(false);
   const {
     riichiBgmSetting,
     riichiAvatar,
@@ -147,24 +140,6 @@ export function TitleScreen() {
           />
         </ModalCard>
       </div>
-      <Button
-        label="遊び方"
-        color="normal"
-        size="normal"
-        onClick={() => setHowToPlayOpen(true)}
-        style={{ marginBottom: 32 }}
-      />
-      {howToPlayOpen && (
-        <OverlayMenu
-          onClose={() => setHowToPlayOpen(false)}
-          tabs={[
-            { label: "ルール", content: <RulesPanel /> },
-            { label: "キャラクター", content: <CharacterIntroPanel /> },
-            { label: "役一覧", content: <YakuListPanel /> },
-            { label: "その他", content: <OtherPanel /> },
-          ]}
-        />
-      )}
       <DanceAvatar character={showDance ? riichiAvatar : "none"} />
     </div>
   );

@@ -45,6 +45,7 @@ $box-radius: 8px;
   height: 100%;
   object-fit: cover;
   object-position: 50% 30%;
+  left: -25%;
 }
 
 .nameBox {
@@ -81,7 +82,7 @@ $box-radius: 8px;
 }
 
 .abilityBox {
-  max-width: 65%;
+  max-width: 45%;
   padding: 10px 14px;
   background: $box-bg;
   border-radius: $box-radius;
@@ -90,6 +91,7 @@ $box-radius: 8px;
   flex-direction: column;
   gap: 3px;
   z-index: 1;
+  align-self: flex-end;
 }
 
 .abilityLabel {

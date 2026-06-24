@@ -7,15 +7,27 @@ interface Tab {
 }
 
 interface Props {
-  tabs: Tab[];
+  rows: Tab[][];
   footer?: ReactNode;
   onClose: () => void;
   activeIndex?: number;
   onActiveIndexChange?: (index: number) => void;
 }
 
+function flatIndex(rows: Tab[][], rowIdx: number, colIdx: number): number {
+  let idx = 0;
+  for (let r = 0; r < rowIdx; r++) {
+    idx += rows[r].length;
+  }
+  return idx + colIdx;
+}
+
+function allTabs(rows: Tab[][]): Tab[] {
+  return rows.flat();
+}
+
 export function OverlayMenu({
-  tabs,
+  rows,
   footer,
   onClose,
   activeIndex: controlledActiveIndex,
@@ -23,6 +35,7 @@ export function OverlayMenu({
 }: Props) {
   const [internalActiveIndex, setInternalActiveIndex] = useState(0);
   const activeIndex = controlledActiveIndex ?? internalActiveIndex;
+  const tabs = allTabs(rows);
 
   function handleTabChange(index: number) {
     if (controlledActiveIndex == null) {
@@ -35,14 +48,21 @@ export function OverlayMenu({
     <div className={styles.overlay} onClick={onClose}>
       <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
         <div className={styles.tabBar}>
-          {tabs.map((tab, i) => (
-            <button
-              key={i}
-              onClick={() => handleTabChange(i)}
-              className={`${styles.tabBtn} ${i === activeIndex ? styles.tabActive : styles.tabInactive}`}
-            >
-              {tab.label}
-            </button>
+          {rows.map((row, rowIdx) => (
+            <div key={rowIdx} className={styles.tabRow}>
+              {row.map((tab, colIdx) => {
+                const idx = flatIndex(rows, rowIdx, colIdx);
+                return (
+                  <button
+                    key={tab.label}
+                    onClick={() => handleTabChange(idx)}
+                    className={`${styles.tabBtn} ${idx === activeIndex ? styles.tabActive : styles.tabInactive}`}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
           ))}
         </div>
         <button

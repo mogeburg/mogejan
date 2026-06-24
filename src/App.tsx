@@ -1,11 +1,14 @@
 import styles from "@/App.module.scss";
+import { AbilityCutin } from "@/components/AbilityCutin";
 import { Button } from "@/components/Button";
+import { CharacterIntroPanel } from "@/components/CharacterIntroPanel";
 import { CutIn } from "@/components/CutIn";
 import { DebugPanel } from "@/components/DebugPanel";
 import { HistoryPanel } from "@/components/HistoryPanel";
+import { OtherPanel } from "@/components/OtherPanel";
 import { OverlayMenu } from "@/components/OverlayMenu";
-import { AbilityCutin } from "@/components/AbilityCutin";
 import { RiichiCutin } from "@/components/RiichiCutin";
+import { RulesPanel } from "@/components/RulesPanel";
 import { SettingsPanel } from "@/components/SettingsPanel";
 import { YakuListPanel } from "@/components/YakuListPanel";
 import { getPreloadBgmPaths, IS_DEBUG } from "@/constants/game";
@@ -100,21 +103,25 @@ export default function App() {
             }}
             activeIndex={menuTabIndex}
             onActiveIndexChange={setMenuTabIndex}
-            tabs={[
-              {
-                label: "設定",
-                content: <SettingsPanel />,
-              },
-              ...(IS_DEBUG
-                ? [
-                    {
-                      label: "デバッグ",
-                      content: <DebugPanel onClose={() => setMenuOpen(false)} />,
-                    },
-                  ]
-                : []),
-              { label: "役一覧", content: <YakuListPanel /> },
-              { label: "履歴", content: <HistoryPanel /> },
+            rows={[
+              [
+                { label: "ルール", content: <RulesPanel /> },
+                { label: "キャラクター", content: <CharacterIntroPanel /> },
+                { label: "役一覧", content: <YakuListPanel /> },
+              ],
+              [
+                { label: "設定", content: <SettingsPanel /> },
+                { label: "履歴", content: <HistoryPanel /> },
+                { label: "その他", content: <OtherPanel /> },
+                ...(IS_DEBUG
+                  ? [
+                      {
+                        label: "デバッグ",
+                        content: <DebugPanel onClose={() => setMenuOpen(false)} />,
+                      },
+                    ]
+                  : []),
+              ],
             ]}
             footer={
               <div style={{ display: "flex", gap: 8, width: "100%" }}>

@@ -6,14 +6,14 @@ $overlay-menu-radius: 18px;
 $overlay-menu-space-sm: var(--ui-space-3, 6px);
 $overlay-menu-space-md: var(--ui-space-4, 8px);
 $overlay-menu-space-lg: var(--ui-space-5, 12px);
-$overlay-menu-tab-padding: calc(10px * var(--ui-scale, 1)) calc(52px * var(--ui-scale, 1)) 0 calc(10px * var(--ui-scale, 1));
+$overlay-menu-tab-padding: calc(8px * var(--ui-scale, 1)) calc(52px * var(--ui-scale, 1)) calc(6px * var(--ui-scale, 1)) calc(10px * var(--ui-scale, 1));
 $overlay-menu-content-padding: calc(18px * var(--ui-scale, 1));
 $overlay-menu-footer-padding: calc(14px * var(--ui-scale, 1)) calc(18px * var(--ui-scale, 1)) calc(18px * var(--ui-scale, 1));
-$overlay-menu-tab-radius: 12px 12px 0 0;
+$overlay-menu-tab-radius: 999px;
 $overlay-menu-close-size: 34px;
 $overlay-menu-close-offset-top: calc(10px * var(--ui-scale, 1));
 $overlay-menu-close-offset-right: var(--ui-space-5, 12px);
-$overlay-menu-tab-min-height: 42px;
+$overlay-menu-tab-min-height: 34px;
 $overlay-menu-surface-top: rgba(255, 255, 255, 0.98);
 $overlay-menu-surface-bottom: rgba(245, 239, 231, 0.98);
 $overlay-menu-tabbar-bg: rgba(228, 216, 201, 0.75);
@@ -48,10 +48,16 @@ $overlay-menu-tab-inline-padding: calc(14px * var(--ui-scale, 1));
 
 .tabBar {
   display: flex;
+  flex-direction: column;
+  gap: $overlay-menu-space-sm;
   padding: $overlay-menu-tab-padding;
-  gap: $overlay-menu-space-md;
   border-bottom: 1px solid $overlay-menu-tabbar-border;
   background: $overlay-menu-tabbar-bg;
+}
+
+.tabRow {
+  display: flex;
+  gap: $overlay-menu-space-md;
 }
 
 .tabBtn {
@@ -59,7 +65,6 @@ $overlay-menu-tab-inline-padding: calc(14px * var(--ui-scale, 1));
   min-height: $overlay-menu-tab-min-height;
   padding: 0 $overlay-menu-tab-inline-padding;
   border: 1px solid $overlay-menu-tab-border;
-  border-bottom: none;
   border-radius: $overlay-menu-tab-radius;
   cursor: pointer;
   font-size: $font-size-body;
