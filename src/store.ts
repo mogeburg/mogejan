@@ -309,7 +309,7 @@ function getRonEligiblePlayers(
   return result;
 }
 
-const defaultPlayers: Player[] = PLAYER_CONFIGS.map((config, index) => ({
+const defaultPlayers: Player[] = PLAYER_CONFIGS.slice(0, PLAYER_COUNT).map((config, index) => ({
   name: config.name,
   score: INITIAL_SCORE,
   type: index === 0 ? "human" : "cpu",

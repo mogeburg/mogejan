@@ -156,7 +156,7 @@ export function getPreloadBgmPaths(
   return [...files];
 }
 
-export const PLAYER_CONFIGS = TileData.slice(0, PLAYER_COUNT).map(
+export const PLAYER_CONFIGS = TileData.map(
   ({ id, colorHex, name }) => ({
     imageUrl: getImageUrl(id),
     colorHex,
