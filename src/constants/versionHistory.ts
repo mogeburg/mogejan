@@ -34,6 +34,7 @@ export const VERSION_HISTORY: VersionHistoryEntry[] = [
         summary: [
           "取り急ぎルールに超東南戦についてを記載",
           "みいもげ能力発動時のツモ判定を修正",
+          "じゃん技用のバッジを可能な限り追加",
         ],
       },
     ],
