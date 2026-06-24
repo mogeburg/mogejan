@@ -77,7 +77,7 @@ function triggerPikasanOnRiichi(playerIndex: number) {
   state.setPikasanBonusPending(playerIndex, true);
 }
 
-function tryActivateImouto(riichiPlayerIndex: number): boolean {
+function tryActivateImouto(riichiPlayerIndex: number, waiter: number): boolean {
   const state = useGameStore.getState();
   if (state.abilityAssignments[riichiPlayerIndex]?.abilityId === "imouto") return false;
 
@@ -88,56 +88,21 @@ function tryActivateImouto(riichiPlayerIndex: number): boolean {
   if (state.riichi[imoutoIndex]) return false;
   if (!canActivateAbility(imoutoIndex, "imouto")) return false;
 
+  state.mergeDrawnIntoHand(riichiPlayerIndex);
   state.swapHandsAndMelds(imoutoIndex, riichiPlayerIndex);
   state.activateAbility(imoutoIndex, "imouto");
 
   const imoutoCanRiichi = canDeclareRiichi(imoutoIndex);
   if (imoutoCanRiichi) {
     state.declareRiichi(imoutoIndex);
+    state.directDiscard(imoutoIndex, waiter, true);
     state.setRiichiCutin(imoutoIndex);
     state.showSpeechBubble("リーチ", imoutoIndex);
-  }
-
-  const riichiPlayerCanRiichi = canDeclareRiichi(riichiPlayerIndex);
-  if (riichiPlayerCanRiichi) {
-    triggerPikasanOnRiichi(riichiPlayerIndex);
-    const handTiles = [
-      ...state.hands[riichiPlayerIndex],
-      ...(state.drawnTile != null ? [state.drawnTile] : []),
-      ...state.ponMelds[riichiPlayerIndex].flat(),
-    ];
-    const waiter = findWaiterId(handTiles);
-    if (waiter == null) {
-      state.skipTurn();
-      return true;
-    }
-    state.declareRiichi(riichiPlayerIndex);
-    const isHumanPlayer = state.players[riichiPlayerIndex].type === "human";
-    if (isHumanPlayer) {
-      state.setRiichiCutin(riichiPlayerIndex, waiter);
-      state.showSpeechBubble("リーチ", riichiPlayerIndex);
-      if (
-        state.riichiBgmSetting !== "none" &&
-        (state.riichiBgmSetting === "random" ||
-          state.riichiBgmSetting !== state.normalBgmSetting)
-      ) {
-        playBgm(
-          resolveBgmPath(
-            state.riichiBgmSetting,
-            state.normalBgmSetting,
-            getCurrentBgmSrc(),
-          ),
-        );
-      }
-    } else {
-      playVoice(voiceAudioUrl("riichi.opus"));
-      state.showSpeechBubble("リーチ", riichiPlayerIndex);
-      state.discard(waiter, true);
-    }
   } else {
-    state.skipTurn();
+    state.directDiscard(imoutoIndex, waiter, false);
   }
 
+  state.skipTurn();
   return true;
 }
 
@@ -339,7 +304,7 @@ export function executeRiichiAction(playerIndex: number): boolean {
     }
   }
 
-  if (tryActivateImouto(playerIndex)) {
+  if (tryActivateImouto(playerIndex, waiter)) {
     return true;
   }
 

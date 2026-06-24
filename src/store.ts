@@ -197,6 +197,7 @@ interface GameStore {
   deal: () => void;
   draw: () => void;
   discard: (tileId: number, isRiichi?: boolean) => void;
+  directDiscard: (playerIndex: number, tileId: number, isRiichi?: boolean) => void;
   showCutin: (
     text: string,
     playerIndex?: number,
@@ -222,6 +223,7 @@ interface GameStore {
   hideSpeechBubble: (id: number) => void;
   declareWin: (playerIndex: number) => void;
   swapHandsAndMelds: (playerA: number, playerB: number) => void;
+  mergeDrawnIntoHand: (playerIndex: number) => void;
   advanceTurn: () => void;
   skipTurn: () => void;
   declareRiichi: (playerIndex: number) => void;
@@ -904,7 +906,7 @@ export const useGameStore = create<GameStore>()(
         set((state) => {
           const nextTurn = (state.turnIndex + 1) % PLAYER_COUNT;
           scheduleDrawForTurn(nextTurn, state.speed);
-          return { turnIndex: nextTurn };
+          return { turnIndex: nextTurn, drawnTile: null };
         }),
       hideCutin: () => {
         const s = useGameStore.getState();
@@ -1147,6 +1149,32 @@ export const useGameStore = create<GameStore>()(
 
           return update;
         }),
+      directDiscard: (playerIndex, tileId, isRiichi) =>
+        set((state) => {
+          const hand = [...state.hands[playerIndex]];
+          const idx = hand.indexOf(tileId);
+          if (idx === -1) return state;
+          hand.splice(idx, 1);
+          const newHands = [...state.hands];
+          newHands[playerIndex] = hand;
+          const newDiscards = [...state.discards];
+          newDiscards[playerIndex] = [...newDiscards[playerIndex], tileId];
+          const newTakenDiscards = state.takenDiscards.map((row) => [...row]);
+          newTakenDiscards[playerIndex] = [...newTakenDiscards[playerIndex], false];
+          const update: Partial<GameStore> = {
+            hands: newHands,
+            discards: newDiscards,
+            takenDiscards: newTakenDiscards,
+          };
+          if (isRiichi) {
+            const newPositions = [
+              ...(state.riichiDiscardPositions ?? [null, null, null, null]),
+            ];
+            newPositions[playerIndex] = newDiscards[playerIndex].length - 1;
+            update.riichiDiscardPositions = newPositions;
+          }
+          return update;
+        }),
       executePon: (playerIndex) =>
         set((state) => {
           const pon = state.pendingPon;
@@ -1248,6 +1276,14 @@ export const useGameStore = create<GameStore>()(
           newPonMelds[playerA] = newPonMelds[playerB];
           newPonMelds[playerB] = tempPon;
           return { hands: newHands, ponMelds: newPonMelds };
+        }),
+      mergeDrawnIntoHand: (playerIndex) =>
+        set((state) => {
+          if (state.drawnTile == null) return state;
+          const newHands = [...state.hands];
+          newHands[playerIndex] = [...newHands[playerIndex], state.drawnTile];
+          newHands[playerIndex].sort(sortTiles);
+          return { hands: newHands, drawnTile: null };
         }),
       activateAbility: (playerIndex, abilityId, text) =>
         set((state) => {
