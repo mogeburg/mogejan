@@ -1,17 +1,22 @@
 import { resolveBgmPath } from "@/constants/game";
 import type { AbilityId } from "@/constants/abilities";
 import {
-  getBasicTileId,
   getTileColor,
-  getTrendTileId,
 } from "@/constants/tiles";
 import { useGameStore } from "@/store";
 import { voiceAudioUrl } from "@/utils/assets";
 import { getCurrentBgmSrc, playBgm, playVoice } from "@/utils/audio";
 import { canFormWinningHand, findAllWaitingColors, findWaiterId } from "@/utils/check";
-import { evaluateSpecialYaku } from "@/utils/evaluateSpecialYaku";
 import type { YakuResult } from "@/utils/evaluateYaku";
 import { evaluateYaku } from "@/utils/evaluateYaku";
+import { evaluateSpecialYaku } from "@/utils/evaluateSpecialYaku";
+import {
+  canDeclareRiichiForTiles,
+  getProjectedTotalYaku,
+  getCutinRarity,
+  getCutinImageVariant,
+  shouldUseEchoVoice,
+} from "@/utils/gameplayLogic";
 import { getCpuProfile } from "@/ai/CpuController";
 
 function canActivateAbility(playerIndex: number, abilityId: AbilityId) {
@@ -72,6 +77,69 @@ function triggerPikasanOnRiichi(playerIndex: number) {
   state.setPikasanBonusPending(playerIndex, true);
 }
 
+function tryActivateImouto(riichiPlayerIndex: number): boolean {
+  const state = useGameStore.getState();
+  if (state.abilityAssignments[riichiPlayerIndex]?.abilityId === "imouto") return false;
+
+  const imoutoIndex = state.abilityAssignments.findIndex(
+    (a) => a.abilityId === "imouto",
+  );
+  if (imoutoIndex === -1) return false;
+  if (!canActivateAbility(imoutoIndex, "imouto")) return false;
+
+  state.swapHandsAndMelds(imoutoIndex, riichiPlayerIndex);
+  state.activateAbility(imoutoIndex, "imouto");
+
+  const imoutoCanRiichi = canDeclareRiichi(imoutoIndex);
+  if (imoutoCanRiichi) {
+    state.declareRiichi(imoutoIndex);
+    state.setRiichiCutin(imoutoIndex);
+    state.showSpeechBubble("リーチ", imoutoIndex);
+  }
+
+  const riichiPlayerCanRiichi = canDeclareRiichi(riichiPlayerIndex);
+  if (riichiPlayerCanRiichi) {
+    triggerPikasanOnRiichi(riichiPlayerIndex);
+    const handTiles = [
+      ...state.hands[riichiPlayerIndex],
+      ...(state.drawnTile != null ? [state.drawnTile] : []),
+      ...state.ponMelds[riichiPlayerIndex].flat(),
+    ];
+    const waiter = findWaiterId(handTiles);
+    if (waiter == null) {
+      state.skipTurn();
+      return true;
+    }
+    state.declareRiichi(riichiPlayerIndex);
+    const isHumanPlayer = state.players[riichiPlayerIndex].type === "human";
+    if (isHumanPlayer) {
+      state.setRiichiCutin(riichiPlayerIndex, waiter);
+      state.showSpeechBubble("リーチ", riichiPlayerIndex);
+      if (
+        state.riichiBgmSetting !== "none" &&
+        (state.riichiBgmSetting === "random" ||
+          state.riichiBgmSetting !== state.normalBgmSetting)
+      ) {
+        playBgm(
+          resolveBgmPath(
+            state.riichiBgmSetting,
+            state.normalBgmSetting,
+            getCurrentBgmSrc(),
+          ),
+        );
+      }
+    } else {
+      playVoice(voiceAudioUrl("riichi.opus"));
+      state.showSpeechBubble("リーチ", riichiPlayerIndex);
+      state.discard(waiter, true);
+    }
+  } else {
+    state.skipTurn();
+  }
+
+  return true;
+}
+
 export function getAimogeDangerColors(playerIndex: number): Set<number> {
   const state = useGameStore.getState();
   if (!state.specialAbilitiesEnabled) return new Set<number>();
@@ -123,103 +191,7 @@ export function canTsumoWithMiimoge(
   return totalYaku >= minYaku;
 }
 
-export function getCutinRarity(totalYaku: number) {
-  return totalYaku >= 13 ? "epic" : totalYaku >= 6 ? "rare" : "normal";
-}
 
-export function getCutinImageVariant(totalYaku: number) {
-  return totalYaku >= 8 ? "baiman" : "normal";
-}
-
-function shouldUseEchoVoice(totalYaku: number) {
-  return getCutinRarity(totalYaku) !== "normal";
-}
-
-function getHandAfterDiscard(tiles: number[], discardTileId: number): number[] {
-  const nextTiles = [...tiles];
-  const discardIndex = nextTiles.indexOf(discardTileId);
-  if (discardIndex >= 0) {
-    nextTiles.splice(discardIndex, 1);
-  }
-  return nextTiles;
-}
-
-export function getRiichiWinningCandidates(trendTypes: number[]): number[] {
-  return [
-    ...Array.from({ length: 9 }, (_, index) => getBasicTileId(index)),
-    ...trendTypes.map((trendType) => getTrendTileId(trendType)),
-  ];
-}
-
-interface ProjectedYakuParams {
-  riichi: boolean;
-  doubleReach: boolean;
-  ippatsu: boolean;
-  isRon: boolean;
-  hasPonMelds: boolean;
-  doraTile: number | null;
-  uradoraTile: number | null;
-  allTiles: number[];
-  winnerDiscardsEmpty: boolean;
-  playerName: string;
-  trendTypes: number[];
-}
-
-export function getProjectedTotalYaku(params: ProjectedYakuParams): number {
-  return evaluateYaku(params)
-    .concat(evaluateSpecialYaku(params.allTiles))
-    .reduce((sum, result) => sum + result.yaku, 0);
-}
-
-interface CanDeclareRiichiForTilesParams {
-  tiles: number[];
-  discardTileId: number;
-  openMeldTiles: number[];
-  hasPonMelds: boolean;
-  doraTile: number | null;
-  playerName: string;
-  trendTypes: number[];
-  winnerDiscardsEmpty: boolean;
-  doubleReach: boolean;
-  minTotalYaku?: number;
-}
-
-export function canDeclareRiichiForTiles({
-  tiles,
-  discardTileId,
-  openMeldTiles,
-  hasPonMelds,
-  doraTile,
-  playerName,
-  trendTypes,
-  winnerDiscardsEmpty,
-  doubleReach,
-  minTotalYaku = 2,
-}: CanDeclareRiichiForTilesParams): boolean {
-  const handAfterDiscard = getHandAfterDiscard(tiles, discardTileId);
-  const winningCandidates = getRiichiWinningCandidates(trendTypes);
-
-  return winningCandidates.some((winningTileId) => {
-    const allTiles = [...handAfterDiscard, winningTileId, ...openMeldTiles];
-    if (!canFormWinningHand(allTiles)) return false;
-
-    const totalYaku = getProjectedTotalYaku({
-      riichi: true,
-      doubleReach,
-      ippatsu: false,
-      isRon: true,
-      hasPonMelds,
-      doraTile,
-      uradoraTile: null,
-      allTiles,
-      winnerDiscardsEmpty,
-      playerName,
-      trendTypes,
-    });
-
-    return totalYaku >= minTotalYaku;
-  });
-}
 
 export function canDeclareRiichi(
   playerIndex: number,
@@ -365,10 +337,16 @@ export function executeRiichiAction(playerIndex: number): boolean {
       return false;
     }
   }
+
+  if (tryActivateImouto(playerIndex)) {
+    return true;
+  }
+
   triggerPikasanOnRiichi(playerIndex);
   if (!isHumanPlayer) {
     playVoice(voiceAudioUrl("riichi.opus"));
   }
+  state.showSpeechBubble("リーチ", playerIndex);
   if (
     isHumanPlayer &&
     state.riichiBgmSetting !== "none" &&

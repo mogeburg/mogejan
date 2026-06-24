@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "preview": "vite preview",
     "output": "npm run build && pwsh -NoProfile -Command \"$d = [Environment]::GetFolderPath('Desktop'); Compress-Archive -Path dist/* -DestinationPath (Join-Path $d mogejan-dist.zip) -Force\""
   },
@@ -16,7 +18,8 @@
     "@types/react-dom": "^19.2.3",
     "sass": "^1.101.0",
     "typescript": "~6.0.2",
-    "vite": "^8.0.12"
+    "vite": "^8.0.12",
+    "vitest": "^4.1.9"
   },
   "dependencies": {
     "framer-motion": "^12.40.0",

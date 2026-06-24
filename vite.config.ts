@@ -1,3 +1,4 @@
+/// <reference types="vitest/config" />
 import { defineConfig } from "vite";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -10,5 +11,10 @@ export default defineConfig({
     alias: {
       "@": path.resolve(__dirname, "src"),
     },
+  },
+  test: {
+    globals: true,
+    include: ["src/**/*.test.ts"],
+    setupFiles: ["src/test-setup.ts"],
   },
 });

@@ -21,11 +21,11 @@ import {
 } from "@/utils/check";
 import { evaluateSpecialYaku } from "@/utils/evaluateSpecialYaku";
 import { evaluateYaku } from "@/utils/evaluateYaku";
+import { canDeclareRiichi } from "@/utils/gameplay";
 import {
-  canDeclareRiichi,
   canDeclareRiichiForTiles,
   getProjectedTotalYaku,
-} from "@/utils/gameplay";
+} from "@/utils/gameplayLogic";
 import {
   countAllTileColors,
   countTileColors,

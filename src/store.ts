@@ -35,7 +35,8 @@ import {
   findWaiterId,
   getEligiblePonPlayerIndexes,
 } from "@/utils/check";
-import { getProjectedTotalYaku, triggerAimogeOnTurn } from "@/utils/gameplay";
+import { triggerAimogeOnTurn } from "@/utils/gameplay";
+import { getProjectedTotalYaku } from "@/utils/gameplayLogic";
 import { usePlayStatsStore } from "@/utils/playStats";
 import { createStorageKey } from "@/utils/storage";
 import {
@@ -220,6 +221,9 @@ interface GameStore {
   clearAbilityCutin: () => void;
   hideSpeechBubble: (id: number) => void;
   declareWin: (playerIndex: number) => void;
+  swapHandsAndMelds: (playerA: number, playerB: number) => void;
+  advanceTurn: () => void;
+  skipTurn: () => void;
   declareRiichi: (playerIndex: number) => void;
   clearWinner: () => void;
   setRyuukyoku: () => void;
@@ -884,6 +888,24 @@ export const useGameStore = create<GameStore>()(
         }),
       setPendingRiichiCutin: (playerIndex, waiter) =>
         set({ pendingRiichiCutin: { playerIndex, waiter } }),
+      advanceTurn: () =>
+        set((state) => {
+          const nextTurn = (state.turnIndex + 1) % PLAYER_COUNT;
+          const newHands = [...state.hands];
+          if (state.drawnTile != null) {
+            const hand = [...newHands[state.turnIndex], state.drawnTile];
+            hand.sort(sortTiles);
+            newHands[state.turnIndex] = hand;
+          }
+          scheduleDrawForTurn(nextTurn, state.speed);
+          return { turnIndex: nextTurn, drawnTile: null, hands: newHands };
+        }),
+      skipTurn: () =>
+        set((state) => {
+          const nextTurn = (state.turnIndex + 1) % PLAYER_COUNT;
+          scheduleDrawForTurn(nextTurn, state.speed);
+          return { turnIndex: nextTurn };
+        }),
       hideCutin: () => {
         const s = useGameStore.getState();
         if (s.cutinPreview != null) {
@@ -1214,6 +1236,18 @@ export const useGameStore = create<GameStore>()(
           const siranGuardActive = [...state.siranGuardActive];
           siranGuardActive[playerIndex] = active;
           return { siranGuardActive };
+        }),
+      swapHandsAndMelds: (playerA, playerB) =>
+        set((state) => {
+          const newHands = [...state.hands];
+          const newPonMelds = state.ponMelds.map((m) => [...m]);
+          const tempHand = newHands[playerA];
+          newHands[playerA] = newHands[playerB];
+          newHands[playerB] = tempHand;
+          const tempPon = newPonMelds[playerA];
+          newPonMelds[playerA] = newPonMelds[playerB];
+          newPonMelds[playerB] = tempPon;
+          return { hands: newHands, ponMelds: newPonMelds };
         }),
       activateAbility: (playerIndex, abilityId, text) =>
         set((state) => {
