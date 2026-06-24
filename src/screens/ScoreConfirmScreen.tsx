@@ -31,6 +31,7 @@ export function ScoreConfirmScreen() {
     ponMelds,
     pikasanBonusPending,
     siranGuardActive,
+    anokoSubstitutionPending,
     simulationMode,
     isRon,
     ronTarget,
@@ -56,6 +57,7 @@ export function ScoreConfirmScreen() {
     ponMelds,
     pikasanBonusPending,
     siranGuardActive,
+    anokoSubstitutionPending,
   };
 
   const pendingDeltas = useMemo(

@@ -34,6 +34,7 @@ function makeContext(overrides?: Partial<WinEvaluationContext>): WinEvaluationCo
     ponMelds: [[], [], [], []],
     pikasanBonusPending: [false, false, false, false],
     siranGuardActive: [false, false, false, false],
+    anokoSubstitutionPending: [false, false, false, false],
     ...overrides,
   };
 }

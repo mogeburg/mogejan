@@ -7,7 +7,7 @@ export interface CharacterAbilityInfo {
   abilityId: AbilityId;
   abilityName: string;
   timing: string;
-  conditions: string[];
+  conditions?: string[];
   effect: string;
 }
 
@@ -19,7 +19,6 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityName: ABILITY_LABELS.aimoge,
     timing: "自ターン開始時",
     conditions: [
-      "能力ゲージがMAX",
       "自分がリーチしていない",
       "リーチしている相手の待ち色を手牌に持っている",
     ],
@@ -31,7 +30,6 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "miimoge",
     abilityName: ABILITY_LABELS.miimoge,
     timing: "局開始時に自動発動",
-    conditions: ["局開始時に自動発動"],
     effect: "他プレイヤーはリーチ宣言時に5翻以上が必要になる",
   },
   pikasan: {
@@ -40,7 +38,6 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "pikasan",
     abilityName: ABILITY_LABELS.pikasan,
     timing: "リーチ時",
-    conditions: ["能力ゲージがMAX"],
     effect: "能力発動局に自分がアガった場合、役「そうだね（3翻）」が追加される",
   },
   siran: {
@@ -49,7 +46,6 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "siran",
     abilityName: ABILITY_LABELS.siran,
     timing: "他プレイヤーからツモ・ロンされた時",
-    conditions: ["能力ゲージがMAX"],
     effect: "自分が支払う点数を0にする",
   },
   imouto: {
@@ -58,7 +54,7 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     abilityId: "imouto",
     abilityName: ABILITY_LABELS.imouto,
     timing: "他プレイヤーがリーチした時",
-    conditions: ["能力ゲージがMAX", "自分がリーチしていない"],
+    conditions: ["自分がリーチしていない"],
     effect:
       "他プレイヤーのリーチ時にツモ・手牌・ポンを全て入れ替え、リーチ可能ならリーチ状態になる",
   },
@@ -76,26 +72,26 @@ export const CHARACTER_ABILITY_INFO: Record<string, CharacterAbilityInfo> = {
     name: "あの娘",
     abilityId: "anoko",
     abilityName: ABILITY_LABELS.anoko,
-    timing: "?",
-    conditions: ["?未実装?"],
-    effect: "?未実装?",
+    timing: "ツモ・ロン時に自動発動",
+    conditions: ["知らん女、またはあの娘を含む手牌"],
+    effect:
+      "あの娘の牌を知らん女として、知らん女の牌をあの娘の牌としても扱い役計算を行い、重複しない役をすべて付与する",
   },
   anemoge: {
     charId: "anemoge",
     name: "あねもげ",
     abilityId: "anemoge",
     abilityName: ABILITY_LABELS.anemoge,
-    timing: "?",
-    conditions: ["?未実装?"],
-    effect: "?未実装?",
+    timing: "局開始時に自動発動",
+    effect: "dice1d8=の出た目だけ手牌があねもげに入れ替わる",
   },
   otyanti: {
     charId: "otyanti",
     name: "おちゃんち",
     abilityId: "otyanti",
     abilityName: ABILITY_LABELS.otyanti,
-    timing: "?",
-    conditions: ["?未実装?"],
-    effect: "?未実装?",
+    timing: "局開始時に自動発動",
+    effect:
+      "「ぶるもげ・みいもげ・知らん女・あの娘・妹・おちゃんち」をツモしやすくなる",
   },
 };

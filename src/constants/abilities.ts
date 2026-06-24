@@ -35,7 +35,7 @@ export const ABILITY_LABELS: Record<AbilityId, string> = {
   siran: "知らん",
   anoko: "一緒にうまれたのに",
   imouto: "ちっちゃい悪いこと",
-  anemoge: "dice1d8",
+  anemoge: "dice1d8=",
   otyanti: "召喚札",
   koitofukumaru: "あくらつなライフハック",
 };

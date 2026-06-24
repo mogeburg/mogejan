@@ -190,6 +190,26 @@ describe("getAimogeDangerColors（あいもげ危険色取得）", () => {
   });
 });
 
+describe("あの娘 ニコデスマン検証", () => {
+  it("siran→anoko で2色になりニコデスマンが付く（リーチ後=捨て牌あり）", () => {
+    useGameStore.setState({
+      winner: 0,
+      riichi: [true, false, false, false],
+      discards: [[c(3)], [], [], []],
+      hands: [[c(0), c(0,1), c(0,2), c(4), c(4,1), c(4,2), c(5), c(5,1)], [], [], []],
+      drawnTile: c(5, 2),
+      anokoSubstitutionPending: [true, false, false, false],
+      doraTile: null,
+      uradoraTile: null,
+      trendTypes: [],
+    });
+    const { results } = evaluateWin(0);
+    const names = results.map(r => r.name);
+    console.log("results:", names);
+    expect(names).toContain("ニコデスマン");
+  });
+});
+
 describe("canTsumoWithMiimoge（みいもげ有効時のツモ条件）", () => {
   it("みいもげActiveかつみいもげ能力者自身は常にツモ可能（0翻でも）", () => {
     const result = canTsumoWithMiimoge(

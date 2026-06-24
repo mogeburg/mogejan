@@ -34,14 +34,16 @@ export function CharacterIntroPanel() {
                       <span className={styles.detailLabel}>発動</span>
                       <span>{info.timing}</span>
                     </div>
-                    <div className={styles.abilityDetail}>
-                      <span className={styles.detailLabel}>条件</span>
-                      <span>
-                        {info.conditions.map((condition) => (
-                          <div>{condition}</div>
-                        ))}
-                      </span>
-                    </div>
+                    {info.conditions && info.conditions.length > 0 && (
+                      <div className={styles.abilityDetail}>
+                        <span className={styles.detailLabel}>条件</span>
+                        <span>
+                          {info.conditions.map((condition) => (
+                            <div>{condition}</div>
+                          ))}
+                        </span>
+                      </div>
+                    )}
                     <div className={styles.abilityDetail}>
                       <span className={styles.detailLabel}>効果</span>
                       <span>{info.effect}</span>

@@ -140,7 +140,7 @@ export function TitleScreen() {
             items={[
               { label: "東南戦" },
               { label: "超東南戦" },
-              { label: "ストーリー", disabled: true },
+              // { label: "ストーリー", disabled: true },
             ]}
             activeIndex={titleModeIndex}
             onChange={setTitleModeIndex}

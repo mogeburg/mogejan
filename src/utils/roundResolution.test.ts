@@ -35,6 +35,7 @@ function makeSnapshot(overrides?: Partial<RoundResolutionSnapshot>): RoundResolu
     ponMelds: [[], [], [], []],
     pikasanBonusPending: [false, false, false, false],
     siranGuardActive: [false, false, false, false],
+    anokoSubstitutionPending: [false, false, false, false],
     ...overrides,
   };
 }

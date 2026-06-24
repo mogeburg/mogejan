@@ -1,9 +1,11 @@
 import { resolveBgmPath } from "@/constants/game";
 import type { AbilityId } from "@/constants/abilities";
 import {
+  getTileCharacterId,
   getTileColor,
 } from "@/constants/tiles";
 import { useGameStore } from "@/store";
+import { sortTiles } from "@/utils/tiles";
 import { voiceAudioUrl } from "@/utils/assets";
 import { getCurrentBgmSrc, playBgm, playVoice } from "@/utils/audio";
 import { canFormWinningHand, findAllWaitingColors, findWaiterId } from "@/utils/check";
@@ -68,6 +70,126 @@ function tryActivateAimoge(playerIndex: number): boolean {
 
 export function triggerAimogeOnTurn(playerIndex: number) {
   tryActivateAimoge(playerIndex);
+}
+
+export function executeAnemogeSwap(
+  playerIndex: number,
+  hands: number[][],
+  wall: number[],
+  doraTile: number | null,
+  uradoraTile: number | null,
+): {
+  hands: number[][];
+  wall: number[];
+  doraTile: number | null;
+  uradoraTile: number | null;
+  diceResult: number;
+} {
+  const N = Math.floor(Math.random() * 8) + 1;
+  const hand = [...hands[playerIndex]];
+  const newWall = [...wall];
+  let newDora = doraTile;
+  let newUradora = uradoraTile;
+  const newHands = hands.map(h => [...h]);
+  const modifiedOtherPlayers = new Set<number>();
+
+  const isAnemoge = (tileId: number) => getTileCharacterId(tileId) === "anemoge";
+
+  let modified = false;
+
+  for (let pos = 0; pos < N && pos < hand.length; pos++) {
+    if (isAnemoge(hand[pos])) continue;
+
+    let found = false;
+
+    for (let j = N; j < hand.length; j++) {
+      if (isAnemoge(hand[j])) {
+        [hand[pos], hand[j]] = [hand[j], hand[pos]];
+        found = true;
+        modified = true;
+        break;
+      }
+    }
+    if (found) continue;
+
+    for (let j = 0; j < newWall.length; j++) {
+      if (isAnemoge(newWall[j])) {
+        [hand[pos], newWall[j]] = [newWall[j], hand[pos]];
+        found = true;
+        modified = true;
+        break;
+      }
+    }
+    if (found) continue;
+
+    if (newDora != null && isAnemoge(newDora)) {
+      [hand[pos], newDora] = [newDora, hand[pos]];
+      found = true;
+      modified = true;
+    }
+    if (found) continue;
+
+    if (newUradora != null && isAnemoge(newUradora)) {
+      [hand[pos], newUradora] = [newUradora, hand[pos]];
+      found = true;
+      modified = true;
+    }
+    if (found) continue;
+
+    for (let p = 0; p < newHands.length; p++) {
+      if (p === playerIndex) continue;
+      for (let j = 0; j < newHands[p].length; j++) {
+        if (isAnemoge(newHands[p][j])) {
+          [hand[pos], newHands[p][j]] = [newHands[p][j], hand[pos]];
+          modifiedOtherPlayers.add(p);
+          found = true;
+          modified = true;
+          break;
+        }
+      }
+      if (found) break;
+    }
+  }
+
+  for (let pos = N; pos < hand.length; pos++) {
+    if (!isAnemoge(hand[pos])) continue;
+    if (newWall.length === 0) break;
+
+    const wallTop = newWall.shift()!;
+    const handTile = hand[pos];
+    hand[pos] = wallTop;
+    newWall.push(handTile);
+    modified = true;
+  }
+
+  if (modified) {
+    hand.sort(sortTiles);
+    newHands[playerIndex] = hand;
+    for (const p of modifiedOtherPlayers) {
+      newHands[p].sort(sortTiles);
+    }
+  }
+
+  return { hands: newHands, wall: newWall, doraTile: newDora, uradoraTile: newUradora, diceResult: N };
+}
+
+function triggerAnokoOnWin(playerIndex: number) {
+  const state = useGameStore.getState();
+  if (!canActivateAbility(playerIndex, "anoko")) return;
+
+  const allTiles = [
+    ...state.hands[playerIndex],
+    ...(state.drawnTile != null ? [state.drawnTile] : []),
+    ...state.ponMelds[playerIndex].flat(),
+  ];
+  const hasTarget = allTiles.some((t) => {
+    const id = getTileCharacterId(t);
+    return id === "anoko" || id === "siran";
+  });
+  if (!hasTarget) return;
+
+  state.activateAbility(playerIndex, "anoko");
+  state.setAnokoSubstitutionPending(playerIndex, true);
 }
 
 function triggerPikasanOnRiichi(playerIndex: number) {
@@ -186,6 +308,51 @@ export function canDeclareRiichi(
   });
 }
 
+function runYakuEvaluation(
+  allTiles: number[],
+  playerIndex: number,
+  options?: { isRon?: boolean },
+): YakuResult[] {
+  const state = useGameStore.getState();
+  return evaluateYaku({
+    riichi: state.riichi[playerIndex],
+    doubleReach: state.doubleReach[playerIndex],
+    ippatsu: state.ippatsu[playerIndex],
+    isRon: options?.isRon ?? false,
+    hasPonMelds: state.ponMelds[playerIndex].length > 0,
+    doraTile: state.doraTile,
+    uradoraTile: state.uradoraTile,
+    allTiles,
+    winnerDiscardsEmpty: state.discards[playerIndex].length === 0,
+    playerName: state.players[playerIndex].name,
+    trendTypes: state.trendTypes,
+  }).concat(evaluateSpecialYaku(allTiles));
+}
+
+function mapSiranToAnoko(tiles: number[]): number[] {
+  return tiles.map((t) =>
+    getTileCharacterId(t) === "siran" ? t + 9 : t,
+  );
+}
+
+function mapAnokoToSiran(tiles: number[]): number[] {
+  return tiles.map((t) =>
+    getTileCharacterId(t) === "anoko" ? t - 9 : t,
+  );
+}
+
+function mergeYakuResults(scenarios: YakuResult[][]): YakuResult[] {
+  const seen = new Map<string, number>();
+  for (const results of scenarios) {
+    for (const r of results) {
+      if (!seen.has(r.name)) {
+        seen.set(r.name, r.yaku);
+      }
+    }
+  }
+  return Array.from(seen.entries()).map(([name, yaku]) => ({ name, yaku }));
+}
+
 export function evaluateWin(
   playerIndex: number,
   options?: {
@@ -205,22 +372,25 @@ export function evaluateWin(
     ...drawnTiles,
     ...state.ponMelds[playerIndex].flat(),
   ];
-  const results = evaluateYaku({
-    riichi: state.riichi[playerIndex],
-    doubleReach: state.doubleReach[playerIndex],
-    ippatsu: state.ippatsu[playerIndex],
-    isRon: options?.isRon ?? false,
-    hasPonMelds: state.ponMelds[playerIndex].length > 0,
-    doraTile: state.doraTile,
-    uradoraTile: state.uradoraTile,
-    allTiles,
-    winnerDiscardsEmpty: state.discards[playerIndex].length === 0,
-    playerName: state.players[playerIndex].name,
-    trendTypes: state.trendTypes,
-  }).concat(evaluateSpecialYaku(allTiles));
+
+  const scenarios: YakuResult[][] = [];
+  scenarios.push(runYakuEvaluation(allTiles, playerIndex, options));
+
+  if (state.anokoSubstitutionPending[playerIndex]) {
+    scenarios.push(
+      runYakuEvaluation(mapSiranToAnoko(allTiles), playerIndex, options),
+    );
+    scenarios.push(
+      runYakuEvaluation(mapAnokoToSiran(allTiles), playerIndex, options),
+    );
+  }
+
+  const results = mergeYakuResults(scenarios);
 
   if (state.pikasanBonusPending[playerIndex]) {
-    results.push({ name: "そうだね", yaku: 3 });
+    if (!results.some((r) => r.name === "そうだね")) {
+      results.push({ name: "そうだね", yaku: 3 });
+    }
   }
 
   const adjustedTotalYaku = results.reduce((sum, result) => sum + result.yaku, 0);
@@ -234,18 +404,30 @@ export function evaluateWin(
 export function executeTsumoWin(playerIndex: number) {
   const state = useGameStore.getState();
   state.declareWin(playerIndex);
+  triggerAnokoOnWin(playerIndex);
   const { totalYaku } = evaluateWin(playerIndex);
   playVoice(
     shouldUseEchoVoice(totalYaku)
       ? voiceAudioUrl("tsumo-echo.opus")
       : voiceAudioUrl("tsumo.opus"),
   );
-  state.showCutin(
-    "ツモ",
-    playerIndex,
-    getCutinRarity(totalYaku),
-    getCutinImageVariant(totalYaku),
-  );
+  if (
+    useGameStore.getState().anokoSubstitutionPending[playerIndex]
+  ) {
+    state.setPendingWinCutin(
+      "ツモ",
+      playerIndex,
+      getCutinRarity(totalYaku),
+      getCutinImageVariant(totalYaku),
+    );
+  } else {
+    state.showCutin(
+      "ツモ",
+      playerIndex,
+      getCutinRarity(totalYaku),
+      getCutinImageVariant(totalYaku),
+    );
+  }
 }
 
 export function executeRonWin(playerIndex: number) {
@@ -253,6 +435,7 @@ export function executeRonWin(playerIndex: number) {
   const claimedTile = state.pendingRon?.tileId;
   if (claimedTile == null) return;
 
+  triggerAnokoOnWin(playerIndex);
   const { totalYaku } = evaluateWin(playerIndex, {
     isRon: true,
     claimedTile,
@@ -263,12 +446,23 @@ export function executeRonWin(playerIndex: number) {
       : voiceAudioUrl("ron.opus"),
   );
   state.executeRon(playerIndex);
-  state.showCutin(
-    "ロン",
-    playerIndex,
-    getCutinRarity(totalYaku),
-    getCutinImageVariant(totalYaku),
-  );
+  if (
+    useGameStore.getState().anokoSubstitutionPending[playerIndex]
+  ) {
+    state.setPendingWinCutin(
+      "ロン",
+      playerIndex,
+      getCutinRarity(totalYaku),
+      getCutinImageVariant(totalYaku),
+    );
+  } else {
+    state.showCutin(
+      "ロン",
+      playerIndex,
+      getCutinRarity(totalYaku),
+      getCutinImageVariant(totalYaku),
+    );
+  }
 }
 
 export function executePonCall(playerIndex: number) {

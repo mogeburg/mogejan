@@ -16,10 +16,13 @@ function clearRoundAbilityEffects() {
     abilityCutinText: "",
     abilityCutinQueue: [],
     pendingRiichiCutin: null,
+    pendingWinCutin: null,
     aimogeDangerColors: resetFlags.map(() => [] as number[]),
     pikasanBonusPending: [...resetFlags],
     siranGuardActive: [...resetFlags],
+    anokoSubstitutionPending: [...resetFlags],
     miimogeActive: false,
+    otyantiActive: false,
   });
 }
 
@@ -42,6 +45,7 @@ export interface RoundResolutionSnapshot {
   ponMelds: number[][][];
   pikasanBonusPending: boolean[];
   siranGuardActive: boolean[];
+  anokoSubstitutionPending: boolean[];
 }
 
 export function buildWinContext(
@@ -64,6 +68,7 @@ export function buildWinContext(
     ponMelds: snapshot.ponMelds,
     pikasanBonusPending: snapshot.pikasanBonusPending,
     siranGuardActive: snapshot.siranGuardActive,
+    anokoSubstitutionPending: snapshot.anokoSubstitutionPending,
   };
 }
 
@@ -115,6 +120,7 @@ export function confirmCurrentRound() {
     ponMelds: state.ponMelds,
     pikasanBonusPending: state.pikasanBonusPending,
     siranGuardActive: state.siranGuardActive,
+    anokoSubstitutionPending: state.anokoSubstitutionPending,
   };
 
   const yaku = evaluateWinner(buildWinContext(snapshot));

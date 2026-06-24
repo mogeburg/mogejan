@@ -27,7 +27,7 @@ import {
 import type { GameSize, ScreenMode } from "@/constants/layout";
 import { DEFAULT_GAME_SIZE } from "@/constants/layout";
 import { SPECIAL_YAKU } from "@/constants/specialYaku";
-import { isSameColorLikeTile } from "@/constants/tiles";
+import { getTileCharacterId, isSameColorLikeTile } from "@/constants/tiles";
 import { YAKU } from "@/constants/yaku";
 import type { CutinImageVariant } from "@/utils/assets";
 import {
@@ -35,7 +35,7 @@ import {
   findWaiterId,
   getEligiblePonPlayerIndexes,
 } from "@/utils/check";
-import { triggerAimogeOnTurn } from "@/utils/gameplay";
+import { executeAnemogeSwap, triggerAimogeOnTurn } from "@/utils/gameplay";
 import { getProjectedTotalYaku } from "@/utils/gameplayLogic";
 import { usePlayStatsStore } from "@/utils/playStats";
 import { createStorageKey } from "@/utils/storage";
@@ -135,6 +135,12 @@ interface GameStore {
   abilityCutinText: string;
   abilityCutinQueue: { playerIndex: number; text: string }[];
   pendingRiichiCutin: { playerIndex: number; waiter: number } | null;
+  pendingWinCutin: {
+    text: string;
+    playerIndex: number;
+    type: "normal" | "rare" | "epic" | "ryuukyoku";
+    imageVariant: CutinImageVariant;
+  } | null;
   speechBubbles: { id: number; text: string; playerIndex: number }[];
   winner: number | null;
   ryuukyoku: boolean;
@@ -164,7 +170,9 @@ interface GameStore {
   aimogeDangerColors: number[][];
   pikasanBonusPending: boolean[];
   siranGuardActive: boolean[];
+  anokoSubstitutionPending: boolean[];
   miimogeActive: boolean;
+  otyantiActive: boolean;
   cpuPersonalities: (CpuPersonality | null)[];
   setSpeed: (speed: number) => void;
   setTextSize: (textSize: TextSize) => void;
@@ -197,7 +205,11 @@ interface GameStore {
   deal: () => void;
   draw: () => void;
   discard: (tileId: number, isRiichi?: boolean) => void;
-  directDiscard: (playerIndex: number, tileId: number, isRiichi?: boolean) => void;
+  directDiscard: (
+    playerIndex: number,
+    tileId: number,
+    isRiichi?: boolean,
+  ) => void;
   showCutin: (
     text: string,
     playerIndex?: number,
@@ -218,6 +230,12 @@ interface GameStore {
     text?: string,
   ) => void;
   setPendingRiichiCutin: (playerIndex: number, waiter: number) => void;
+  setPendingWinCutin: (
+    text: string,
+    playerIndex: number,
+    type: "normal" | "rare" | "epic" | "ryuukyoku",
+    imageVariant: CutinImageVariant,
+  ) => void;
   showSpeechBubble: (text: string, playerIndex: number) => void;
   clearAbilityCutin: () => void;
   hideSpeechBubble: (id: number) => void;
@@ -244,6 +262,7 @@ interface GameStore {
   setAimogeDangerColors: (playerIndex: number, colors: number[]) => void;
   setPikasanBonusPending: (playerIndex: number, pending: boolean) => void;
   setSiranGuardActive: (playerIndex: number, active: boolean) => void;
+  setAnokoSubstitutionPending: (playerIndex: number, pending: boolean) => void;
   activateAbility: (
     playerIndex: number,
     abilityId?: AbilityId | null,
@@ -716,6 +735,12 @@ function createRoundState() {
     abilityCutinText: "",
     abilityCutinQueue: [] as { playerIndex: number; text: string }[],
     pendingRiichiCutin: null as { playerIndex: number; waiter: number } | null,
+    pendingWinCutin: null as {
+      text: string;
+      playerIndex: number;
+      type: "normal" | "rare" | "epic" | "ryuukyoku";
+      imageVariant: CutinImageVariant;
+    } | null,
     speechBubbles: [] as { id: number; text: string; playerIndex: number }[],
     winner: null as number | null,
     ryuukyoku: false,
@@ -744,7 +769,9 @@ function createRoundState() {
     aimogeDangerColors: initialAbilityFlags().map(() => [] as number[]),
     pikasanBonusPending: initialAbilityFlags(),
     siranGuardActive: initialAbilityFlags(),
+    anokoSubstitutionPending: initialAbilityFlags(),
     miimogeActive: false,
+    otyantiActive: false,
   };
 }
 
@@ -890,6 +917,8 @@ export const useGameStore = create<GameStore>()(
         }),
       setPendingRiichiCutin: (playerIndex, waiter) =>
         set({ pendingRiichiCutin: { playerIndex, waiter } }),
+      setPendingWinCutin: (text, playerIndex, type, imageVariant) =>
+        set({ pendingWinCutin: { text, playerIndex, type, imageVariant } }),
       advanceTurn: () =>
         set((state) => {
           const nextTurn = (state.turnIndex + 1) % PLAYER_COUNT;
@@ -1069,10 +1098,67 @@ export const useGameStore = create<GameStore>()(
           stateAfterDeal.activateAbility(miimogePlayer, "miimoge");
           set({ miimogeActive: true });
         }
+
+        const anemogePlayer = stateAfterDeal.abilityAssignments.findIndex(
+          (a) => a?.abilityId === "anemoge",
+        );
+        if (
+          anemogePlayer >= 0 &&
+          stateAfterDeal.abilityGauge[anemogePlayer] >= ABILITY_MAX_GAUGE &&
+          stateAfterDeal.abilityReady[anemogePlayer]
+        ) {
+          const { diceResult, ...anemogeUpdates } = executeAnemogeSwap(
+            anemogePlayer,
+            stateAfterDeal.hands,
+            stateAfterDeal.wall,
+            stateAfterDeal.doraTile,
+            stateAfterDeal.uradoraTile,
+          );
+          stateAfterDeal.activateAbility(
+            anemogePlayer,
+            "anemoge",
+            `${ABILITY_LABELS.anemoge}(${diceResult})`,
+          );
+          set(anemogeUpdates);
+        }
+
+        const otyantiPlayer = stateAfterDeal.abilityAssignments.findIndex(
+          (a) => a?.abilityId === "otyanti",
+        );
+        if (
+          otyantiPlayer >= 0 &&
+          stateAfterDeal.abilityGauge[otyantiPlayer] >= ABILITY_MAX_GAUGE &&
+          stateAfterDeal.abilityReady[otyantiPlayer]
+        ) {
+          stateAfterDeal.activateAbility(otyantiPlayer, "otyanti");
+          set({ otyantiActive: true });
+        }
       },
       draw: () =>
         set((state) => {
           if (state.wall.length === 0) return state;
+
+          if (
+            state.otyantiActive &&
+            state.abilityAssignments[state.turnIndex]?.abilityId === "otyanti"
+          ) {
+            const targetTileIds = [
+              "burumoge",
+              "miimoge",
+              "siran",
+              "anoko",
+              "imouto",
+              "otyanti",
+            ];
+            for (let i = 0; i < state.wall.length; i++) {
+              if (targetTileIds.includes(getTileCharacterId(state.wall[i]))) {
+                const newWall = [...state.wall];
+                newWall.splice(i, 1);
+                return { drawnTile: state.wall[i], wall: newWall };
+              }
+            }
+          }
+
           const [top, ...rest] = state.wall;
           return { drawnTile: top, wall: rest };
         }),
@@ -1160,7 +1246,10 @@ export const useGameStore = create<GameStore>()(
           const newDiscards = [...state.discards];
           newDiscards[playerIndex] = [...newDiscards[playerIndex], tileId];
           const newTakenDiscards = state.takenDiscards.map((row) => [...row]);
-          newTakenDiscards[playerIndex] = [...newTakenDiscards[playerIndex], false];
+          newTakenDiscards[playerIndex] = [
+            ...newTakenDiscards[playerIndex],
+            false,
+          ];
           const update: Partial<GameStore> = {
             hands: newHands,
             discards: newDiscards,
@@ -1265,6 +1354,12 @@ export const useGameStore = create<GameStore>()(
           siranGuardActive[playerIndex] = active;
           return { siranGuardActive };
         }),
+      setAnokoSubstitutionPending: (playerIndex, pending) =>
+        set((state) => {
+          const anokoSubstitutionPending = [...state.anokoSubstitutionPending];
+          anokoSubstitutionPending[playerIndex] = pending;
+          return { anokoSubstitutionPending };
+        }),
       swapHandsAndMelds: (playerA, playerB) =>
         set((state) => {
           const newHands = [...state.hands];
@@ -1347,6 +1442,21 @@ export const useGameStore = create<GameStore>()(
               riichiCutinText: "リーチ",
             };
           }
+          if (state.pendingWinCutin != null) {
+            const { text, playerIndex, type, imageVariant } =
+              state.pendingWinCutin;
+            return {
+              abilityCutinActive: false,
+              abilityCutinPlayer: null,
+              abilityCutinText: "",
+              abilityCutinQueue: [],
+              pendingWinCutin: null,
+              cutin: text,
+              cutinPlayer: playerIndex,
+              cutinType: type,
+              cutinImageVariant: imageVariant,
+            };
+          }
           if (state.winner != null) {
             return {
               abilityCutinActive: false,
@@ -1426,8 +1536,8 @@ export const useGameStore = create<GameStore>()(
               charId: p.charId,
             };
           });
-          const abilityAssignments = players.map(
-            (p) => createDefaultAbilityAssignment(p.charId),
+          const abilityAssignments = players.map((p) =>
+            createDefaultAbilityAssignment(p.charId),
           );
           const abilityGauge = config.players.map((p) =>
             Math.min(ABILITY_MAX_GAUGE, Math.max(0, p.abilityGauge)),
@@ -1469,6 +1579,41 @@ export const useGameStore = create<GameStore>()(
         ) {
           stateAfter.activateAbility(miimogePlayer, "miimoge");
           set({ miimogeActive: true });
+        }
+
+        const anemogePlayer = stateAfter.abilityAssignments.findIndex(
+          (a) => a?.abilityId === "anemoge",
+        );
+        if (
+          anemogePlayer >= 0 &&
+          stateAfter.abilityGauge[anemogePlayer] >= ABILITY_MAX_GAUGE &&
+          stateAfter.abilityReady[anemogePlayer]
+        ) {
+          const { diceResult, ...anemogeUpdates } = executeAnemogeSwap(
+            anemogePlayer,
+            stateAfter.hands,
+            stateAfter.wall,
+            stateAfter.doraTile,
+            stateAfter.uradoraTile,
+          );
+          stateAfter.activateAbility(
+            anemogePlayer,
+            "anemoge",
+            `${ABILITY_LABELS.anemoge}(${diceResult})`,
+          );
+          set(anemogeUpdates);
+        }
+
+        const otyantiPlayer = stateAfter.abilityAssignments.findIndex(
+          (a) => a?.abilityId === "otyanti",
+        );
+        if (
+          otyantiPlayer >= 0 &&
+          stateAfter.abilityGauge[otyantiPlayer] >= ABILITY_MAX_GAUGE &&
+          stateAfter.abilityReady[otyantiPlayer]
+        ) {
+          stateAfter.activateAbility(otyantiPlayer, "otyanti");
+          set({ otyantiActive: true });
         }
       },
       startDebugMidgame: (players) =>

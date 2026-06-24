@@ -30,6 +30,7 @@ export function YakuResultScreen() {
     hands,
     ponMelds,
     pikasanBonusPending,
+    anokoSubstitutionPending,
     goTo,
     addYakuCounts,
     simulationMode,
@@ -54,6 +55,7 @@ export function YakuResultScreen() {
     ponMelds,
     pikasanBonusPending,
     siranGuardActive: [false, false, false, false],
+    anokoSubstitutionPending,
   };
 
   const allTiles = buildWinnerTiles(winContext);
